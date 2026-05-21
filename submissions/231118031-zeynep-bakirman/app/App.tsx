@@ -316,8 +316,8 @@ function AvatarCameraRig() {
   const { camera } = useThree();
 
   useFrame(() => {
-    camera.position.set(0, 1.44, 2.18);
-    camera.lookAt(0, 1.42, 0.02);
+    camera.position.set(0, 1.22, 3.05);
+    camera.lookAt(0, 1.26, 0.02);
     camera.updateProjectionMatrix();
   });
 
@@ -339,7 +339,7 @@ function ProceduralMouth({ level, isIdle }: { level: number; isIdle: boolean }) 
   });
 
   return (
-    <group position={[0, 1.62, 0.19]}>
+    <group position={[0, 1.58, 0.19]}>
       <mesh ref={glow} position={[0, 0, -0.006]}>
         <sphereGeometry args={[1, 24, 12]} />
         <meshStandardMaterial color="#fb7185" transparent opacity={isIdle ? 0.2 : 0.42} />
@@ -365,7 +365,7 @@ function AvatarModel({ level, isIdle }: { level: number; isIdle: boolean }) {
 
   return (
     <Float speed={1.4} rotationIntensity={0.05} floatIntensity={0.06}>
-      <group ref={group} position={[0, -0.06, 0]} scale={1.22}>
+      <group ref={group} position={[0, -0.22, 0]} scale={1.08}>
         <primitive object={gltf.scene} />
         <ProceduralMouth level={level} isIdle={isIdle} />
       </group>
@@ -376,7 +376,7 @@ function AvatarModel({ level, isIdle }: { level: number; isIdle: boolean }) {
 function AvatarStage({ level, isIdle }: { level: number; isIdle: boolean }) {
   return (
     <View style={styles.stage}>
-      <Canvas camera={{ position: [0, 0.82, 2.65], fov: 34 }}>
+      <Canvas camera={{ position: [0, 1.22, 3.05], fov: 42 }}>
         <color attach="background" args={['#101014']} />
         <AvatarCameraRig />
         <ambientLight intensity={1.35} />
