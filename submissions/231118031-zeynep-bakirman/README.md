@@ -9,6 +9,7 @@ Slug: zeynep-bakirman
 
 Expo Link: https://expo.dev/accounts/zeynepbakirman/projects/app/builds/f3f7c3bc-f144-4ec6-82fd-ecb03456538a  
 Demo Video (Phase A+B+C): https://youtu.be/oAl6NrlqfjM?si=VKcCTmsGQgbL0LVS  
+Demo File: `demo.mp4`  
 APK: `app-release.apk`
 
 ## Checklist
@@ -17,6 +18,7 @@ APK: `app-release.apk`
 - [x] README includes track selection
 - [x] `app/avatar.glb` exists
 - [x] `app-release.apk` added after EAS build
+- [x] `demo.mp4` added to submission folder
 - [x] Demo video link added after upload
 - [x] Mic input drives voice visualizer
 - [x] Silent state returns to idle
