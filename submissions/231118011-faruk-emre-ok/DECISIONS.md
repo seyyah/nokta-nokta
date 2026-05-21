@@ -18,7 +18,7 @@ I first tried `expo-three`, then rolled it back after npm reported old peer expe
 
 ## 2026-05-21 — Local state only
 
-The mic amplitude and report shelf stay in local React state/static files. Adding backend state would make the old Audit-Forge boundary harder to remove and would not improve the assignment evidence.
+The mic amplitude and report shelf stay in local React state/static files. Adding backend state would make the old audit boundary harder to remove and would not improve the assignment evidence.
 
 ## 2026-05-21 — Patch strategy
 

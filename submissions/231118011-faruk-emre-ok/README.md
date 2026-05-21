@@ -1,14 +1,14 @@
 Track: A
 
-# 231118011 - Nokta Nokta Halka Kapanisi
+# 231118011 - Nokta Halka Kapanisi
 
 ## Track secimi
 
-Track A - Sadakat. The submission keeps the previous Audit-Forge boundary intact and adds the new voice, avatar, lipsync, and HITL bridge features without touching files outside `submissions/231118011-faruk-emre-ok/`.
+Track A - Sadakat. The submission keeps the previous audit boundary intact and adds the new voice, avatar, lipsync, and HITL bridge features without touching files outside `submissions/231118011-faruk-emre-ok/`.
 
 ## Project overview
 
-This is an Expo SDK 55 + TypeScript + Expo Router app with three screens: `/`, `/reports`, and `/forge`. The app now has an Ayna surface on Capture, an audit artifact shelf on Reports, and a Jitsi human bridge on Forge. `@xtatistix/mobile-audit` still mounts once in `app/app/_layout.tsx`.
+This is an Expo SDK 55 + TypeScript + Expo Router app with three screens: `/`, `/reports`, and `/forge`. The app is named Nokta Halka and now has an Ayna surface on Capture, an audit artifact shelf on Reports, and a Jitsi human bridge on Forge. `@xtatistix/mobile-audit` still mounts once in `app/app/_layout.tsx`.
 
 ## Architecture
 
@@ -62,8 +62,8 @@ The existing audit reports still include burn-in screenshot, screen name, custom
 
 ## Expo Go / web link
 
-- Expo project: https://expo.dev/accounts/farukkemree/projects/nokta-audit-forge-231118011
-- Expo Go link from previous delivery: `expo-go://u.expo.dev/59bd1c95-dc58-4e25-b6c8-4dcf31e9d40f?channel-name=main`
+- Expo project id: `59bd1c95-dc58-4e25-b6c8-4dcf31e9d40f`
+- Expo Go link from previous delivery remains available for the old channel, but the fresh APK is the authoritative artifact for this handoff.
 - Local web check command: `npx expo export --platform web --output-dir dist-web-check`
 
 ## Demo video link

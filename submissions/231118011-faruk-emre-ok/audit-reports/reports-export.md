@@ -34,7 +34,7 @@ READ: Reports ekraninda yeni haftanin audit evidence yuzeyinin hala agent-readab
 
 LOCATE: `app/src/components/ReportStack.tsx`, `audit-reports/*.md`.
 
-HYPOTHESIZE: Rapor kartlari screen, note, bounds ve agent input ozetini gosterdiginde yeni voice/avatar isleri eski Audit-Forge duzenini bozmaz.
+HYPOTHESIZE: Rapor kartlari screen, note, bounds ve agent input ozetini gosterdiginde yeni voice/avatar isleri eski audit duzenini bozmaz.
 
 REPAIR: Reports ekranina statik rapor rafini ekle; widget mount veya storage deps yuzeyini degistirme.
 

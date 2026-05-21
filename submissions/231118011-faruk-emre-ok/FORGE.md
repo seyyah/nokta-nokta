@@ -88,4 +88,4 @@ HYPOTHESIS: A temporary app-only copy outside the repo can produce the required 
 CHANGES: app-release.apk, README.md, DECISIONS.md, EVAL.md, FORGE.md
 TEST: EAS Android preview build finished: `da945328-c173-4df2-82ed-3b4352974e83`; downloaded APK size is 92,585,406 bytes.
 DURATION_MIN: 16
-NOTES: Build URL: https://expo.dev/accounts/farukkemree/projects/nokta-audit-forge-231118011/builds/da945328-c173-4df2-82ed-3b4352974e83
+NOTES: EAS build id `da945328-c173-4df2-82ed-3b4352974e83`; artifact URL is recorded in README.

@@ -134,7 +134,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <Slot />
-      <MobileAudit.AuditWidget appName="Nokta Audit Forge" deps={deps} initialPosition={{ bottom: 96, right: 16 }} />
+      <MobileAudit.AuditWidget appName="Nokta Halka" deps={deps} initialPosition={{ bottom: 96, right: 16 }} />
     </SafeAreaProvider>
   );
 }
