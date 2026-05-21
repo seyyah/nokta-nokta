@@ -23,7 +23,7 @@ No future cycle may add a second audit mount, move native package imports into t
 | `npx expo export --platform web --output-dir dist-web-check` | pass | Export bundled `avatar.da0564028c45a1301008e0c580b5aca8.glb`. |
 | single audit mount grep | pass | One line: `app/app/_layout.tsx:137`. |
 | Browser smoke | pass | `/`, `/reports`, and `/forge` rendered; Forge DOM includes `Uzmana Baglan`, `Video`, `Audio`, `Screen share`, and an iframe. |
-| EAS Android preview build | pass | Build `da945328-c173-4df2-82ed-3b4352974e83`; APK downloaded to `app-release.apk`. |
+| EAS Android preview build | pass | Build `02068895-74e2-49b7-a86a-e2972a4d40ca`; APK downloaded to `app-release.apk`. |
 | current-work scope | pass | `git diff --name-only <previous-work-branch>...HEAD` lists only `submissions/231118011-faruk-emre-ok/`. |
 | requested `origin/main...HEAD` scope | warning | Fork `origin/main` is not the clean PR base for this branch and lists legacy repo differences outside this task. No new work was made outside this submission. |
 | `demo.mp4` | blocked | Missing by design until the student records real mic, audit, forge, and >=60s expert bridge proof. |

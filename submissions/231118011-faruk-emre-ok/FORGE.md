@@ -89,3 +89,13 @@ CHANGES: app-release.apk, README.md, DECISIONS.md, EVAL.md, FORGE.md
 TEST: EAS Android preview build finished: `da945328-c173-4df2-82ed-3b4352974e83`; downloaded APK size is 92,585,406 bytes.
 DURATION_MIN: 16
 NOTES: EAS build id `da945328-c173-4df2-82ed-3b4352974e83`; artifact URL is recorded in README.
+
+## Cycle 10 — nokta-halka-rename — 2026-05-21T14:24
+
+STATUS: COMMIT
+INPUT: README.md
+HYPOTHESIS: The delivery should target the Nokta Nokta repo with a Nokta Halka identity, not the old app name.
+CHANGES: app/app.json, app/package.json, app/package-lock.json, app/app/_layout.tsx, README.md, DECISIONS.md, EVAL.md, FORGE.md, app-release.apk
+TEST: Old app-name search returned no matches; EAS build `02068895-74e2-49b7-a86a-e2972a4d40ca` finished and APK size is 92,585,810 bytes.
+DURATION_MIN: 18
+NOTES: New Expo project: https://expo.dev/accounts/farukkemree/projects/nokta-halka-231118011

@@ -58,12 +58,13 @@ The existing audit reports still include burn-in screenshot, screen name, custom
 
 ## APK install
 
-`app-release.apk` is a fresh Android APK built after the Halka voice/avatar/bridge changes. EAS build id: `da945328-c173-4df2-82ed-3b4352974e83`. Artifact URL: https://expo.dev/artifacts/eas/sZu7vBJx3GzT732hDsp13X.apk
+`app-release.apk` is a fresh Android APK built after the Halka voice/avatar/bridge changes and the Nokta Halka rename. EAS build id: `02068895-74e2-49b7-a86a-e2972a4d40ca`. Artifact URL: https://expo.dev/artifacts/eas/fvpqsXnLoxfa74RLRiQiY.apk
 
 ## Expo Go / web link
 
-- Expo project id: `59bd1c95-dc58-4e25-b6c8-4dcf31e9d40f`
-- Expo Go link from previous delivery remains available for the old channel, but the fresh APK is the authoritative artifact for this handoff.
+- Expo project: https://expo.dev/accounts/farukkemree/projects/nokta-halka-231118011
+- Expo project id: `cb584463-7b52-45bc-9134-baa871dc62ee`
+- The fresh APK is the authoritative artifact for this handoff.
 - Local web check command: `npx expo export --platform web --output-dir dist-web-check`
 
 ## Demo video link
