@@ -16,7 +16,8 @@
         {
           "microphonePermission": "Allow Nokta Halka to read microphone level for the voice avatar."
         }
-      ]
+      ],
+      "expo-sharing"
     ],
     "android": {
       "package": "com.farukemre.noktahalka",
