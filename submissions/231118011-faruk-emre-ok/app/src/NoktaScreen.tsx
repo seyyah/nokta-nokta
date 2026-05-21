@@ -1,6 +1,9 @@
 import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { BridgePanel } from "./components/BridgePanel";
+import { ReportStack } from "./components/ReportStack";
+import { VoiceAvatarPanel } from "./components/VoiceAvatarPanel";
 import { screens, tabs, type RoutePath } from "./screens";
 
 type Props = {
@@ -47,6 +50,10 @@ export function NoktaScreen({ route }: Props) {
               <Text style={styles.workText}>{screen.secondary}</Text>
             </View>
           </View>
+
+          {route === "/" ? <VoiceAvatarPanel /> : null}
+          {route === "/reports" ? <ReportStack /> : null}
+          {route === "/forge" ? <BridgePanel /> : null}
         </ScrollView>
       </View>
     </SafeAreaView>

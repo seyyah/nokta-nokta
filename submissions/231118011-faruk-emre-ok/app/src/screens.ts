@@ -25,14 +25,14 @@ export const screens: Record<RoutePath, ScreenData> = {
   "/": {
     title: "Capture",
     eyebrow: "Signal intake",
-    body: "A compact queue for the moment a tester sees a UI issue and wants the context kept intact.",
+    body: "A compact queue now listens to the tester, draws live amplitude, and drives the Avaturn mouth without moving the audit boundary.",
     metrics: [
       { label: "Open notes", value: "3" },
-      { label: "Avg capture", value: "18s" },
+      { label: "Mic tick", value: "80ms" },
       { label: "Boundary", value: "DI only" }
     ],
-    primary: "Latest note: CTA spacing felt cramped near the lower action row.",
-    secondary: "Next ratchet: keep the capture action visible while the screen stays quiet.",
+    primary: "Latest note: voice bars should move only from microphone metering, then settle to idle in silence.",
+    secondary: "Next ratchet: keep mic-to-mouth feedback fast enough to feel immediate in the demo.",
     accent: "#2563EB"
   },
   "/reports": {
@@ -51,14 +51,14 @@ export const screens: Record<RoutePath, ScreenData> = {
   "/forge": {
     title: "Forge",
     eyebrow: "Ratchet ledger",
-    body: "The agent loop reads the audit report, changes one narrow surface, tests, then commits or rolls back.",
+    body: "The agent loop reads the audit report, changes one narrow surface, tests, then commits, rolls back, or calls a human expert.",
     metrics: [
-      { label: "Success cycles", value: "3+" },
+      { label: "Commit cycles", value: "2+" },
       { label: "Rollbacks", value: "1" },
-      { label: "Human touches", value: "4" }
+      { label: "Bridge", value: "Jitsi" }
     ],
-    primary: "Latest note: the ledger must show failed hypotheses instead of hiding them.",
-    secondary: "Next ratchet: every cycle earns kg only after typecheck and visual intent pass.",
+    primary: "Latest note: the bridge must expose video, audio, and screen share from the same expert room.",
+    secondary: "Next ratchet: one stuck cycle becomes a call, then the next cycle uses the human decision.",
     accent: "#D97706"
   }
 };
