@@ -27,3 +27,15 @@ HYPOTHESIZE: Reports ekrani agent-readable artifact fikrini gostermeli, her rapo
 REPAIR: UI metinlerini ve rapor markdownlarini minimal tut; backend veya gercek kullanici verisi ekleme.
 
 VERIFY: `audit-reports/` altinda uc `.md` dosyasi ve `assets/` altinda uc burn-in PNG bulunmali.
+
+## Halka Extension
+
+READ: Reports ekraninda yeni haftanin audit evidence yuzeyinin hala agent-readable kaldigini kontrol et.
+
+LOCATE: `app/src/components/ReportStack.tsx`, `audit-reports/*.md`.
+
+HYPOTHESIZE: Rapor kartlari screen, note, bounds ve agent input ozetini gosterdiginde yeni voice/avatar isleri eski Audit-Forge duzenini bozmaz.
+
+REPAIR: Reports ekranina statik rapor rafini ekle; widget mount veya storage deps yuzeyini degistirme.
+
+VERIFY: `rg -n "AuditWidget" submissions/231118011-faruk-emre-ok/app -g '!node_modules'` tek satir donmeli.
