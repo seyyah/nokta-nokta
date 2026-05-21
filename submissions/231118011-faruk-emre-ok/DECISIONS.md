@@ -24,6 +24,10 @@ The mic amplitude and report shelf stay in local React state/static files. Addin
 
 The existing `@xtatistix/mobile-audit` postinstall patch remains untouched. New work sits beside the host app, and the single root layout audit mount stays the only widget mount.
 
+## 2026-05-21 — EAS build path
+
+The first EAS build attempt from the repo checkout failed because EAS archived the git root and exceeded the 2.0 GB upload limit. I did not add root ignore files. Instead, I copied only the submission app to a temporary folder outside the repo, installed dependencies there for config resolution, built remotely with EAS, and copied the finished APK back to `app-release.apk`.
+
 ## 2026-05-21 — Evidence honesty
 
-`avatar.glb` is real and present. A new `demo.mp4` and rebuilt APK still need real recording/build evidence; I did not create placeholders because the spec explicitly forbids fake demo or APK artifacts.
+`avatar.glb` is real and present, and `app-release.apk` is a fresh EAS artifact from build `da945328-c173-4df2-82ed-3b4352974e83`. A new `demo.mp4` still needs real recording evidence; I did not create a placeholder because the spec explicitly forbids fake demo artifacts.

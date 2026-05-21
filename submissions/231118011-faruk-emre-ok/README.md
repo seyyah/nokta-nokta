@@ -58,7 +58,7 @@ The existing audit reports still include burn-in screenshot, screen name, custom
 
 ## APK install
 
-`app-release.apk` is a real existing Android artifact from the previous Audit-Forge build. It has not yet been rebuilt after the Halka voice/avatar changes in this local run; a fresh EAS/APK build is still required before final submission.
+`app-release.apk` is a fresh Android APK built after the Halka voice/avatar/bridge changes. EAS build id: `da945328-c173-4df2-82ed-3b4352974e83`. Artifact URL: https://expo.dev/artifacts/eas/sZu7vBJx3GzT732hDsp13X.apk
 
 ## Expo Go / web link
 
@@ -90,6 +90,7 @@ Jitsi was selected for the fastest video/audio/screen-share bridge. Lipsync is a
 - Codex added scoped voice, avatar, lipsync, report shelf, and Jitsi bridge code.
 - Codex updated audit reports, forge cycles, bridge notes, personas, and decisions.
 - Codex ran `npm run typecheck` successfully after the feature implementation.
+- Codex ran EAS Android preview build from a temporary app-only build folder and downloaded the finished APK into this submission.
 
 ## Self-check
 
@@ -103,8 +104,8 @@ Jitsi was selected for the fastest video/audio/screen-share bridge. Lipsync is a
 - [x] AuditWidget mount remains single.
 - [x] FORGE includes COMMIT, ROLLBACK, and STUCK cycles.
 - [ ] New `demo.mp4` recorded with mic, audit flow, forge flow, and >=60s bridge.
-- [ ] Fresh APK rebuilt after the Halka code changes.
+- [x] Fresh APK rebuilt after the Halka code changes.
 
 ## Known limitations
 
-The app code is ready for the new proof flow, but this run intentionally does not invent evidence. The final two acceptance gaps are the real `demo.mp4` recording and a fresh Android APK build that includes the new voice/avatar/bridge code.
+The app code and fresh APK are ready for the new proof flow, but this run intentionally does not invent video evidence. The remaining acceptance gap is the real `demo.mp4` recording with microphone speech, audit flow, forge flow, and a >=60s expert bridge segment.

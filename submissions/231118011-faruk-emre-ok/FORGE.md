@@ -69,3 +69,23 @@ CHANGES: README.md, DECISIONS.md, BRIDGE.md, PERSONAS.md, audit-reports/*.md, FO
 TEST: Documentation scan for required README sections and exact first line `Track: A`.
 DURATION_MIN: 10
 NOTES: This cycle is the documentation commit created after feature code and before final verification.
+
+## Cycle 8 — eas-root-archive — 2026-05-21T13:12
+
+STATUS: STUCK
+INPUT: FORGE.md
+HYPOTHESIS: The Android APK can be rebuilt directly from the checked-out repo after adding an app-level `.easignore`.
+CHANGES: app/.easignore
+TEST: EAS still archived the git root and failed at 2.6 GB, above the 2.0 GB upload limit.
+DURATION_MIN: 9
+NOTES: Commit 4668400 keeps the app-level ignore for app-root builds, but the repo-root EAS route was abandoned because root edits are forbidden.
+
+## Cycle 9 — eas-temp-apk — 2026-05-21T13:28
+
+STATUS: COMMIT
+INPUT: FORGE.md
+HYPOTHESIS: A temporary app-only copy outside the repo can produce the required fresh APK without touching root files.
+CHANGES: app-release.apk, README.md, DECISIONS.md, EVAL.md, FORGE.md
+TEST: EAS Android preview build finished: `da945328-c173-4df2-82ed-3b4352974e83`; downloaded APK size is 92,585,406 bytes.
+DURATION_MIN: 16
+NOTES: Build URL: https://expo.dev/accounts/farukkemree/projects/nokta-audit-forge-231118011/builds/da945328-c173-4df2-82ed-3b4352974e83
