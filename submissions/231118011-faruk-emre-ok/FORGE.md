@@ -109,3 +109,13 @@ CHANGES: app/package.json, app/package-lock.json, app/app.json, app-release.apk,
 TEST: `npm run typecheck` passed; `npx expo install --check` passed; EAS build `87d57eb8-9edd-451a-be33-1bf73d4b3f1d` finished; APK size is 92,585,846 bytes.
 DURATION_MIN: 18
 NOTES: This cycle exists because Expo SDK patch expectations changed after the first Nokta Halka APK build.
+
+## Cycle 12 — demo-video-proof — 2026-05-21T19:12
+
+STATUS: COMMIT
+INPUT: BRIDGE.md
+HYPOTHESIS: The remaining delivery gap closes if the real student recording is added as a local `demo.mp4` under the submission folder.
+CHANGES: demo.mp4, README.md, EVAL.md, FORGE.md, BRIDGE.md
+TEST: Source recording duration was 00:03:05; it was trimmed to 00:02:59, compressed to 7,409,422 bytes, and stored as `submissions/231118011-faruk-emre-ok/demo.mp4`.
+DURATION_MIN: 8
+NOTES: No synthetic video was generated; the source was `C:\Users\faruk\Desktop\Video Project 7.mp4`.

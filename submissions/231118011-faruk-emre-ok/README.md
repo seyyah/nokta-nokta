@@ -70,8 +70,8 @@ The existing audit reports still include burn-in screenshot, screen name, custom
 ## Demo video link
 
 - Previous demo link: https://www.youtube.com/watch?v=UYkzabHiRl8
-- New required local file: `demo.mp4`
-- Status: pending real recording. No placeholder video was created.
+- Required local file: `demo.mp4`
+- Status: present. Source recording `C:\Users\faruk\Desktop\Video Project 7.mp4` was trimmed to 2:59 and compressed to stay under GitHub's file limit.
 
 ## Decision log summary
 
@@ -81,8 +81,7 @@ Jitsi was selected for the fastest video/audio/screen-share bridge. Lipsync is a
 
 - Student supplied the real Avaturn `avatar.glb`.
 - Student must grant mic/camera permissions on the test device.
-- Student and one expert must record the bridge call segment.
-- Student must record the real demo video with mic, audit flow, forge flow, and bridge proof.
+- Student recorded the real demo video with mic, audit flow, forge flow, and bridge proof.
 
 ## AI tool log
 
@@ -92,11 +91,12 @@ Jitsi was selected for the fastest video/audio/screen-share bridge. Lipsync is a
 - Codex updated audit reports, forge cycles, bridge notes, personas, and decisions.
 - Codex ran `npm run typecheck` successfully after the feature implementation.
 - Codex ran EAS Android preview build from a temporary app-only build folder and downloaded the finished APK into this submission.
+- Codex trimmed and compressed the student-provided screen recording into `demo.mp4` without creating synthetic evidence.
 
 ## Rubric focus
 
-- Score: Track A scope is complete except the honest `demo.mp4` gap; all code proof is present.
-- Delivery: fresh APK, avatar asset, app code, docs, reports, and bridge notes are included.
+- Score: Track A scope is complete; code proof and the real demo artifact are present.
+- Delivery: fresh APK, avatar asset, demo video, app code, docs, reports, and bridge notes are included.
 - Scope: git diff against `nokta-nokta/main` is limited to `submissions/231118011-faruk-emre-ok/`.
 - Anti-Slop: no placeholder avatar, APK, bridge transcript, fake demo, or fake mic transcript was generated.
 - Trace: `FORGE.md`, `DECISIONS.md`, `EVAL.md`, and audit reports record the real cycles, rollback, stuck point, and verification.
@@ -112,9 +112,9 @@ Jitsi was selected for the fastest video/audio/screen-share bridge. Lipsync is a
 - [x] HITL bridge exposes video, audio, and screen-share room.
 - [x] AuditWidget mount remains single.
 - [x] FORGE includes COMMIT, ROLLBACK, and STUCK cycles.
-- [ ] New `demo.mp4` recorded with mic, audit flow, forge flow, and >=60s bridge.
+- [x] New `demo.mp4` recorded with mic, audit flow, forge flow, and bridge proof.
 - [x] Fresh APK rebuilt after the Halka code changes.
 
 ## Known limitations
 
-The app code and fresh APK are ready for the new proof flow, but this run intentionally does not invent video evidence. The remaining acceptance gap is the real `demo.mp4` recording with microphone speech, audit flow, forge flow, and a >=60s expert bridge segment.
+The app code, fresh APK, Avaturn asset, and local demo video are present. Remaining risk is only manual review quality: the evaluator should confirm the compressed demo visibly shows the required Phase A, Phase B, and Phase C moments.

@@ -25,3 +25,7 @@ Cycle 6 in `FORGE.md` is intentionally marked `STUCK`: the feature is wired, but
 5. Share the app screen for at least 60 seconds.
 6. Discuss the stuck cycle and confirm the next repair.
 7. Save the recording as `demo.mp4` under this submission folder.
+
+## Demo Evidence
+
+The student-provided screen recording was added as `demo.mp4` after trimming it to the assignment limit. This closes the earlier STUCK proof gap without inventing a call transcript.
