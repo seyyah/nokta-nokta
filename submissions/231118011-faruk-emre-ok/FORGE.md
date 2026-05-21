@@ -1,14 +1,71 @@
 # FORGE
 
-| cycle | report | hypothesis | result | changed files | test result | commit hash | kg | human touch points |
-|---|---|---|---|---|---|---|---:|---:|
-| 1 | capture-cta.md | Capture needs the smallest useful product surface before audit wiring; add router shell and host dependency boundary. | success | app/app/_layout.tsx, app/app/index.tsx, app/src/NoktaScreen.tsx, app/src/screens.ts | `npm run typecheck` pass; `npx expo install --check` pass; single audit mount grep pass | c11a2c5 | 8kg | 1 |
-| 2 | reports-export.md | Reports should be agent-readable as static artifacts, not buried in app state. | success | audit-reports/capture-cta.md, audit-reports/reports-export.md, audit-reports/forge-ratchet.md, audit-reports/assets/*.png | 3 report files and 3 burn-in PNG files present | b453d02 | 7kg | 1 |
-| 3 | forge-ratchet.md | First attempt to make the ledger auto-generated from commit log added too much process weight for Track A. | rollback | none | rejected before commit; simpler manual ledger kept | none | 0kg | 1 |
-| 4 | forge-ratchet.md | Track A still needs traceability; add explicit IDEA/EVAL and a ledger with the exact rubric columns. | success | IDEA.md, EVAL.md, FORGE.md | exact ledger columns present; rollback retained | dea7be0 | 6kg | 1 |
-| 5 | capture-cta.md | Delivery needs explicit self-check and binary proof without changing root files. | success | README.md, app-release.apk | README first line pass; APK is a non-empty zip/APK artifact | 68b6ad6, 7979d15 | 5kg | 1 |
+## Cycle 1 — avaturn-asset — 2026-05-21T12:51
 
-## Notes
+STATUS: COMMIT
+INPUT: audit-reports/capture-cta.md
+HYPOTHESIS: The voice avatar can stay local to the submission if the real Avaturn GLB and 3D deps live inside the Expo app.
+CHANGES: app/avatar.glb, app/package.json, app/package-lock.json, app/app.json, app/metro.config.js, app/src/assets.d.ts
+TEST: `npm run typecheck` passed after the asset and dependency boundary was added.
+DURATION_MIN: 6
+NOTES: Commit 5b9906d. The avatar came from `C:\Users\faruk\Downloads\avatar.glb` and was copied into the required submission path.
 
-- Rollback cycle 3 is intentionally logged: automation would have created more moving parts than the simplicity track needs.
-- Commit hash writeback was performed after scoped commits were created.
+## Cycle 2 — expo-three-peer-rollback — 2026-05-21T12:50
+
+STATUS: ROLLBACK
+INPUT: audit-reports/capture-cta.md
+HYPOTHESIS: `expo-three` would simplify the native Three.js bridge without adding risk.
+CHANGES: none in final tree
+TEST: `npm install expo-three` produced stale peer warnings around old Expo browser polyfills; the package was removed before the feature commit.
+DURATION_MIN: 3
+NOTES: Rolled back to `@react-three/fiber/native` plus `@react-three/drei/native` so the app keeps Expo SDK 55 aligned.
+
+## Cycle 3 — mic-rms-lipsync — 2026-05-21T12:51
+
+STATUS: COMMIT
+INPUT: audit-reports/capture-cta.md
+HYPOTHESIS: `expo-av` metering at 80ms can drive waveform bars and mouth targets within the 200ms budget.
+CHANGES: app/src/audioAmplitude.ts, app/src/components/AvatarStage.tsx, app/src/components/VoiceAvatarPanel.tsx
+TEST: `npm run typecheck` passed; hook uses native metering and web WebAudio RMS instead of generated animation.
+DURATION_MIN: 8
+NOTES: Commit 746327e. Mouth movement first tries Avaturn morph targets such as mouthOpen/jawOpen/viseme_aa, then jaw bones if present.
+
+## Cycle 4 — jitsi-hitl-bridge — 2026-05-21T12:51
+
+STATUS: COMMIT
+INPUT: audit-reports/forge-ratchet.md
+HYPOTHESIS: Jitsi gives video, audio, and screen share fastest without native SDK churn.
+CHANGES: app/src/components/BridgePanel.tsx
+TEST: `npm run typecheck` passed; bridge URL is a stable Jitsi room with web iframe and native external open path.
+DURATION_MIN: 5
+NOTES: Commit 18aeeeb. The app contains the `Uzmana Baglan` control; the real expert call still needs to be recorded by a human participant.
+
+## Cycle 5 — route-panel-integration — 2026-05-21T12:51
+
+STATUS: COMMIT
+INPUT: audit-reports/reports-export.md
+HYPOTHESIS: The new Ayna and HITL panels can attach to existing routes without adding a second audit widget mount.
+CHANGES: app/src/NoktaScreen.tsx, app/src/screens.ts, app/src/components/ReportStack.tsx
+TEST: `npm run typecheck` passed; `rg -n "AuditWidget" submissions/231118011-faruk-emre-ok/app -g '!node_modules'` still returns one mount line.
+DURATION_MIN: 4
+NOTES: Commit b8103b4. The old Link style-array fix remains intact: no `asChild` tab links were reintroduced.
+
+## Cycle 6 — hitl-demo-recording — 2026-05-21T12:56
+
+STATUS: STUCK
+INPUT: audit-reports/forge-ratchet.md
+HYPOTHESIS: The agent can complete the >=60s expert-call demo evidence in this run.
+CHANGES: none
+TEST: Blocked because the required proof needs a real second human/expert bridge session with camera, microphone, and screen share.
+DURATION_MIN: 2
+NOTES: No placeholder `demo.mp4` was created. This is intentionally left honest until the student records the real bridge segment.
+
+## Cycle 7 — halka-docs — 2026-05-21T13:00
+
+STATUS: COMMIT
+INPUT: audit-reports/reports-export.md
+HYPOTHESIS: The handoff can be accepted or rejected faster if the README, decision log, and bridge notes call out real proof gaps.
+CHANGES: README.md, DECISIONS.md, BRIDGE.md, PERSONAS.md, audit-reports/*.md, FORGE.md
+TEST: Documentation scan for required README sections and exact first line `Track: A`.
+DURATION_MIN: 10
+NOTES: This cycle is the documentation commit created after feature code and before final verification.
