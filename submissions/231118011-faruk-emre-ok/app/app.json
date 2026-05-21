@@ -9,17 +9,32 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-asset",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow Nokta Audit Forge to read microphone level for the voice avatar."
+        }
+      ]
     ],
     "android": {
       "package": "com.farukemre.noktaauditforge",
+      "permissions": [
+        "RECORD_AUDIO",
+        "CAMERA"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#F8FAFC"
       }
     },
     "ios": {
-      "bundleIdentifier": "com.farukemre.noktaauditforge"
+      "bundleIdentifier": "com.farukemre.noktaauditforge",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Camera is used when the Jitsi expert bridge is opened.",
+        "NSMicrophoneUsageDescription": "Microphone level drives the voice avatar and live waveform."
+      }
     },
     "extra": {
       "router": {
