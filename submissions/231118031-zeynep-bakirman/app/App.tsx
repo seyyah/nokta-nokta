@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { Audio } from 'expo-av';
 import { StatusBar } from 'expo-status-bar';
-import { Canvas, useFrame } from '@react-three/fiber/native';
+import { Canvas, useFrame, useThree } from '@react-three/fiber/native';
 import { Float, useGLTF } from '@react-three/drei/native';
 import { WebView } from 'react-native-webview';
 import { AuditWidget } from '@xtatistix/mobile-audit';
@@ -312,6 +312,18 @@ function driveMorphTargets(root: Object3D, level: number, isIdle: boolean) {
   });
 }
 
+function AvatarCameraRig() {
+  const { camera } = useThree();
+
+  useFrame(() => {
+    camera.position.set(0, 1.44, 2.18);
+    camera.lookAt(0, 1.42, 0.02);
+    camera.updateProjectionMatrix();
+  });
+
+  return null;
+}
+
 function ProceduralMouth({ level, isIdle }: { level: number; isIdle: boolean }) {
   const mouth = useRef<Mesh>(null);
   const glow = useRef<Mesh>(null);
@@ -319,21 +331,21 @@ function ProceduralMouth({ level, isIdle }: { level: number; isIdle: boolean }) 
   useFrame(() => {
     const open = isIdle ? 0.08 : clamp(level * 1.4, 0.08, 0.95);
     if (mouth.current) {
-      mouth.current.scale.set(0.22 + open * 0.22, 0.05 + open * 0.34, 0.035);
+      mouth.current.scale.set(0.06 + open * 0.06, 0.014 + open * 0.09, 0.012);
     }
     if (glow.current) {
-      glow.current.scale.set(0.3 + open * 0.28, 0.1 + open * 0.42, 0.02);
+      glow.current.scale.set(0.08 + open * 0.08, 0.03 + open * 0.12, 0.01);
     }
   });
 
   return (
-    <group position={[0, 1.49, 0.205]}>
+    <group position={[0, 1.62, 0.19]}>
       <mesh ref={glow} position={[0, 0, -0.006]}>
-        <boxGeometry args={[1, 1, 1]} />
+        <sphereGeometry args={[1, 24, 12]} />
         <meshStandardMaterial color="#fb7185" transparent opacity={isIdle ? 0.2 : 0.42} />
       </mesh>
       <mesh ref={mouth}>
-        <boxGeometry args={[1, 1, 1]} />
+        <sphereGeometry args={[1, 24, 12]} />
         <meshStandardMaterial color="#3f0f1f" />
       </mesh>
     </group>
@@ -353,7 +365,7 @@ function AvatarModel({ level, isIdle }: { level: number; isIdle: boolean }) {
 
   return (
     <Float speed={1.4} rotationIntensity={0.05} floatIntensity={0.06}>
-      <group ref={group} position={[0, -1.25, 0]} scale={1.34}>
+      <group ref={group} position={[0, -0.06, 0]} scale={1.22}>
         <primitive object={gltf.scene} />
         <ProceduralMouth level={level} isIdle={isIdle} />
       </group>
@@ -366,6 +378,7 @@ function AvatarStage({ level, isIdle }: { level: number; isIdle: boolean }) {
     <View style={styles.stage}>
       <Canvas camera={{ position: [0, 0.82, 2.65], fov: 34 }}>
         <color attach="background" args={['#101014']} />
+        <AvatarCameraRig />
         <ambientLight intensity={1.35} />
         <directionalLight position={[2, 3, 3]} intensity={2.35} />
         <pointLight position={[-1.8, 0.7, 2.4]} intensity={1.8} color="#2dd4bf" />
