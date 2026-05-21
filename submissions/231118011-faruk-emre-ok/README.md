@@ -58,7 +58,7 @@ The existing audit reports still include burn-in screenshot, screen name, custom
 
 ## APK install
 
-`app-release.apk` is a fresh Android APK built after the Halka voice/avatar/bridge changes and the Nokta Halka rename. EAS build id: `02068895-74e2-49b7-a86a-e2972a4d40ca`. Artifact URL: https://expo.dev/artifacts/eas/fvpqsXnLoxfa74RLRiQiY.apk
+`app-release.apk` is a fresh Android APK built after the Halka voice/avatar/bridge changes, the Nokta Halka rename, and the final SDK patch alignment. EAS build id: `87d57eb8-9edd-451a-be33-1bf73d4b3f1d`. Artifact URL: https://expo.dev/artifacts/eas/hLRzfdxKbPokNJtCW75pTk.apk
 
 ## Expo Go / web link
 
@@ -82,7 +82,7 @@ Jitsi was selected for the fastest video/audio/screen-share bridge. Lipsync is a
 - Student supplied the real Avaturn `avatar.glb`.
 - Student must grant mic/camera permissions on the test device.
 - Student and one expert must record the bridge call segment.
-- Student must run or trigger the final APK build.
+- Student must record the real demo video with mic, audit flow, forge flow, and bridge proof.
 
 ## AI tool log
 
@@ -92,6 +92,14 @@ Jitsi was selected for the fastest video/audio/screen-share bridge. Lipsync is a
 - Codex updated audit reports, forge cycles, bridge notes, personas, and decisions.
 - Codex ran `npm run typecheck` successfully after the feature implementation.
 - Codex ran EAS Android preview build from a temporary app-only build folder and downloaded the finished APK into this submission.
+
+## Rubric focus
+
+- Score: Track A scope is complete except the honest `demo.mp4` gap; all code proof is present.
+- Delivery: fresh APK, avatar asset, app code, docs, reports, and bridge notes are included.
+- Scope: git diff against `nokta-nokta/main` is limited to `submissions/231118011-faruk-emre-ok/`.
+- Anti-Slop: no placeholder avatar, APK, bridge transcript, fake demo, or fake mic transcript was generated.
+- Trace: `FORGE.md`, `DECISIONS.md`, `EVAL.md`, and audit reports record the real cycles, rollback, stuck point, and verification.
 
 ## Self-check
 

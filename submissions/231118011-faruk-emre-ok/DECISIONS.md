@@ -30,4 +30,4 @@ The first EAS build attempt from the repo checkout failed because EAS archived t
 
 ## 2026-05-21 — Evidence honesty
 
-`avatar.glb` is real and present, and `app-release.apk` is a fresh EAS artifact from build `02068895-74e2-49b7-a86a-e2972a4d40ca`. A new `demo.mp4` still needs real recording evidence; I did not create a placeholder because the spec explicitly forbids fake demo artifacts.
+`avatar.glb` is real and present, and `app-release.apk` is a fresh EAS artifact from build `87d57eb8-9edd-451a-be33-1bf73d4b3f1d`. A new `demo.mp4` still needs real recording evidence; I did not create a placeholder because the spec explicitly forbids fake demo artifacts.

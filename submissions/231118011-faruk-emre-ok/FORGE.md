@@ -99,3 +99,13 @@ CHANGES: app/app.json, app/package.json, app/package-lock.json, app/app/_layout.
 TEST: Old app-name search returned no matches; EAS build `02068895-74e2-49b7-a86a-e2972a4d40ca` finished and APK size is 92,585,810 bytes.
 DURATION_MIN: 18
 NOTES: New Expo project: https://expo.dev/accounts/farukkemree/projects/nokta-halka-231118011
+
+## Cycle 11 — nokta-nokta-pr-hardening — 2026-05-21T17:45
+
+STATUS: COMMIT
+INPUT: challenge-nokta.md
+HYPOTHESIS: Final delivery score improves if SDK patch alignment, APK freshness, and rubric evidence are updated immediately before the nokta-nokta PR.
+CHANGES: app/package.json, app/package-lock.json, app/app.json, app-release.apk, README.md, DECISIONS.md, EVAL.md, FORGE.md
+TEST: `npm run typecheck` passed; `npx expo install --check` passed; EAS build `87d57eb8-9edd-451a-be33-1bf73d4b3f1d` finished; APK size is 92,585,846 bytes.
+DURATION_MIN: 18
+NOTES: This cycle exists because Expo SDK patch expectations changed after the first Nokta Halka APK build.
