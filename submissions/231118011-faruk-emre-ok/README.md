@@ -69,7 +69,7 @@ The existing audit reports still include burn-in screenshot, screen name, custom
 
 ## Demo video link
 
-- Previous demo link: https://www.youtube.com/watch?v=UYkzabHiRl8
+- Demo video link: https://www.youtube.com/watch?v=p6Me4h7HOEs
 - Required local file: `demo.mp4`
 - Status: present. Source recording `C:\Users\faruk\Desktop\Video Project 7.mp4` was trimmed to 2:59 and compressed to stay under GitHub's file limit.
 
