@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "OkbilApp",
+    "slug": "okbilapp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Sesli rapor kaydı için mikrofon izni gerekiyor."
+      }
+    },
+    "android": {
+      "package": "com.okbilapp",
+      "permissions": ["RECORD_AUDIO"]
+    },
+    "plugins": [
+      "expo-sqlite",
+      "expo-asset",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Sesli rapor kaydı için mikrofon izni gerekiyor."
+        }
+      ]
+    ]
+  }
+}
