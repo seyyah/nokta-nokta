@@ -1,0 +1,31 @@
+{
+  "name": "@xtatistix/mobile-audit",
+  "version": "0.1.0",
+  "description": "Mobile bug reporting widget for React Native / Expo apps",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src"
+  ],
+  "dependencies": {
+    "docx": "^9.6.1"
+  },
+  "peerDependencies": {
+    "expo-file-system": ">=17",
+    "expo-sharing": ">=11",
+    "react": ">=18",
+    "react-native": ">=0.73",
+    "react-native-view-shot": ">=3"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "bug-report",
+    "audit",
+    "screenshot"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  }
+}
