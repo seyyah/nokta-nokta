@@ -9,7 +9,7 @@
 
 TRIGGER: manual (Mirror ekranındaki "Uzmana Bağlan" butonu)
 STUCK_CYCLE: cycle-demo-stuck
-EXPERT: [uzman-adi-buraya] · partner: sınıf arkadaşı (Jitsi room: `halka-stuck-221118054-demo`)
+EXPERT: aile-uye · partner: görüşme yapılan kişi (Jitsi room: `halka-stuck-221118054-demo`)
 DURATION_SEC: 78
 
 TRANSCRIPT_SUMMARY:
