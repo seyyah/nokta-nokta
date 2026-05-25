@@ -59,3 +59,4 @@ altinda derlendi. Olusan gercek Android release cikti dosyasi submission icine
 | 2026-05-25 | Gradle `assembleRelease` (gecici build dizini) | `app-release.apk` uretildi |
 | 2026-05-25 | Expo Go uyumluluk karari | `expo-speech-recognition` ve `expo-av` kaldirildi |
 | 2026-05-25 | `npx expo export --platform ios --clear` (`app/`) | Expo Go yonelimli iOS bundle gecti |
+| 2026-05-25 | Gradle `assembleRelease` (Expo Go uyarlamasi sonrasi) | Guncel `app-release.apk` yeniden uretildi |
