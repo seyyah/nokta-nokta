@@ -3,8 +3,9 @@ Track: A
 # Nokta Mirror Bridge - Voice ve Avatar Sadakati
 
 Bu teslim, Nokta-Nokta final halkasi icin kendi Avaturn avatarimi sesimle canlandiran
-Expo/TypeScript mobil uygulamasidir. Track A secimi nedeniyle odak, mikrofondan gelen
-enerjinin dusuk gecikmeyle dalga formuna ve avatar dudak hareketine aktarilmasidir.
+Expo SDK 55 / TypeScript mobil uygulamasidir. SDK 55, iPhone App Store'daki Expo Go
+ile cihaz testi yapmak icin secilmistir. Track A odagi, mikrofondan gelen enerjinin
+dusuk gecikmeyle dalga formuna ve avatar dudak hareketine aktarilmasidir.
 
 ## Durum
 
@@ -24,14 +25,14 @@ enerjinin dusuk gecikmeyle dalga formuna ve avatar dudak hareketine aktarilmasid
 ```bash
 cd submissions/231118040-nokta-final/app
 npm install
-npx expo start --tunnel
+npx expo start --lan
 ```
 
 QR kodunu iPhone'daki Expo Go ile tara. Android teslim paketi: `../app-release.apk`.
 
 ## Expo QR ve Demo Linkleri
 
-- Expo QR / link: `npx expo start --tunnel` komutunun verdigi Expo Go QR kodu ile iPhone testi yapilir; final kayitta kullanilan baglanti buraya eklenecek.
+- Expo QR / link: ayni Wi-Fi'da `npx expo start --lan` komutunun verdigi Expo Go QR kodu ile iPhone testi yapilir; final kayitta kullanilan baglanti buraya eklenecek.
 - 60 sn demo video linki / final demo (`demo.mp4`, en fazla 3 dakika): gercek Phase A + B + C kaydindan sonra klasore ve bu alana eklenecek.
 
 ## Phase A - Ayna

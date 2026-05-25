@@ -14,10 +14,9 @@ icinde `app/avatar.glb` olarak paketlenir.
 
 ## D03 - Mikrofon olcumu Expo Go icin `expo-audio` ile yapildi
 
-Challenge metni `expo-av` mic capture ister; ancak SDK 56 Expo Go bu kaldirilmis
-modulu tasimaz. iPhone ile QR testi yapabilmek icin Expo Go icindeki guncel
-`expo-audio` recording metering 50 ms aralikla dinlenir; waveform ve avatar icin
-ayni normalize enerji degeri korunur.
+Challenge metni `expo-av` mic capture ister; ancak modern Expo Go test yolunda
+desteklenen kayit modulu `expo-audio`dur. `expo-audio` recording metering 50 ms
+aralikla dinlenir; waveform ve avatar icin ayni normalize enerji degeri korunur.
 
 ## D04 - Lipsync gercek zamanli RMS tepki hattidir
 
@@ -49,6 +48,12 @@ Windows native build yol uzunlugu riskini azaltmak icin kaynak kod `C:\tmp\nnf-a
 altinda derlendi. Olusan gercek Android release cikti dosyasi submission icine
 `app-release.apk` olarak alindi.
 
+## D09 - iPhone Expo Go testi icin SDK 55'e gecildi
+
+SDK 56, 21 Mayis 2026 itibariyla iPhone App Store'daki Expo Go uygulamasinda
+kullanilamiyor. Kullanici iPhone ile QR test edecegi icin uygulama SDK 55 paket
+ailesine indirildi; voice, avatar, audit ve bridge davranislari korunuyor.
+
 ## Verification Log
 
 | Tarih | Kontrol | Sonuc |
@@ -58,5 +63,6 @@ altinda derlendi. Olusan gercek Android release cikti dosyasi submission icine
 | 2026-05-25 | `npx expo export --platform android --clear` (`app/`) | Android JS/asset export gecti |
 | 2026-05-25 | Gradle `assembleRelease` (gecici build dizini) | `app-release.apk` uretildi |
 | 2026-05-25 | Expo Go uyumluluk karari | `expo-speech-recognition` ve `expo-av` kaldirildi |
-| 2026-05-25 | `npx expo export --platform ios --clear` (`app/`) | Expo Go yonelimli iOS bundle gecti |
+| 2026-05-25 | `npx expo export --platform ios --clear` (`app/`, SDK 55) | Expo Go uyumlu iOS bundle gecti |
 | 2026-05-25 | Gradle `assembleRelease` (Expo Go uyarlamasi sonrasi) | Guncel `app-release.apk` yeniden uretildi |
+| 2026-05-25 | `npx expo-doctor` (SDK 55 hizasi) | 19/19 kontrol gecti |
