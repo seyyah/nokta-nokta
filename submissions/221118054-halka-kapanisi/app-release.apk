@@ -1,0 +1,4 @@
+APK PLACEHOLDER
+
+eas build --platform android --profile preview ile üretilen
+gerçek APK bu placeholder'ın üstüne yazılacak.
