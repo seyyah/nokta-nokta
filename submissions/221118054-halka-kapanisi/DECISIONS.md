@@ -112,3 +112,11 @@ boyutu artar.
 app.json'da explicit `assets/avatar.glb` belirtildi.
 **Gerekçe:** Bundle'a dahil ama runtime'da lazy-load edilebilir;
 useGLTF preload pattern'i bunu hallediyor.
+
+## D-11 · 2026-05-25 · WebView three.js CDN lipsync
+
+**Bağlam:** model-viewer scene API blendshape'leri expose etmedi (count=0).
+**Karar:** WebView içinde three.js CDN + GLTFLoader doğrudan kullanıldı.
+**Gerekçe:** donmccurdy viewer aynı stack ile çalışıyordu; avaturn TYPE 2
+blendshape'leri (mouthOpen, viseme_*) three.js traverse ile görünür oldu.
+Lipsync çalışır hale geldi.
