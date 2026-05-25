@@ -1,5 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Audio } from 'expo-av';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  AudioModule,
+  RecordingPresets,
+  setAudioModeAsync,
+  useAudioRecorder,
+  useAudioRecorderState,
+} from 'expo-audio';
 
 const SILENCE_DB = -60;
 const UPDATE_INTERVAL_MS = 50;
@@ -9,7 +15,11 @@ function normalizedLevel(db: number) {
 }
 
 export function useVoiceMeter() {
-  const recordingRef = useRef<Audio.Recording | null>(null);
+  const recorder = useAudioRecorder({
+    ...RecordingPresets.LOW_QUALITY,
+    isMeteringEnabled: true,
+  });
+  const recorderState = useAudioRecorderState(recorder, UPDATE_INTERVAL_MS);
   const [level, setLevel] = useState(0);
   const [decibels, setDecibels] = useState(SILENCE_DB);
   const [active, setActive] = useState(false);
@@ -17,23 +27,20 @@ export function useVoiceMeter() {
   const [error, setError] = useState('');
 
   const stop = useCallback(async () => {
-    const recording = recordingRef.current;
-    recordingRef.current = null;
-    if (recording) {
-      recording.setOnRecordingStatusUpdate(null);
-      await recording.stopAndUnloadAsync().catch(() => undefined);
+    if (recorderState.isRecording) {
+      await recorder.stop().catch(() => undefined);
     }
     setActive(false);
     setDecibels(SILENCE_DB);
     setLevel(0);
-  }, []);
+  }, [recorder, recorderState.isRecording]);
 
   const start = useCallback(async () => {
     setError('');
-    if (recordingRef.current) {
+    if (recorderState.isRecording) {
       return;
     }
-    const permissionResult = await Audio.requestPermissionsAsync();
+    const permissionResult = await AudioModule.requestRecordingPermissionsAsync();
     setPermission(permissionResult.status);
     if (!permissionResult.granted) {
       setError('Mikrofon izni verilmedi.');
@@ -41,34 +48,28 @@ export function useVoiceMeter() {
     }
 
     try {
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
+      await setAudioModeAsync({
+        allowsRecording: true,
+        playsInSilentMode: true,
       });
-
-      const recording = new Audio.Recording();
-      await recording.prepareToRecordAsync({
-        ...Audio.RecordingOptionsPresets.LOW_QUALITY,
-        isMeteringEnabled: true,
-      });
-      recording.setProgressUpdateInterval(UPDATE_INTERVAL_MS);
-      recording.setOnRecordingStatusUpdate((status) => {
-        if (!status.isRecording) {
-          return;
-        }
-        const db = status.metering ?? SILENCE_DB;
-        const next = normalizedLevel(db);
-        setDecibels(db);
-        setLevel((previous) => previous * 0.25 + next * 0.75);
-      });
-      await recording.startAsync();
-      recordingRef.current = recording;
+      await recorder.prepareToRecordAsync();
+      recorder.record();
       setActive(true);
     } catch {
       setError('Ses olcumu baslatilamadi.');
       await stop();
     }
-  }, [stop]);
+  }, [recorder, recorderState.isRecording, stop]);
+
+  useEffect(() => {
+    if (!recorderState.isRecording) {
+      return;
+    }
+    const db = recorderState.metering ?? SILENCE_DB;
+    const next = normalizedLevel(db);
+    setDecibels(db);
+    setLevel((previous) => previous * 0.25 + next * 0.75);
+  }, [recorderState.isRecording, recorderState.metering]);
 
   useEffect(() => {
     return () => {

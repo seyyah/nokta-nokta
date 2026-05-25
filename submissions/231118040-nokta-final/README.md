@@ -12,9 +12,9 @@ enerjinin dusuk gecikmeyle dalga formuna ve avatar dudak hareketine aktarilmasid
 | --- | --- |
 | Expo + TypeScript mobil uygulama | Tamam |
 | `app/avatar.glb` (Avaturn, `model (7).glb`) | Tamam |
-| `expo-av` RMS tabanli voice visualizer | Tamam |
+| Expo Go uyumlu `expo-audio` RMS tabanli voice visualizer | Tamam |
 | R3F avatar sahnesi ve viseme tepki hatti | Tamam |
-| Dikte destekli AuditWidget akisi | Tamam, cihaz kaniti bekliyor |
+| Manuel not destekli AuditWidget akisi | Tamam, cihaz kaniti bekliyor |
 | Uzmana Baglan Jitsi akisi | Tamam, gercek gorusme kaniti bekliyor |
 | `app-release.apk` | Tamam |
 | `audit-reports/*.md` ve `demo.mp4` | Telefon kaydi sonrasi eklenecek |
@@ -24,20 +24,19 @@ enerjinin dusuk gecikmeyle dalga formuna ve avatar dudak hareketine aktarilmasid
 ```bash
 cd submissions/231118040-nokta-final/app
 npm install
-npx expo prebuild --platform android
-npx expo run:android
+npx expo start --tunnel
 ```
 
-Telefonda dogrudan test icin Android kurulum paketi: `../app-release.apk`
+QR kodunu iPhone'daki Expo Go ile tara. Android teslim paketi: `../app-release.apk`.
 
 ## Expo QR ve Demo Linkleri
 
-- Expo QR / development-client linki: development build veya EAS dagitimi alindiginda buraya sabit link eklenecek; mevcut gercek test paketi `app-release.apk` dosyasidir.
+- Expo QR / link: `npx expo start --tunnel` komutunun verdigi Expo Go QR kodu ile iPhone testi yapilir; final kayitta kullanilan baglanti buraya eklenecek.
 - 60 sn demo video linki / final demo (`demo.mp4`, en fazla 3 dakika): gercek Phase A + B + C kaydindan sonra klasore ve bu alana eklenecek.
 
 ## Phase A - Ayna
 
-Mikrofon kaydi `expo-av` metering ile 50 ms ornekleme hedefinde izlenir. Ses
+Mikrofon kaydi Expo Go icindeki `expo-audio` metering ile 50 ms ornekleme hedefinde izlenir. Ses
 seviyesi waveform barlarini hareket ettirir; sessizlikte barlar soner. Aynı normalize
 seviye `avatar.glb` icindeki `viseme_aa`, `viseme_E`, `viseme_O`, `viseme_PP`,
 `viseme_TH`, `viseme_U`, `jawOpen` ve `mouthOpen` morph hedeflerine aktarilir.
@@ -46,11 +45,13 @@ mic-to-mouth tepki suresi hedefi 200 ms altidir.
 
 ## Phase B - Audit ve Forge
 
-Audit ekraninda Turkce konusma `expo-speech-recognition` ile metne cevrilir. Metin
-kopyalanip uygulama kokune tek kez mount edilen `AuditWidget` icindeki nota
+Audit ekraninda geri bildirim metni girilip kopyalanir ve uygulama kokune tek kez
+mount edilen `AuditWidget` icindeki nota
 yapistirilabilir; widget ekrani yakalayip sari burn-in kutusu ile Markdown raporu
 paylastirir. Gercek cihazda uretilen en az uc rapor `audit-reports/` altina konacak,
 ardindan her biri icin gercek diff ve zaman damgali donguler `FORGE.md`'ye yazilacak.
+Challenge manuel notu kabul eder; `expo-speech-recognition` Expo Go binary'sinde
+bulunmadigi icin iPhone test yolunda dikte bonusu hedeflenmez.
 
 ## Phase C - Uzman Koprusu
 
@@ -62,14 +63,15 @@ az 60 saniye video, ses ve ekran paylasimi birlikte gosterilecek; gorusme ozeti
 ## Human Touch Points
 
 Su an sayac: **1** - kullanici kendi yuzune ait `model (7).glb` avatarini sagladi.
-Telefon testi, audit notlarinin gercek diktesi ve uzman gorusmesi tamamlaninca sayac
-gercek adimlarla guncellenecek.
+Telefon testi, manuel audit raporlari ve uzman gorusmesi tamamlaninca sayac gercek
+adimlarla guncellenecek.
 
 ## AI Tool Log
 
 | Islem | Arac | Sonuc |
 | --- | --- | --- |
 | Uygulama iskeleti, voice/viseme/audit/bridge implementasyonu | OpenAI Codex | Gercek commitler olusturuldu |
+| Expo Go uyarlamasi | OpenAI Codex | Native STT kaldirildi, `expo-audio` metering ve manuel not girisi kullanildi |
 | TypeScript kontrolu ve Android release build | OpenAI Codex | `typecheck` gecti, APK uretildi |
 | Audit kaynakli forge cycle'lari | Bekliyor | Gercek audit raporlari sonra verilecek |
 
@@ -89,8 +91,8 @@ Uygulama kararlarinin gercek gerekceleri ve calistirilan dogrulamalar
 
 ## Teslimden Once Kalan Gercek Kanitlar
 
-1. APK'yi telefona kurup mikrofon, waveform ve kendi avatar dudak tepkisini kaydet.
-2. Audit ekraninda dikte ile uc ayri rapor uretip dosyalari `audit-reports/` altina ekle.
+1. iPhone'da Expo Go QR ile acip mikrofon, waveform ve kendi avatar dudak tepkisini kaydet.
+2. Audit ekraninda manuel notla uc ayri rapor uretip dosyalari `audit-reports/` altina ekle.
 3. Bu raporlardan en az iki gercek fix ve bir rollback dongusu cikarip `FORGE.md`'yi doldur.
 4. Sinif arkadasinla Jitsi gorusmesinde ses, video ve ekran paylasimini en az 60 saniye kaydet.
 5. Tek `demo.mp4` icinde Phase A, B ve C kanitlarini en fazla 3 dakikada birlestir.

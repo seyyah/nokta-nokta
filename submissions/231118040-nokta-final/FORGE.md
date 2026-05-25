@@ -12,7 +12,7 @@ girdisi olmadan success veya rollback cycle'i gibi gosterilmez.
 | `c7c9fe7` | Mic waveform/RMS hatti | Hazirlik |
 | `0c364e9` | Avatar viseme tepkisi | Hazirlik |
 | `da6ddf4` | Mirror mobil arayuzu | Hazirlik |
-| `7b5cb19` | Dikte ve AuditWidget akisi | Hazirlik |
+| `7b5cb19` | Ilk dikte/AuditWidget prototipi (Expo Go uyarlamasinda STT kaldirildi) | Hazirlik |
 | `77d477e` | STUCK/Jitsi bridge ekrani | Hazirlik |
 | `05f8827` | Speech oturum temizligi | Hazirlik |
 | `aa5b30f` | Android release APK | Hazirlik |
@@ -32,4 +32,3 @@ TEST: <gercek dogrulama>
 DURATION_MIN: <20 veya alti>
 NOTES: <human touch point ve agirlik>
 -->
-

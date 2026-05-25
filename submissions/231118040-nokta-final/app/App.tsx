@@ -29,7 +29,7 @@ type WidgetDeps = {
 };
 
 const labels: Record<AppScreen, string> = {
-  audit: 'Dikte Audit',
+  audit: 'Audit Notu',
   bridge: 'Uzman Koprusu',
   forge: 'Forge Ratchet',
   mirror: 'Voice Avatar',
@@ -102,7 +102,7 @@ export default function App() {
         {screen === 'mirror' ? (
           <MirrorScreen voice={voice} />
         ) : screen === 'audit' ? (
-          <AuditScreen stopMeter={voice.stop} />
+          <AuditScreen />
         ) : screen === 'forge' ? (
           <ForgeScreen openBridge={() => setScreen('bridge')} />
         ) : (

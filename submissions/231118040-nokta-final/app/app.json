@@ -14,8 +14,7 @@
       "bundleIdentifier": "com.nokta.mirrorbridge",
       "infoPlist": {
         "NSCameraUsageDescription": "Uzman gorusmesi icin kameraya erisim gerekir.",
-        "NSMicrophoneUsageDescription": "Ses dalgasi, dikte ve uzman gorusmesi icin mikrofona erisim gerekir.",
-        "NSSpeechRecognitionUsageDescription": "Audit notunu sesle Markdown raporuna donusturmek icin konusma tanima gerekir."
+        "NSMicrophoneUsageDescription": "Ses dalgasi ve uzman gorusmesi icin mikrofona erisim gerekir."
       }
     },
     "android": {
@@ -37,20 +36,13 @@
     },
     "plugins": [
       [
-        "expo-av",
+        "expo-audio",
         {
           "microphonePermission": "Ses dalgasi ve avatar lipsync icin mikrofon erisimi gerekir."
         }
       ],
       "expo-asset",
-      "expo-sharing",
-      [
-        "expo-speech-recognition",
-        {
-          "microphonePermission": "Audit notunu sesle olusturmak icin mikrofon erisimi gerekir.",
-          "speechRecognitionPermission": "Audit notunu Markdown raporuna donusturmek icin konusma tanima gerekir."
-        }
-      ]
+      "expo-sharing"
     ]
   }
 }

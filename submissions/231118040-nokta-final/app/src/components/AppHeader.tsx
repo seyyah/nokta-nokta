@@ -4,7 +4,7 @@ import { colors } from '../theme';
 
 const titles: Record<AppScreen, { label: string; title: string }> = {
   mirror: { label: 'PHASE A / AYNA', title: 'Voice Avatar' },
-  audit: { label: 'PHASE B / SELF AUDIT', title: 'Dikte & Rapor' },
+  audit: { label: 'PHASE B / SELF AUDIT', title: 'Not & Rapor' },
   forge: { label: 'PHASE B / RATCHET', title: 'Forge Ledger' },
   bridge: { label: 'PHASE C / HITL', title: 'Uzman Koprusu' },
 };

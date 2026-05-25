@@ -12,10 +12,12 @@ Kullanici tarafindan saglanan Avaturn export secildi. Dosyada animasyon ve dudak
 tepkisi icin gerekli viseme/mouth morph hedefleri bulundu; kaynak dosya uygulama
 icinde `app/avatar.glb` olarak paketlenir.
 
-## D03 - Mikrofon olcumu `expo-av` ile yapildi
+## D03 - Mikrofon olcumu Expo Go icin `expo-audio` ile yapildi
 
-Challenge `expo-av` mic capture ister. Recording status metering 50 ms aralikla
-dinlenerek waveform ve avatar icin ayni normalize enerji degeri kullanilir.
+Challenge metni `expo-av` mic capture ister; ancak SDK 56 Expo Go bu kaldirilmis
+modulu tasimaz. iPhone ile QR testi yapabilmek icin Expo Go icindeki guncel
+`expo-audio` recording metering 50 ms aralikla dinlenir; waveform ve avatar icin
+ayni normalize enerji degeri korunur.
 
 ## D04 - Lipsync gercek zamanli RMS tepki hattidir
 
@@ -28,11 +30,12 @@ oynatilir; demo olcumu mic-to-mouth tepki akisina odaklanir.
 `@xtatistix/mobile-audit` yalniz uygulama kokunde mount edilir. Screenshot, dosya
 yazma, paylasma ve storage islevleri host uygulama tarafindan `deps` ile verilir.
 
-## D06 - Audit notlari icin voice-to-text akisi eklendi
+## D06 - Audit notlari Expo Go yolunda manuel girilir
 
-Gercek cihazda rapor notlarini dikte edebilmek icin `expo-speech-recognition`
-kullanildi. Audit raporlarinin tamamlanmis kaniti, kullanici testi sonucunda
-uretilecektir; sentetik rapor eklenmeyecektir.
+`expo-speech-recognition` custom development build ister ve iPhone'daki Expo Go ile
+calismaz. Challenge manuel typing kabul ettigi icin bu bonus birakildi; rapor
+notlari gercek test sirasinda elle yazilip widget ile export edilir. Sentetik rapor
+eklenmeyecektir.
 
 ## D07 - Uzman koprusu Jitsi ile acilir
 
@@ -54,4 +57,5 @@ altinda derlendi. Olusan gercek Android release cikti dosyasi submission icine
 | 2026-05-25 | `npx expo install --check` (`app/`) | Bagimliliklar uyumlu |
 | 2026-05-25 | `npx expo export --platform android --clear` (`app/`) | Android JS/asset export gecti |
 | 2026-05-25 | Gradle `assembleRelease` (gecici build dizini) | `app-release.apk` uretildi |
-
+| 2026-05-25 | Expo Go uyumluluk karari | `expo-speech-recognition` ve `expo-av` kaldirildi |
+| 2026-05-25 | `npx expo export --platform ios --clear` (`app/`) | Expo Go yonelimli iOS bundle gecti |
