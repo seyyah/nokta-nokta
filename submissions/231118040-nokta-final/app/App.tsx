@@ -1,5 +1,5 @@
 import { ReactNode, RefObject, useMemo, useState } from 'react';
-import { Alert, SafeAreaView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Alert, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { Bug } from 'lucide-react-native';
 import * as MobileAudit from '@xtatistix/mobile-audit';
@@ -11,6 +11,8 @@ import { AppHeader } from './src/components/AppHeader';
 import { BottomTabs, type AppScreen } from './src/components/BottomTabs';
 import { MirrorScreen } from './src/screens/MirrorScreen';
 import { AuditScreen } from './src/screens/AuditScreen';
+import { ForgeScreen } from './src/screens/ForgeScreen';
+import { BridgeScreen } from './src/screens/BridgeScreen';
 import { useVoiceMeter } from './src/hooks/useVoiceMeter';
 import { colors } from './src/theme';
 
@@ -101,11 +103,10 @@ export default function App() {
           <MirrorScreen voice={voice} />
         ) : screen === 'audit' ? (
           <AuditScreen stopMeter={voice.stop} />
+        ) : screen === 'forge' ? (
+          <ForgeScreen openBridge={() => setScreen('bridge')} />
         ) : (
-          <View style={styles.pending}>
-            <Text style={styles.pendingTitle}>{screen.toUpperCase()}</Text>
-            <Text style={styles.pendingText}>Bu modul bir sonraki forge adiminda baglanacak.</Text>
-          </View>
+          <BridgeScreen />
         )}
       </View>
       <BottomTabs active={screen} onChange={changeScreen} />
@@ -126,22 +127,5 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-  },
-  pending: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    padding: 24,
-  },
-  pendingTitle: {
-    color: colors.ink,
-    fontSize: 24,
-    fontWeight: '800',
-  },
-  pendingText: {
-    color: colors.muted,
-    fontSize: 14,
-    marginTop: 8,
-    textAlign: 'center',
   },
 });
