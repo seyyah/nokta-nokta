@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ExpoSpeechRecognitionModule,
   useSpeechRecognitionEvent,
@@ -57,6 +57,12 @@ export function useDictation() {
   const clear = useCallback(() => {
     setTranscript('');
     setError('');
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      ExpoSpeechRecognitionModule.abort();
+    };
   }, []);
 
   return {
