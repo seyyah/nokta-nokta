@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "Nokta Mirror Bridge",
+    "slug": "nokta-mirror-bridge",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nokta.mirrorbridge",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Uzman gorusmesi icin kameraya erisim gerekir.",
+        "NSMicrophoneUsageDescription": "Ses dalgasi, dikte ve uzman gorusmesi icin mikrofona erisim gerekir.",
+        "NSSpeechRecognitionUsageDescription": "Audit notunu sesle Markdown raporuna donusturmek icin konusma tanima gerekir."
+      }
+    },
+    "android": {
+      "package": "com.nokta.mirrorbridge",
+      "permissions": [
+        "RECORD_AUDIO",
+        "CAMERA"
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Ses dalgasi ve avatar lipsync icin mikrofon erisimi gerekir."
+        }
+      ],
+      "expo-asset",
+      "expo-sharing",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Audit notunu sesle olusturmak icin mikrofon erisimi gerekir.",
+          "speechRecognitionPermission": "Audit notunu Markdown raporuna donusturmek icin konusma tanima gerekir."
+        }
+      ]
+    ]
+  }
+}
