@@ -48,11 +48,12 @@ Windows native build yol uzunlugu riskini azaltmak icin kaynak kod `C:\tmp\nnf-a
 altinda derlendi. Olusan gercek Android release cikti dosyasi submission icine
 `app-release.apk` olarak alindi.
 
-## D09 - iPhone Expo Go testi icin SDK 55'e gecildi
+## D09 - iPhone Expo Go testi icin SDK 54'e gecildi
 
-SDK 56, 21 Mayis 2026 itibariyla iPhone App Store'daki Expo Go uygulamasinda
-kullanilamiyor. Kullanici iPhone ile QR test edecegi icin uygulama SDK 55 paket
-ailesine indirildi; voice, avatar, audit ve bridge davranislari korunuyor.
+Expo'nun 4 Mayis 2026 duyurusuna gore SDK 55 icin iOS Expo Go App Store onayi
+halen beklenirken magaza surumu SDK 54'u tasiyor. Kullanici iPhone'daki magaza
+Expo Go surumuyle QR test edecegi icin uygulama SDK 54 paket ailesine indirildi;
+voice, avatar, audit ve bridge davranislari korunuyor.
 
 ## Verification Log
 
@@ -63,6 +64,9 @@ ailesine indirildi; voice, avatar, audit ve bridge davranislari korunuyor.
 | 2026-05-25 | `npx expo export --platform android --clear` (`app/`) | Android JS/asset export gecti |
 | 2026-05-25 | Gradle `assembleRelease` (gecici build dizini) | `app-release.apk` uretildi |
 | 2026-05-25 | Expo Go uyumluluk karari | `expo-speech-recognition` ve `expo-av` kaldirildi |
-| 2026-05-25 | `npx expo export --platform ios --clear` (`app/`, SDK 55) | Expo Go uyumlu iOS bundle gecti |
+| 2026-05-25 | `npx expo export --platform ios --clear` (`app/`, SDK 55) | Test gecti ancak App Store Expo Go runtime'i uyumsuz cikti |
 | 2026-05-25 | Gradle `assembleRelease` (Expo Go uyarlamasi sonrasi) | Guncel `app-release.apk` yeniden uretildi |
 | 2026-05-25 | `npx expo-doctor` (SDK 55 hizasi) | 19/19 kontrol gecti |
+| 2026-05-25 | iPhone Expo Go acilis testi | SDK 55 uyumsuz; resmi notla SDK 54'e donus karari alindi |
+| 2026-05-25 | `npx expo-doctor` (SDK 54 hizasi) | 18/18 kontrol gecti |
+| 2026-05-25 | `npx expo export --platform ios --clear` (`app/`, SDK 54) | App Store Expo Go uyumlu bundle gecti |

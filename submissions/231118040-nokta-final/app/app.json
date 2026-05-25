@@ -41,8 +41,7 @@
           "microphonePermission": "Ses dalgasi ve avatar lipsync icin mikrofon erisimi gerekir."
         }
       ],
-      "expo-asset",
-      "expo-sharing"
+      "expo-asset"
     ]
   }
 }

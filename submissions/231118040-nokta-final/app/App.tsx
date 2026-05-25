@@ -1,9 +1,7 @@
-import { ReactNode, RefObject, useMemo, useState } from 'react';
+import { ComponentType, ReactNode, RefObject, useMemo, useState } from 'react';
 import { Alert, SafeAreaView, StatusBar, StyleSheet, View } from 'react-native';
 import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 import { Bug } from 'lucide-react-native';
-import * as MobileAudit from '@xtatistix/mobile-audit';
-import type { AuditNote, AuditStorage } from '@xtatistix/mobile-audit';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { captureRef, captureScreen } from 'react-native-view-shot';
@@ -27,6 +25,21 @@ type WidgetDeps = {
   reporterId: string;
   BugIcon: ReactNode;
 };
+
+type AuditNote = Record<string, unknown>;
+type AuditStorage = {
+  loadNotes: () => Promise<AuditNote[]>;
+  saveNotes: (notes: AuditNote[]) => Promise<void>;
+};
+type AuditWidgetComponent = ComponentType<{
+  appName: string;
+  deps: WidgetDeps;
+  initialPosition: { bottom: number; right: number };
+}>;
+
+declare const require: (name: string) => unknown;
+
+const MobileAudit = require('@xtatistix/mobile-audit') as { AuditWidget: AuditWidgetComponent };
 
 const labels: Record<AppScreen, string> = {
   audit: 'Audit Notu',
