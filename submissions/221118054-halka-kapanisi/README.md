@@ -25,7 +25,7 @@ Geliştirici, kendi uygulamasının ilk kullanıcısı oldu:
 
 ## Demo
 
-- **Demo video (≤3dk, Phase A+B+C):** `demo.mp4` (repo kökünde)
+- **Demo video (≤3dk, Phase A+B+C):** https://youtube.com/shorts/AOiTpMASf4M
 - **APK:** `app-release.apk` (gerçek EAS build)
 - **Expo QR:** `cd app && npm install && npx expo start`
 
