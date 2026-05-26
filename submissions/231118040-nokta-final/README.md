@@ -15,10 +15,11 @@ dusuk gecikmeyle dalga formuna ve avatar dudak hareketine aktarilmasidir.
 | `app/avatar.glb` (Avaturn, `model (7).glb`) | Tamam |
 | Expo Go uyumlu `expo-av` RMS tabanli voice visualizer | Tamam |
 | R3F avatar sahnesi ve viseme tepki hatti | Tamam |
-| Manuel not destekli AuditWidget akisi | Tamam, cihaz kaniti bekliyor |
+| Manuel not destekli AuditWidget akisi | Tamam, 3 cihaz raporu eklendi |
 | Uzmana Baglan Jitsi akisi | Tamam, gercek gorusme kaniti bekliyor |
 | `app-release.apk` | Tamam |
-| `audit-reports/*.md` ve `demo.mp4` | Telefon kaydi sonrasi eklenecek |
+| `audit-reports/*.md` | Tamam, 3 burn-in kanitli rapor |
+| `demo.mp4` | Telefon kaydi sonrasi eklenecek |
 
 ## Calistirma
 
@@ -48,9 +49,9 @@ mic-to-mouth tepki suresi hedefi 200 ms altidir.
 
 Audit ekraninda geri bildirim metni girilip kopyalanir ve uygulama kokune tek kez
 mount edilen `AuditWidget` icindeki nota
-yapistirilabilir; widget ekrani yakalayip sari burn-in kutusu ile Markdown raporu
-paylastirir. Gercek cihazda uretilen en az uc rapor `audit-reports/` altina konacak,
-ardindan her biri icin gercek diff ve zaman damgali donguler `FORGE.md`'ye yazilacak.
+yapistirilabilir; widget ekrani yakalayip burn-in secim kutusu ile Markdown raporu
+paylastirir. iPhone Expo Go oturumunda uretilen uc gercek rapor `audit-reports/`
+altina kondu; bunlardan dogan diff ve zaman damgali donguler `FORGE.md`'ye yazilacak.
 Challenge manuel notu kabul eder; `expo-speech-recognition` Expo Go binary'sinde
 bulunmadigi icin iPhone test yolunda dikte bonusu hedeflenmez.
 
@@ -63,9 +64,9 @@ az 60 saniye video, ses ve ekran paylasimi birlikte gosterilecek; gorusme ozeti
 
 ## Human Touch Points
 
-Su an sayac: **1** - kullanici kendi yuzune ait `model (7).glb` avatarini sagladi.
-Telefon testi, manuel audit raporlari ve uzman gorusmesi tamamlaninca sayac gercek
-adimlarla guncellenecek.
+Su an sayac: **2** - kullanici kendi yuzune ait `model (7).glb` avatarini sagladi
+ve iPhone Expo Go uzerinden uc burn-in'li audit girdisini kaydetti. Uzman
+gorusmesi tamamlaninca sayac gercek adimla guncellenecek.
 
 ## AI Tool Log
 
@@ -74,6 +75,7 @@ adimlarla guncellenecek.
 | Uygulama iskeleti, voice/viseme/audit/bridge implementasyonu | OpenAI Codex | Gercek commitler olusturuldu |
 | Expo Go uyarlamasi | OpenAI Codex | Native STT kaldirildi, `expo-av` metering ve manuel not girisi kullanildi |
 | TypeScript kontrolu ve Android release build | OpenAI Codex | `typecheck` gecti, APK uretildi |
+| Device audit aktarimi | OpenAI Codex | iPhone'da girilen 3 not ve burn-in kaniti Markdown rapora baglandi |
 | Audit kaynakli forge cycle'lari | Bekliyor | Gercek audit raporlari sonra verilecek |
 
 ## Decision Log
@@ -93,7 +95,6 @@ Uygulama kararlarinin gercek gerekceleri ve calistirilan dogrulamalar
 ## Teslimden Once Kalan Gercek Kanitlar
 
 1. iPhone'da Expo Go QR ile acip mikrofon, waveform ve kendi avatar dudak tepkisini kaydet.
-2. Audit ekraninda manuel notla uc ayri rapor uretip dosyalari `audit-reports/` altina ekle.
-3. Bu raporlardan en az iki gercek fix ve bir rollback dongusu cikarip `FORGE.md`'yi doldur.
-4. Sinif arkadasinla Jitsi gorusmesinde ses, video ve ekran paylasimini en az 60 saniye kaydet.
-5. Tek `demo.mp4` icinde Phase A, B ve C kanitlarini en fazla 3 dakikada birlestir.
+2. Bu raporlardan en az iki gercek fix ve bir rollback dongusu cikarip `FORGE.md`'yi doldur.
+3. Jitsi gorusmesinde ses, video ve ekran paylasimini en az 60 saniye kaydet.
+4. Tek `demo.mp4` icinde Phase A, B ve C kanitlarini en fazla 3 dakikada birlestir.

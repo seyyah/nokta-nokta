@@ -77,6 +77,13 @@ Canli cihaz testinde ses algisi calisti ancak ilk guclendirme ayari normal konus
 agzi tam aciyordu. Sessizlik esigi eklendi; viseme, cene ve agiz acikligi ayri ve
 daha dusuk tavanlarla surulerek Track A demosunda dogal gorunen tepki hedeflendi.
 
+## D13 - Audit raporlarinda tasinabilir cihaz kaniti kullanildi
+
+Kullanici iPhone Expo Go uzerinde uc ekrani `AuditWidget` ile isaretledi ve not
+girdi. Widget Markdown export'undaki ekran gorseli telefon ici gecici URI oldugu
+icin repoda kirilacakti; raporlara, ayni widget ekraninda burn-in dikdortgeni ve
+not metni gorunen cihaz JPEG kanitlari gomuldu.
+
 ## Verification Log
 
 | Tarih | Kontrol | Sonuc |
@@ -98,3 +105,4 @@ daha dusuk tavanlarla surulerek Track A demosunda dogal gorunen tepki hedeflendi
 | 2026-05-26 | `npm run typecheck`, `npx expo install --check`, `npx expo-doctor` (mic fix) | Gecti; doctor 18/18 |
 | 2026-05-26 | `npx expo export --platform ios --clear` (`expo-av` mic fix) | iOS bundle gecti |
 | 2026-05-26 | iPhone lipsync genlik testi ve `npm run typecheck`, `npx expo-doctor` | Agiz acikligi dusuruldu; doctor 18/18 |
+| 2026-05-26 | iPhone `AuditWidget` kanit aktarimi | 3 notlu burn-in capture `audit-reports/` altina baglandi |

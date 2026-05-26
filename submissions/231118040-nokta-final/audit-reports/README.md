@@ -1,13 +1,15 @@
-# Audit Reports
+# Device Audit Reports
 
-Bu klasore yalniz uygulamadaki `AuditWidget` ile gercek telefonda olusturulmus
-burn-in ekran goruntulu Markdown raporlari eklenecektir.
+Bu klasordeki uc rapor, 26 Mayis 2026 tarihinde iPhone Expo Go oturumunda
+`AuditWidget` kullanilarak olusturulan gercek test girdileridir. Her gorselde
+widget'in burn-in secim dikdortgeni ve kullanicinin girdigi not birlikte gorunur.
 
-Planlanan gercek test ekranlari:
+Widget'in Markdown export'u telefon icindeki gecici ekran goruntusu URI'sini
+referansladigi icin, submission icinde tasinabilir kanit olarak cihazdan alinmis
+JPEG kaydi kullanilmistir.
 
-1. `Mirror`: waveform sessizlikte sonuyor mu, konusmada avatar tepki veriyor mu?
-2. `Audit`: manuel girilen test notu Markdown raporuna dogru aktariliyor mu?
-3. `Bridge`: STUCK sonrasinda uzman gorusmesine gecis anlasilir mi?
-
-Bos/sentetik rapor teslim kaniti sayilmaz; raporlar telefon testinden sonra bu
-klasore konacaktir.
+| Rapor | Ekran | Kanit |
+| --- | --- | --- |
+| [`01-voice-avatar-mouth-range.md`](./01-voice-avatar-mouth-range.md) | Voice Avatar | `assets/voice-avatar-mouth-range.jpeg` |
+| [`02-forge-stuck-visibility.md`](./02-forge-stuck-visibility.md) | Forge Ratchet | `assets/forge-stuck-visibility.jpeg` |
+| [`03-bridge-sharing-status.md`](./03-bridge-sharing-status.md) | Uzman Koprusu | `assets/bridge-sharing-status.jpeg` |
