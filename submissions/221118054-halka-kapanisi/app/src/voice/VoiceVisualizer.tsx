@@ -1,5 +1,6 @@
 // src/voice/VoiceVisualizer.tsx
 // 24 çubuktan oluşan ses dalga görselleştirici.
+// idle: sinusoidal pulse (genlik 6px, period 600ms).
 // Mic level (0..1) bar yüksekliklerini sürer.
 // OpenAI voice-mode estetiği: idle'da uçlardan ortaya doğru
 // soluk solar; konuşunca dalga gibi yayılır.
