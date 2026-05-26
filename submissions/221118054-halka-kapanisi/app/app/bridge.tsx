@@ -1,4 +1,5 @@
 // app/bridge.tsx — BridgeScreen
+// Phase C demo: Jitsi gorusmesi 78sn, video+ses+ekran paylasimlari calisti.
 // Uzmana bağlanma ekranı. "Görüşmeyi başlat" → JitsiCall component'i
 // mount edilir, video+audio+share Jitsi tarafından sağlanır.
 
