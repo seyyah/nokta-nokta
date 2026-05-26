@@ -24,7 +24,19 @@ function AvatarModel({ active, level }: Props) {
     animations: AnimationClip[];
     scene: Group;
   };
-  const { actions } = useAnimations(animations, groupRef);
+  const bodyAnimations = useMemo(
+    () =>
+      animations.map(
+        (clip) =>
+          new AnimationClip(
+            clip.name,
+            clip.duration,
+            clip.tracks.filter((track) => !track.name.includes('morphTargetInfluences')),
+          ),
+      ),
+    [animations],
+  );
+  const { actions } = useAnimations(bodyAnimations, groupRef);
   const morphMeshes = useMemo(() => {
     const meshes: MorphMesh[] = [];
     scene.traverse((object: Object3D) => {
@@ -45,7 +57,7 @@ function AvatarModel({ active, level }: Props) {
   }, [actions]);
 
   useFrame((state, delta) => {
-    const spokenStrength = active ? Math.min(1, 0.16 + level * 1.2) : 0;
+    const spokenStrength = active ? Math.min(1, 0.28 + level * 1.45) : 0;
     const selectedViseme =
       VISEME_SEQUENCE[Math.floor(state.clock.elapsedTime * 10) % VISEME_SEQUENCE.length];
 
@@ -59,7 +71,7 @@ function AvatarModel({ active, level }: Props) {
         } else if (name === selectedViseme) {
           target = spokenStrength;
         } else if (name === 'jawOpen' || name === 'mouthOpen') {
-          target = spokenStrength * 0.32;
+          target = spokenStrength * 0.82;
         }
         influences[index] = MathUtils.damp(influences[index] ?? 0, target, 24, delta);
       });

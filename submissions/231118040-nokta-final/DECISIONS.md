@@ -55,6 +55,14 @@ halen beklenirken magaza surumu SDK 54'u tasiyor. Kullanici iPhone'daki magaza
 Expo Go surumuyle QR test edecegi icin uygulama SDK 54 paket ailesine indirildi;
 voice, avatar, audit ve bridge davranislari korunuyor.
 
+## D10 - Idle animasyonunun facial morph override'i kaldirildi
+
+iPhone testinde avatar gorundu ancak konusurken agiz hareketi gorunmedi. GLB
+incelemesinde `avaturn_animation` icinde kafa, dis ve dil dahil alti `weights`
+kanali bulundugu goruldu; bu kanallar canli `mouthOpen`, `jawOpen` ve viseme
+degerlerini ezebiliyordu. Body animasyonu korunup morph-weight track'leri playback
+disinda birakildi ve ses tepkisinin gorunurlugu artirildi.
+
 ## Verification Log
 
 | Tarih | Kontrol | Sonuc |
@@ -70,3 +78,5 @@ voice, avatar, audit ve bridge davranislari korunuyor.
 | 2026-05-25 | iPhone Expo Go acilis testi | SDK 55 uyumsuz; resmi notla SDK 54'e donus karari alindi |
 | 2026-05-25 | `npx expo-doctor` (SDK 54 hizasi) | 18/18 kontrol gecti |
 | 2026-05-25 | `npx expo export --platform ios --clear` (`app/`, SDK 54) | App Store Expo Go uyumlu bundle gecti |
+| 2026-05-26 | GLB animation track incelemesi | 6 facial `weights` kanali tespit edildi |
+| 2026-05-26 | `npm run typecheck`, `npx expo-doctor`, iOS export (lipsync fix) | Gecti |
