@@ -8,9 +8,9 @@ const fallbackRoomUrl = 'https://meet.jit.si/nokta-231118040-final-bridge';
 const meetingUrl = process.env.EXPO_PUBLIC_BRIDGE_ROOM_URL || fallbackRoomUrl;
 
 const capabilities = [
-  { Icon: Camera, label: 'Video', detail: 'kamera acik' },
-  { Icon: Mic, label: 'Audio', detail: 'mikrofon acik' },
-  { Icon: MonitorUp, label: 'Share', detail: 'ekran paylas' },
+  { Icon: Camera, label: 'Video', detail: 'izin ver' },
+  { Icon: Mic, label: 'Audio', detail: 'izin ver' },
+  { Icon: MonitorUp, label: 'Share', detail: 'odada baslat' },
 ];
 
 export function BridgeScreen() {
@@ -46,6 +46,15 @@ export function BridgeScreen() {
 
       <View style={styles.surface}>
         <Text style={styles.sectionTitle}>Jitsi expert room</Text>
+        <View style={styles.shareInstruction}>
+          <MonitorUp color={colors.accent} size={19} />
+          <View style={styles.shareInstructionCopy}>
+            <Text style={styles.shareInstructionLabel}>EKRAN PAYLASIMI</Text>
+            <Text style={styles.shareInstructionText}>
+              Odaya girdikten sonra Jitsi icindeki ekran paylas eylemini baslat.
+            </Text>
+          </View>
+        </View>
         <Text numberOfLines={2} style={styles.link}>{meetingUrl}</Text>
         <View style={styles.actions}>
           <Pressable onPress={() => void Linking.openURL(meetingUrl)} style={styles.primary}>
@@ -140,6 +149,29 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 18,
     padding: 10,
+  },
+  shareInstruction: {
+    alignItems: 'center',
+    backgroundColor: colors.accentSoft,
+    borderRadius: 7,
+    flexDirection: 'row',
+    gap: 9,
+    marginBottom: 10,
+    padding: 10,
+  },
+  shareInstructionCopy: {
+    flex: 1,
+  },
+  shareInstructionLabel: {
+    color: colors.accent,
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  shareInstructionText: {
+    color: colors.ink,
+    fontSize: 11,
+    lineHeight: 16,
+    marginTop: 3,
   },
   actions: {
     flexDirection: 'row',
