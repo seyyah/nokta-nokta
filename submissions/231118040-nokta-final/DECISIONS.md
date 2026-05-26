@@ -71,6 +71,12 @@ ise aktif kaydi UI tarafinda hemen kapatiyordu. Recorder yasam dongusu sabit bir
 ref ile yonetilecek sekilde degistirildi; metering ayni zamanda challenge'daki
 `expo-av` kayit status callback'ine tasindi.
 
+## D12 - Lipsync acikligi insan yuzune gore sinirlandi
+
+Canli cihaz testinde ses algisi calisti ancak ilk guclendirme ayari normal konusmada
+agzi tam aciyordu. Sessizlik esigi eklendi; viseme, cene ve agiz acikligi ayri ve
+daha dusuk tavanlarla surulerek Track A demosunda dogal gorunen tepki hedeflendi.
+
 ## Verification Log
 
 | Tarih | Kontrol | Sonuc |
@@ -91,3 +97,4 @@ ref ile yonetilecek sekilde degistirildi; metering ayni zamanda challenge'daki
 | 2026-05-26 | iPhone waveform testi ve hook incelemesi | Recorder cleanup hatasi bulundu; `expo-av` metering'e gecildi |
 | 2026-05-26 | `npm run typecheck`, `npx expo install --check`, `npx expo-doctor` (mic fix) | Gecti; doctor 18/18 |
 | 2026-05-26 | `npx expo export --platform ios --clear` (`expo-av` mic fix) | iOS bundle gecti |
+| 2026-05-26 | iPhone lipsync genlik testi ve `npm run typecheck`, `npx expo-doctor` | Agiz acikligi dusuruldu; doctor 18/18 |

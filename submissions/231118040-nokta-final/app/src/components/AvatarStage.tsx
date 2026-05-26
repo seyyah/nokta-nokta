@@ -57,7 +57,11 @@ function AvatarModel({ active, level }: Props) {
   }, [actions]);
 
   useFrame((state, delta) => {
-    const spokenStrength = active ? Math.min(1, 0.28 + level * 1.45) : 0;
+    const speechEnergy = active ? Math.max(0, Math.min(1, (level - 0.22) / 0.56)) : 0;
+    const easedEnergy = Math.sqrt(speechEnergy);
+    const visemeStrength = easedEnergy * 0.3;
+    const jawStrength = easedEnergy * 0.16;
+    const mouthStrength = easedEnergy * 0.1;
     const selectedViseme =
       VISEME_SEQUENCE[Math.floor(state.clock.elapsedTime * 10) % VISEME_SEQUENCE.length];
 
@@ -69,11 +73,13 @@ function AvatarModel({ active, level }: Props) {
         if (name === 'viseme_sil' && !active) {
           target = 1;
         } else if (name === selectedViseme) {
-          target = spokenStrength;
-        } else if (name === 'jawOpen' || name === 'mouthOpen') {
-          target = spokenStrength * 0.82;
+          target = visemeStrength;
+        } else if (name === 'jawOpen') {
+          target = jawStrength;
+        } else if (name === 'mouthOpen') {
+          target = mouthStrength;
         }
-        influences[index] = MathUtils.damp(influences[index] ?? 0, target, 24, delta);
+        influences[index] = MathUtils.damp(influences[index] ?? 0, target, 18, delta);
       });
     });
 
