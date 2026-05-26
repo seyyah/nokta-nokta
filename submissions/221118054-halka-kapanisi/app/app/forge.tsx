@@ -27,6 +27,7 @@ interface Cycle {
 }
 
 // FORGE.md ile manuel olarak senkron tutulan özet. Gerçek hash'ler
+// Güncelleme 2026-05-25: gerçek cycle hash'leri eklendi.
 // terminal commit log'undan gelir; bu sadece app içi görselleştirme.
 const CYCLES: Cycle[] = [
   {
