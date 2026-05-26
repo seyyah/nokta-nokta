@@ -28,6 +28,18 @@ export function ForgeScreen({ openBridge }: { openBridge: () => void }) {
         </View>
       </View>
 
+      <Pressable onPress={openBridge} style={styles.escalation}>
+        <View style={styles.escalationCopy}>
+          <Text style={styles.escalationLabel}>STUCK DETECTED</Text>
+          <Text style={styles.escalationTitle}>Uzman koprusu gerekli</Text>
+          <Text style={styles.escalationText}>Cycle 4 icin goruntulu destek oturumunu ac.</Text>
+        </View>
+        <View style={styles.escalationAction}>
+          <PhoneCall color="#ffffff" size={19} />
+          <Text style={styles.escalationActionText}>Baglan</Text>
+        </View>
+      </Pressable>
+
       {cycles.map((cycle) => (
         <View key={cycle.id} style={styles.cycle}>
           <View style={styles.cycleTop}>
@@ -47,13 +59,6 @@ export function ForgeScreen({ openBridge }: { openBridge: () => void }) {
         </View>
       ))}
 
-      <Pressable onPress={openBridge} style={styles.bridgeButton}>
-        <PhoneCall color="#ffffff" size={20} />
-        <View>
-          <Text style={styles.bridgeTitle}>Uzmana Baglan</Text>
-          <Text style={styles.bridgeSub}>Cycle 4 STUCK / human bridge required</Text>
-        </View>
-      </Pressable>
     </ScrollView>
   );
 }
@@ -87,6 +92,51 @@ const styles = StyleSheet.create({
   divider: {
     backgroundColor: colors.border,
     width: 1,
+  },
+  escalation: {
+    alignItems: 'center',
+    backgroundColor: '#fff0f2',
+    borderColor: '#eaa5b0',
+    borderRadius: 8,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'space-between',
+    padding: 12,
+  },
+  escalationCopy: {
+    flex: 1,
+  },
+  escalationLabel: {
+    color: colors.danger,
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  escalationTitle: {
+    color: colors.ink,
+    fontSize: 14,
+    fontWeight: '800',
+    marginTop: 4,
+  },
+  escalationText: {
+    color: '#6f4350',
+    fontSize: 11,
+    lineHeight: 16,
+    marginTop: 3,
+  },
+  escalationAction: {
+    alignItems: 'center',
+    backgroundColor: colors.danger,
+    borderRadius: 7,
+    gap: 4,
+    justifyContent: 'center',
+    minHeight: 62,
+    paddingHorizontal: 13,
+  },
+  escalationActionText: {
+    color: '#ffffff',
+    fontSize: 11,
+    fontWeight: '800',
   },
   cycle: {
     backgroundColor: colors.surface,
@@ -144,25 +194,5 @@ const styles = StyleSheet.create({
   },
   pillStuckText: {
     color: colors.danger,
-  },
-  bridgeButton: {
-    alignItems: 'center',
-    backgroundColor: colors.danger,
-    borderRadius: 8,
-    flexDirection: 'row',
-    gap: 11,
-    marginTop: 4,
-    minHeight: 64,
-    paddingHorizontal: 16,
-  },
-  bridgeTitle: {
-    color: '#ffffff',
-    fontSize: 15,
-    fontWeight: '800',
-  },
-  bridgeSub: {
-    color: '#ffe9ed',
-    fontSize: 11,
-    marginTop: 2,
   },
 });
