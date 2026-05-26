@@ -89,7 +89,28 @@ not metni gorunen cihaz JPEG kanitlari gomuldu.
 Forge ekrani ilk taslak senaryo kartlari yerine cihaz raporlarindan dogan cycle
 kayitlarini gosterir. Bridge icin yanlis "hazir" durum hipotezi rollback edildi;
 izin ve ekran paylasimi adimlarini gercek Jitsi oturum sinirinda anlatan cozum
-success olarak kayda alindi. Canli ikinci katilimci gerektiren dogrulama STUCK'tir.
+COMMIT olarak kayda alindi. Canli ikinci katilimci gerektiren dogrulama STUCK'tir.
+
+## D15 - FORGE ledger final CONTRACT satir formatina getirildi
+
+Cycle kaniti once tablo olarak kayitliydi; final spec ise `STATUS: COMMIT`,
+`STATUS: ROLLBACK`, timestamp ve `DURATION_MIN` alanlarini acikca ister. Gercek
+commit timestamp'leri ve uygulamada zaten kayitli cycle sureleri kullanilarak
+ledger sozlesme formuna getirildi.
+
+## D16 - Ilk final demo kaniti eksigi saklamadan teslim klasorune alindi
+
+Kullanicinin telefon ekran kaydi `demo.mp4` olarak eklendi. Video 73.36 saniye
+suruyor; avatar/waveform, Forge ledger ve Jitsi gecisi gorunuyor. Kare incelemesi,
+aktif gorusmenin 60 saniyelik esigi ve ekran paylasimi kanitini saglamadigini
+gosterdigi icin Phase C tamamlandi iddiasi yazilmadi.
+
+## D17 - APK son kaynak koddan yeniden uretildi
+
+Ilk APK sonraki cihaz kaynakli mic, lipsync ve Forge duzeltmelerinden once
+uretilmisti. Guncel `app/` kaynagi kisa gecici Android build dizininde yeniden
+derlendi ve teslimdeki `app-release.apk` 26 Mayis 2026 release ciktiyla
+degistirildi.
 
 ## Verification Log
 
@@ -114,3 +135,6 @@ success olarak kayda alindi. Canli ikinci katilimci gerektiren dogrulama STUCK't
 | 2026-05-26 | iPhone lipsync genlik testi ve `npm run typecheck`, `npx expo-doctor` | Agiz acikligi dusuruldu; doctor 18/18 |
 | 2026-05-26 | iPhone `AuditWidget` kanit aktarimi | 3 notlu burn-in capture `audit-reports/` altina baglandi |
 | 2026-05-26 | `npm run typecheck`, `npx expo install --check`, `npx expo-doctor` (forge cycles) | Gecti; doctor 18/18 |
+| 2026-05-26 | `FORGE.md` final CONTRACT uyumu | Gercek commit timestamp ve mevcut time-box sureleriyle 2 COMMIT + 1 ROLLBACK + 1 STUCK kaydedildi |
+| 2026-05-26 | `demo.mp4` metadata ve zaman ornekli kare incelemesi | 73.36 sn; Phase A/Forge/Jitsi gecisi gorunur, 60 sn ekran paylasimli Phase C kaniti eksik |
+| 2026-05-26 | `npm run typecheck`, `npx expo install --check`, Gradle `assembleRelease` (guncel kaynak) | Gecti; 84,810,460 byte `app-release.apk` teslim klasorune alindi |

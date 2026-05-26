@@ -6,11 +6,13 @@ odasini acar.
 
 ## Kanit Durumu
 
-- Durum: **Cycle 4 STUCK - gercek uzman gorusmesi henuz kaydedilmedi.**
+- Durum: **Cycle 4 STUCK - ilk gorusme kaydi eklendi, kabul kaniti tamamlanmadi.**
 - Gerekli kanit: en az 60 saniye boyunca ses, video ve ekran paylasimi birlikte acik.
-- Demo yeri: final `demo.mp4` icindeki Phase C bolumu.
+- Demo yeri: `demo.mp4` (73.36 sn) icindeki Phase C bolumu.
+- Inceleme sonucu: kayitta Jitsi gecisi ve kisa ikinci katilimci goruntusu gorunur;
+  aktif gorusme 60 saniye surmez ve ekran paylasimi gorunur degildir.
 
-## Gercek Gorusmeden Sonra Doldurulacak Kayit
+## Kabul Kanitli Gorusmeden Sonra Doldurulacak Kayit
 
 ```text
 ## Bridge call - YYYY-MM-DDTHH:MM

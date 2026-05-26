@@ -16,11 +16,11 @@ dusuk gecikmeyle dalga formuna ve avatar dudak hareketine aktarilmasidir.
 | Expo Go uyumlu `expo-av` RMS tabanli voice visualizer | Tamam |
 | R3F avatar sahnesi ve viseme tepki hatti | Tamam |
 | Manuel not destekli AuditWidget akisi | Tamam, 3 cihaz raporu eklendi |
-| Uzmana Baglan Jitsi akisi | Tamam, gercek gorusme kaniti bekliyor |
+| Uzmana Baglan Jitsi akisi | Tamam; demo kanitinda 60 sn ekran paylasimi eksik |
 | `app-release.apk` | Tamam |
 | `audit-reports/*.md` | Tamam, 3 burn-in kanitli rapor |
-| `FORGE.md` | Tamam, 2 success + 1 rollback + 1 stuck cycle kayitli |
-| `demo.mp4` | Telefon kaydi sonrasi eklenecek |
+| `FORGE.md` | Tamam, 2 COMMIT + 1 ROLLBACK + 1 STUCK cycle kayitli |
+| `demo.mp4` | Eklendi (73.36 sn); Phase C kabul kaniti icin yeniden kayit gerekli |
 
 ## Calistirma
 
@@ -34,8 +34,8 @@ QR kodunu iPhone'daki Expo Go ile tara. Android teslim paketi: `../app-release.a
 
 ## Expo QR ve Demo Linkleri
 
-- Expo QR / link: `npx expo start --tunnel` komutunun verdigi Expo Go QR kodu ile iPhone testi yapilir; final kayitta kullanilan baglanti buraya eklenecek.
-- 60 sn demo video linki / final demo (`demo.mp4`, en fazla 3 dakika): gercek Phase A + B + C kaydindan sonra klasore ve bu alana eklenecek.
+- Expo QR / link: `npx expo start --tunnel` komutunun verdigi Expo Go QR kodu ile iPhone testi yapilir.
+- Final demo: [`demo.mp4`](./demo.mp4) (73.36 sn, en fazla 3 dakika siniri icinde).
 
 ## Phase A - Ayna
 
@@ -59,15 +59,17 @@ bulunmadigi icin iPhone test yolunda dikte bonusu hedeflenmez.
 ## Phase C - Uzman Koprusu
 
 Forge ekranindaki STUCK durumu `Uzmana Baglan` eylemini acar. Bridge ekrani sabit
-Jitsi odasina gecis ve link kopyalama sunar. Teslim videosunda baska bir kisiyle en
-az 60 saniye video, ses ve ekran paylasimi birlikte gosterilecek; gorusme ozeti
-`BRIDGE.md`'de tamamlanacak.
+Jitsi odasina gecis ve link kopyalama sunar. Mevcut `demo.mp4`, Jitsi gecisini ve
+kisa bir ikinci katilimci goruntusunu kaydeder; ancak en az 60 saniye boyunca
+video, ses ve ekran paylasimi birlikte gorunmedigi icin Phase C kaniti tamamlanmis
+sayilmaz. Dogrulama notu `BRIDGE.md`'dedir.
 
 ## Human Touch Points
 
-Su an sayac: **2** - kullanici kendi yuzune ait `model (7).glb` avatarini sagladi
-ve iPhone Expo Go uzerinden uc burn-in'li audit girdisini kaydetti. Uzman
-gorusmesi tamamlaninca sayac gercek adimla guncellenecek.
+Su an sayac: **3** - kullanici kendi yuzune ait `model (7).glb` avatarini sagladi,
+iPhone Expo Go uzerinden uc burn-in'li audit girdisini kaydetti ve ilk demo ekran
+kaydini teslim etti. Uzman gorusmesi kabul kanitiyla tamamlaninca sayac gercek
+adimla guncellenecek.
 
 ## AI Tool Log
 
@@ -77,7 +79,8 @@ gorusmesi tamamlaninca sayac gercek adimla guncellenecek.
 | Expo Go uyarlamasi | OpenAI Codex | Native STT kaldirildi, `expo-av` metering ve manuel not girisi kullanildi |
 | TypeScript kontrolu ve Android release build | OpenAI Codex | `typecheck` gecti, APK uretildi |
 | Device audit aktarimi | OpenAI Codex | iPhone'da girilen 3 not ve burn-in kaniti Markdown rapora baglandi |
-| Audit kaynakli forge cycle'lari | OpenAI Codex | 2 success (`3832c52`, `897b5c8`) + 1 rollback + 1 stuck kayitli |
+| Audit kaynakli forge cycle'lari | OpenAI Codex | 2 COMMIT (`3832c52`, `897b5c8`) + 1 ROLLBACK + 1 STUCK, spec satir formatiyla kayitli |
+| Demo kaniti kontrolu | OpenAI Codex | 73.36 sn video eklendi; Phase A ve Forge gorunur, Phase C 60 sn ekran paylasimi kaniti eksik |
 
 ## Decision Log
 
@@ -92,9 +95,8 @@ Uygulama kararlarinin gercek gerekceleri ve calistirilan dogrulamalar
 - `FORGE.md`: gercek audit kaynakli cycle ledger'i icin kayit alani.
 - `BRIDGE.md`: uzman gorusmesi kanit ve ozet alani.
 - `audit-reports/`: telefonda uretilen burn-in raporlarinin teslim klasoru.
+- `demo.mp4`: 73.36 sn telefon ekran kaydi.
 
 ## Teslimden Once Kalan Gercek Kanitlar
 
-1. iPhone'da Expo Go QR ile acip mikrofon, waveform ve kendi avatar dudak tepkisini kaydet.
-2. Jitsi gorusmesinde ses, video ve ekran paylasimini en az 60 saniye kaydet.
-3. Tek `demo.mp4` icinde Phase A, B ve C kanitlarini en fazla 3 dakikada birlestir.
+1. `demo.mp4` kaydini, Jitsi gorusmesinde baska bir kisiyle ses, video ve ekran paylasiminin birlikte en az 60 saniye gorundugu yeni bir kayitla degistir.
