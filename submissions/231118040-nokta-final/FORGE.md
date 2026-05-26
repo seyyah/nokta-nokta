@@ -19,16 +19,10 @@ girdisi olmadan success veya rollback cycle'i gibi gosterilmez.
 
 ## Gercek Cycle Ledger
 
-Telefon testi sonrasi buraya en az iki `COMMIT` ve bir `ROLLBACK` kaydi eklenecek.
-Her kaydin girdisi `audit-reports/` altindaki gercek rapora referans verecek.
+Her kaydin girdisi `audit-reports/` altindaki gercek cihaz raporuna referans verir.
 
-<!--
-## Cycle N - <slug> - YYYY-MM-DDTHH:MM
-STATUS: COMMIT | ROLLBACK | STUCK
-INPUT: audit-reports/<real-report>.md
-HYPOTHESIS: <tek test edilebilir hipotez>
-CHANGES: <degisen dosyalar veya rollback ise none>
-TEST: <gercek dogrulama>
-DURATION_MIN: <20 veya alti>
-NOTES: <human touch point ve agirlik>
--->
+| Cycle | Rapor | Hipotez | Sonuc | Degisen dosyalar | Test sonucu | Commit hash | kg | Human touch points |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | `audit-reports/02-forge-stuck-visibility.md` | STUCK eylemi listenin sonundan ilk gorunume tasinirsa uzman gecisi fark edilir olur. | SUCCESS | `app/src/screens/ForgeScreen.tsx` | `npm run typecheck`; `npx expo-doctor` 18/18 | `3832c52` | 4 | Kullanici cihaz notu; agent tek ekran duzeltmesi |
+
+Kalan minimum cycle: en az bir `SUCCESS` ve bir `ROLLBACK`.

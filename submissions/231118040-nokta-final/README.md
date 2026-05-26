@@ -19,6 +19,7 @@ dusuk gecikmeyle dalga formuna ve avatar dudak hareketine aktarilmasidir.
 | Uzmana Baglan Jitsi akisi | Tamam, gercek gorusme kaniti bekliyor |
 | `app-release.apk` | Tamam |
 | `audit-reports/*.md` | Tamam, 3 burn-in kanitli rapor |
+| `FORGE.md` | Devam ediyor, 1 success cycle kayitli |
 | `demo.mp4` | Telefon kaydi sonrasi eklenecek |
 
 ## Calistirma
@@ -76,7 +77,7 @@ gorusmesi tamamlaninca sayac gercek adimla guncellenecek.
 | Expo Go uyarlamasi | OpenAI Codex | Native STT kaldirildi, `expo-av` metering ve manuel not girisi kullanildi |
 | TypeScript kontrolu ve Android release build | OpenAI Codex | `typecheck` gecti, APK uretildi |
 | Device audit aktarimi | OpenAI Codex | iPhone'da girilen 3 not ve burn-in kaniti Markdown rapora baglandi |
-| Audit kaynakli forge cycle'lari | Bekliyor | Gercek audit raporlari sonra verilecek |
+| Audit kaynakli forge cycle'lari | OpenAI Codex | Cycle 1: STUCK uzman eylemi ust gorunume tasindi (`3832c52`) |
 
 ## Decision Log
 
