@@ -6,7 +6,7 @@ odasini acar.
 
 ## Kanit Durumu
 
-- Durum: **Bekliyor - gercek sinif arkadasi gorusmesi henuz kaydedilmedi.**
+- Durum: **Cycle 4 STUCK - gercek uzman gorusmesi henuz kaydedilmedi.**
 - Gerekli kanit: en az 60 saniye boyunca ses, video ve ekran paylasimi birlikte acik.
 - Demo yeri: final `demo.mp4` icindeki Phase C bolumu.
 
@@ -15,7 +15,7 @@ odasini acar.
 ```text
 ## Bridge call - YYYY-MM-DDTHH:MM
 TRIGGER: manual
-STUCK_CYCLE: <gercek cycle id>
+STUCK_CYCLE: 4
 EXPERT: <sinif arkadasi adi veya handle>
 DURATION_SEC: <en az 60>
 TRANSCRIPT_SUMMARY:
@@ -23,4 +23,3 @@ TRANSCRIPT_SUMMARY:
   - <uzmanin onerisi>
 NEXT_CYCLE_INPUT: <agent'a geri verilen somut bilgi>
 ```
-

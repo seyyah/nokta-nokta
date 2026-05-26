@@ -19,7 +19,7 @@ dusuk gecikmeyle dalga formuna ve avatar dudak hareketine aktarilmasidir.
 | Uzmana Baglan Jitsi akisi | Tamam, gercek gorusme kaniti bekliyor |
 | `app-release.apk` | Tamam |
 | `audit-reports/*.md` | Tamam, 3 burn-in kanitli rapor |
-| `FORGE.md` | Devam ediyor, 1 success cycle kayitli |
+| `FORGE.md` | Tamam, 2 success + 1 rollback + 1 stuck cycle kayitli |
 | `demo.mp4` | Telefon kaydi sonrasi eklenecek |
 
 ## Calistirma
@@ -52,7 +52,7 @@ Audit ekraninda geri bildirim metni girilip kopyalanir ve uygulama kokune tek ke
 mount edilen `AuditWidget` icindeki nota
 yapistirilabilir; widget ekrani yakalayip burn-in secim kutusu ile Markdown raporu
 paylastirir. iPhone Expo Go oturumunda uretilen uc gercek rapor `audit-reports/`
-altina kondu; bunlardan dogan diff ve zaman damgali donguler `FORGE.md`'ye yazilacak.
+altina kondu; bunlardan dogan diff ve zaman damgali donguler `FORGE.md`'ye yazildi.
 Challenge manuel notu kabul eder; `expo-speech-recognition` Expo Go binary'sinde
 bulunmadigi icin iPhone test yolunda dikte bonusu hedeflenmez.
 
@@ -77,7 +77,7 @@ gorusmesi tamamlaninca sayac gercek adimla guncellenecek.
 | Expo Go uyarlamasi | OpenAI Codex | Native STT kaldirildi, `expo-av` metering ve manuel not girisi kullanildi |
 | TypeScript kontrolu ve Android release build | OpenAI Codex | `typecheck` gecti, APK uretildi |
 | Device audit aktarimi | OpenAI Codex | iPhone'da girilen 3 not ve burn-in kaniti Markdown rapora baglandi |
-| Audit kaynakli forge cycle'lari | OpenAI Codex | Cycle 1: STUCK uzman eylemi ust gorunume tasindi (`3832c52`) |
+| Audit kaynakli forge cycle'lari | OpenAI Codex | 2 success (`3832c52`, `897b5c8`) + 1 rollback + 1 stuck kayitli |
 
 ## Decision Log
 
@@ -96,6 +96,5 @@ Uygulama kararlarinin gercek gerekceleri ve calistirilan dogrulamalar
 ## Teslimden Once Kalan Gercek Kanitlar
 
 1. iPhone'da Expo Go QR ile acip mikrofon, waveform ve kendi avatar dudak tepkisini kaydet.
-2. Bu raporlardan en az iki gercek fix ve bir rollback dongusu cikarip `FORGE.md`'yi doldur.
-3. Jitsi gorusmesinde ses, video ve ekran paylasimini en az 60 saniye kaydet.
-4. Tek `demo.mp4` icinde Phase A, B ve C kanitlarini en fazla 3 dakikada birlestir.
+2. Jitsi gorusmesinde ses, video ve ekran paylasimini en az 60 saniye kaydet.
+3. Tek `demo.mp4` icinde Phase A, B ve C kanitlarini en fazla 3 dakikada birlestir.

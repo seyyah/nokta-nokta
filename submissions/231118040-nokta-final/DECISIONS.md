@@ -84,6 +84,13 @@ girdi. Widget Markdown export'undaki ekran gorseli telefon ici gecici URI oldugu
 icin repoda kirilacakti; raporlara, ayni widget ekraninda burn-in dikdortgeni ve
 not metni gorunen cihaz JPEG kanitlari gomuldu.
 
+## D14 - Gercek audit cycle'lari uygulama ledger'ina yansitildi
+
+Forge ekrani ilk taslak senaryo kartlari yerine cihaz raporlarindan dogan cycle
+kayitlarini gosterir. Bridge icin yanlis "hazir" durum hipotezi rollback edildi;
+izin ve ekran paylasimi adimlarini gercek Jitsi oturum sinirinda anlatan cozum
+success olarak kayda alindi. Canli ikinci katilimci gerektiren dogrulama STUCK'tir.
+
 ## Verification Log
 
 | Tarih | Kontrol | Sonuc |
@@ -106,3 +113,4 @@ not metni gorunen cihaz JPEG kanitlari gomuldu.
 | 2026-05-26 | `npx expo export --platform ios --clear` (`expo-av` mic fix) | iOS bundle gecti |
 | 2026-05-26 | iPhone lipsync genlik testi ve `npm run typecheck`, `npx expo-doctor` | Agiz acikligi dusuruldu; doctor 18/18 |
 | 2026-05-26 | iPhone `AuditWidget` kanit aktarimi | 3 notlu burn-in capture `audit-reports/` altina baglandi |
+| 2026-05-26 | `npm run typecheck`, `npx expo install --check`, `npx expo-doctor` (forge cycles) | Gecti; doctor 18/18 |

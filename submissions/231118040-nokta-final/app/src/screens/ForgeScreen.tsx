@@ -14,17 +14,19 @@ function StatusIcon({ status }: { status: CycleStatus }) {
 }
 
 export function ForgeScreen({ openBridge }: { openBridge: () => void }) {
+  const ratchetLoad = Math.max(...cycles.map((cycle) => cycle.kg));
+
   return (
     <ScrollView contentContainerStyle={styles.content}>
       <View style={styles.summary}>
         <View>
           <Text style={styles.summaryLabel}>RATCHET LOAD</Text>
-          <Text style={styles.summaryValue}>11 kg</Text>
+          <Text style={styles.summaryValue}>{ratchetLoad} kg</Text>
         </View>
         <View style={styles.divider} />
         <View>
           <Text style={styles.summaryLabel}>HUMAN TOUCH</Text>
-          <Text style={styles.summaryValue}>01 pending</Text>
+          <Text style={styles.summaryValue}>02 logged</Text>
         </View>
       </View>
 
