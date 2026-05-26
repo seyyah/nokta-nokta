@@ -12,11 +12,11 @@ Kullanici tarafindan saglanan Avaturn export secildi. Dosyada animasyon ve dudak
 tepkisi icin gerekli viseme/mouth morph hedefleri bulundu; kaynak dosya uygulama
 icinde `app/avatar.glb` olarak paketlenir.
 
-## D03 - Mikrofon olcumu Expo Go icin `expo-audio` ile yapildi
+## D03 - Mikrofon olcumu SDK 54 Expo Go icin `expo-av` ile yapildi
 
-Challenge metni `expo-av` mic capture ister; ancak modern Expo Go test yolunda
-desteklenen kayit modulu `expo-audio`dur. `expo-audio` recording metering 50 ms
-aralikla dinlenir; waveform ve avatar icin ayni normalize enerji degeri korunur.
+Challenge metni `expo-av` mic capture ister ve kullanicinin cihazinda calisan SDK 54
+Expo Go runtime'i bu modulu destekler. Kayit status callback'i 50 ms aralikla
+dinlenir; waveform ve avatar icin ayni normalize enerji degeri korunur.
 
 ## D04 - Lipsync gercek zamanli RMS tepki hattidir
 
@@ -63,6 +63,14 @@ kanali bulundugu goruldu; bu kanallar canli `mouthOpen`, `jawOpen` ve viseme
 degerlerini ezebiliyordu. Body animasyonu korunup morph-weight track'leri playback
 disinda birakildi ve ses tepkisinin gorunurlugu artirildi.
 
+## D11 - Recorder cleanup ve metering hatti duzeltildi
+
+iPhone testinde waveform barlari da tepkisiz kalinca sorun avatar disinda arandi.
+Ilk hook'ta recording state degisimi `stop` callback'ini yeniliyor, effect cleanup
+ise aktif kaydi UI tarafinda hemen kapatiyordu. Recorder yasam dongusu sabit bir
+ref ile yonetilecek sekilde degistirildi; metering ayni zamanda challenge'daki
+`expo-av` kayit status callback'ine tasindi.
+
 ## Verification Log
 
 | Tarih | Kontrol | Sonuc |
@@ -71,7 +79,7 @@ disinda birakildi ve ses tepkisinin gorunurlugu artirildi.
 | 2026-05-25 | `npx expo install --check` (`app/`) | Bagimliliklar uyumlu |
 | 2026-05-25 | `npx expo export --platform android --clear` (`app/`) | Android JS/asset export gecti |
 | 2026-05-25 | Gradle `assembleRelease` (gecici build dizini) | `app-release.apk` uretildi |
-| 2026-05-25 | Expo Go uyumluluk karari | `expo-speech-recognition` ve `expo-av` kaldirildi |
+| 2026-05-25 | Expo Go uyumluluk karari | `expo-speech-recognition` kaldirildi; manuel audit yolu secildi |
 | 2026-05-25 | `npx expo export --platform ios --clear` (`app/`, SDK 55) | Test gecti ancak App Store Expo Go runtime'i uyumsuz cikti |
 | 2026-05-25 | Gradle `assembleRelease` (Expo Go uyarlamasi sonrasi) | Guncel `app-release.apk` yeniden uretildi |
 | 2026-05-25 | `npx expo-doctor` (SDK 55 hizasi) | 19/19 kontrol gecti |
@@ -80,3 +88,6 @@ disinda birakildi ve ses tepkisinin gorunurlugu artirildi.
 | 2026-05-25 | `npx expo export --platform ios --clear` (`app/`, SDK 54) | App Store Expo Go uyumlu bundle gecti |
 | 2026-05-26 | GLB animation track incelemesi | 6 facial `weights` kanali tespit edildi |
 | 2026-05-26 | `npm run typecheck`, `npx expo-doctor`, iOS export (lipsync fix) | Gecti |
+| 2026-05-26 | iPhone waveform testi ve hook incelemesi | Recorder cleanup hatasi bulundu; `expo-av` metering'e gecildi |
+| 2026-05-26 | `npm run typecheck`, `npx expo install --check`, `npx expo-doctor` (mic fix) | Gecti; doctor 18/18 |
+| 2026-05-26 | `npx expo export --platform ios --clear` (`expo-av` mic fix) | iOS bundle gecti |

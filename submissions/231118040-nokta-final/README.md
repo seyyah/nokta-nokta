@@ -13,7 +13,7 @@ dusuk gecikmeyle dalga formuna ve avatar dudak hareketine aktarilmasidir.
 | --- | --- |
 | Expo + TypeScript mobil uygulama | Tamam |
 | `app/avatar.glb` (Avaturn, `model (7).glb`) | Tamam |
-| Expo Go uyumlu `expo-audio` RMS tabanli voice visualizer | Tamam |
+| Expo Go uyumlu `expo-av` RMS tabanli voice visualizer | Tamam |
 | R3F avatar sahnesi ve viseme tepki hatti | Tamam |
 | Manuel not destekli AuditWidget akisi | Tamam, cihaz kaniti bekliyor |
 | Uzmana Baglan Jitsi akisi | Tamam, gercek gorusme kaniti bekliyor |
@@ -37,7 +37,7 @@ QR kodunu iPhone'daki Expo Go ile tara. Android teslim paketi: `../app-release.a
 
 ## Phase A - Ayna
 
-Mikrofon kaydi Expo Go icindeki `expo-audio` metering ile 50 ms ornekleme hedefinde izlenir. Ses
+Mikrofon kaydi Expo Go icindeki `expo-av` metering ile 50 ms ornekleme hedefinde izlenir. Ses
 seviyesi waveform barlarini hareket ettirir; sessizlikte barlar soner. Aynı normalize
 seviye `avatar.glb` icindeki `viseme_aa`, `viseme_E`, `viseme_O`, `viseme_PP`,
 `viseme_TH`, `viseme_U`, `jawOpen` ve `mouthOpen` morph hedeflerine aktarilir.
@@ -72,7 +72,7 @@ adimlarla guncellenecek.
 | Islem | Arac | Sonuc |
 | --- | --- | --- |
 | Uygulama iskeleti, voice/viseme/audit/bridge implementasyonu | OpenAI Codex | Gercek commitler olusturuldu |
-| Expo Go uyarlamasi | OpenAI Codex | Native STT kaldirildi, `expo-audio` metering ve manuel not girisi kullanildi |
+| Expo Go uyarlamasi | OpenAI Codex | Native STT kaldirildi, `expo-av` metering ve manuel not girisi kullanildi |
 | TypeScript kontrolu ve Android release build | OpenAI Codex | `typecheck` gecti, APK uretildi |
 | Audit kaynakli forge cycle'lari | Bekliyor | Gercek audit raporlari sonra verilecek |
 

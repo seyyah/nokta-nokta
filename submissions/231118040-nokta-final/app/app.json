@@ -35,12 +35,6 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      [
-        "expo-audio",
-        {
-          "microphonePermission": "Ses dalgasi ve avatar lipsync icin mikrofon erisimi gerekir."
-        }
-      ],
       "expo-asset"
     ]
   }
