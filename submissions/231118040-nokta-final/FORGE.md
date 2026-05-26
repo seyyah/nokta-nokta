@@ -24,5 +24,6 @@ Her kaydin girdisi `audit-reports/` altindaki gercek cihaz raporuna referans ver
 | Cycle | Rapor | Hipotez | Sonuc | Degisen dosyalar | Test sonucu | Commit hash | kg | Human touch points |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | `audit-reports/02-forge-stuck-visibility.md` | STUCK eylemi listenin sonundan ilk gorunume tasinirsa uzman gecisi fark edilir olur. | SUCCESS | `app/src/screens/ForgeScreen.tsx` | `npm run typecheck`; `npx expo-doctor` 18/18 | `3832c52` | 4 | Kullanici cihaz notu; agent tek ekran duzeltmesi |
+| 2 | `audit-reports/03-bridge-sharing-status.md` | Odaya girmeden yesil `EKRAN PAYLASIMI HAZIR` rozeti gostermek durumu netlestirir. | ROLLBACK | `none` (prototip geri alindi) | `npm run typecheck` gecti; dogrulamada rozetin oturum/izin oncesi yanlis durum bildirdigi bulundu | `-` | 4 | Agent hipotezi reddetti; ek yonlendirme yok |
 
-Kalan minimum cycle: en az bir `SUCCESS` ve bir `ROLLBACK`.
+Kalan minimum cycle: en az bir `SUCCESS`.
