@@ -17,6 +17,8 @@ import HomeScreen from './src/screens/HomeScreen';
 import AddIdeaScreen from './src/screens/AddIdeaScreen';
 import IdeaDetailScreen from './src/screens/IdeaDetailScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import MirrorScreen from './src/screens/MirrorScreen';
+import BridgeScreen from './src/screens/BridgeScreen';
 import { auditStorage } from './src/utils/auditStorage';
 import type { RootStackParamList, MainTabParamList } from './src/types';
 
@@ -26,6 +28,8 @@ const Tab = createBottomTabNavigator<MainTabParamList>();
 function TabIcon({ name, focused }: { name: string; focused: boolean }) {
   const icons: Record<string, string> = {
     Home: '💡',
+    Mirror: '🪞',
+    Bridge: '📞',
     Profile: '👤',
   };
   return (
@@ -73,6 +77,8 @@ function MainTabs() {
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Fikirler' }} />
+      <Tab.Screen name="Mirror" component={MirrorScreen} options={{ title: 'Ayna' }} />
+      <Tab.Screen name="Bridge" component={BridgeScreen} options={{ title: 'Köprü' }} />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profil' }} />
     </Tab.Navigator>
   );
