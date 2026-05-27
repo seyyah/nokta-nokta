@@ -27,9 +27,9 @@ Voice viz akıcılığı + lipsync senkronu öncelikli. Track A çizgisi:
 ## Phase B — Kendi Müşterin (Self-as-User Forge)
 
 - `<AuditWidget />` Hafta 2'den itibaren `App.tsx`'te mount (drop-in)
-- Yeni: **`expo-speech-recognition`** ile sesli rapor dikte (voice → STT → markdown)
+- Sesli dikte ile audit rapor üretimi (voice → STT → markdown)
 - Coding agent (Claude Code Opus 4.7) ile forge döngüsü: READ → LOCATE → HYPOTHESIZE → REPAIR → TEST → VERIFY → COMMIT/ROLLBACK
-- ≥2 yeni COMMIT + ≥1 ROLLBACK; her cycle ≤20 dk; `FORGE.md`'ye log
+- Hafta 3: 4 yeni cycle (3 COMMIT + 1 ROLLBACK); toplam 9 cycle (7 COMMIT + 2 ROLLBACK); `FORGE.md`'ye log
 
 ## Phase C — Köprü (HITL Video Bridge)
 
@@ -64,9 +64,9 @@ Voice viz akıcılığı + lipsync senkronu öncelikli. Track A çizgisi:
 
 ## Build & Demo
 
-- **APK:** `app-release.apk` (Hafta 2 build, Halka Kapanışı build sonra eklenecek)
-- **Expo Build (week 2):** https://expo.dev/accounts/aleyna1955/projects/nokta-audit-forge/builds/b3d94ea0-bd7e-4cb7-afcf-f7b28b79f593
-- **Demo video (3 dk, Phase A+B+C):** [eklenecek — `demo.mp4`]
+- **APK:** `app-release.apk`
+- **Expo Build:** https://expo.dev/accounts/aleyna1955/projects/nokta-audit-forge/builds/b3d94ea0-bd7e-4cb7-afcf-f7b28b79f593
+- **Demo video (3 dk, Phase A+B+C):** `demo.mp4`
 
 ## Decision Log (özet)
 
@@ -101,17 +101,23 @@ Tam liste: [`DECISIONS.md`](./DECISIONS.md). AI-DLC çerçevesinde Visioner/Harn
 ```
 submissions/231118098-tohum/
 ├── README.md              # Bu dosya (Track: A satır 1)
-├── DECISIONS.md           # AI-DLC harness kararları
-├── FORGE.md               # Cycle ledger (hafta 2'den, hafta 3'te ≥2+1 yeni)
+├── DECISIONS.md           # AI-DLC harness kararları (6 rol)
+├── FORGE.md               # Cycle ledger (5 Hafta 2 + 4 Hafta 3 = 9 cycle)
 ├── BRIDGE.md              # Phase C görüşme özeti
 ├── demo.mp4               # ≤3dk Phase A+B+C
 ├── app-release.apk        # Halka Kapanışı build
-├── audit-reports/         # ≥3 .md rapor (yeni rapor eklenecek)
-└── app/                   # Expo + TS proje
+├── audit-reports/         # 6 .md rapor (3 Hafta 2 + 3 Hafta 3)
+│   ├── report-home-screen.md
+│   ├── report-add-idea-screen.md
+│   ├── report-profile-screen.md
+│   ├── report-mirror-mic-permission.md      # Hafta 3 — sesli dikte
+│   ├── report-mirror-avatar-lipsync-lag.md  # Hafta 3 — sesli dikte
+│   └── report-bridge-room-collision.md      # Hafta 3 — sesli dikte
+└── app/                   # Expo SDK 54 + TS proje
     ├── App.tsx
     ├── src/
     │   ├── screens/       # Home/AddIdea/IdeaDetail/Profile + Mirror + Bridge
-    │   ├── components/    # AvatarStage, Waveform, JitsiBridge
+    │   ├── components/    # AvatarStage, Waveform
     │   ├── hooks/         # useVoiceMeter
     │   ├── utils/         # ideaStorage, auditStorage
     │   └── types/

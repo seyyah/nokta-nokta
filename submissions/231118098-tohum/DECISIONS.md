@@ -45,8 +45,8 @@ AI-DLC'de insan artık "kod yazan" değil **orkestratör**. 6 alt rolün her bir
 
 | Karar | Tarih | Gerekçe |
 |---|---|---|
-| (örnek, hafta 2'den) Cycle #4 SecureStore reddi | 2026-05-20 | Claude AsyncStorage→SecureStore migration önerdi. Test edildi, **2KB limit** sorunu çıktı. ROLLBACK + asıl sorun (state management) tespit edildi. → Cycle #5 `useFocusEffect` ile çözüldü. |
-| (gelecek, hafta 3) Phase A iskelet review | TBD | Voice viz + avatar bileşenleri eklenince her commit öncesi: gerçekten <200ms latency tutuyor mu? Görsel olarak ikna edici mi? |
+| Cycle #4 SecureStore reddi | 2026-05-20 | Claude AsyncStorage→SecureStore migration önerdi. Test edildi, **2KB limit** sorunu çıktı. ROLLBACK + asıl sorun (state management) tespit edildi. → Cycle #5 `useFocusEffect` ile çözüldü. |
+| Cycle #7 Asymmetric lerp reddi | 2026-05-27 | Lipsync lag için asymmetric lerp (0.8/0.3) denendi. Düşük amplitude gürültüde jitter oluştu. **ROLLBACK** → Bridge call'da arkadaş "basit factor bump yeter" dedi → Cycle #8'de 0.65 ile COMMIT. Karmaşık çözüm yerine basit parametre. |
 
 ### 🔗 System Thinker — Büyük resmi görür, parçaları uyumlu hale getirir
 

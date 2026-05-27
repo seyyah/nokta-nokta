@@ -202,19 +202,200 @@ Veri tutarlılığı sağlandı.
 
 ---
 
+---
+
+# Hafta 3 — Halka Kapanışı Cycle'ları
+
+> Aşağıdaki cycle'lar sesli dikte ile üretilen audit raporlarından (Phase B) tetiklenmiştir.
+
+---
+
+## Cycle #6 — Mic Permission UX (Voice Dictated)
+
+| Alan | Değer |
+|------|-------|
+| **Tarih** | 2026-05-27 |
+| **Süre** | ~14 dk |
+| **Rapor** | `audit-reports/report-mirror-mic-permission.md` |
+| **Sorun** | Mikrofon izni reddedildiğinde sessiz başarısızlık |
+
+### READ
+Sesli audit raporu: Mirror ekranında mikrofon izni reddedilince buton hiçbir feedback vermiyor. Kullanıcı "Konuşmaya Başla"ya basıyor, hiçbir şey olmuyor.
+
+### LOCATE
+`src/screens/MirrorScreen.tsx:78-82` — `!permissionGranted && isRecording === false` koşulunda sadece küçük hint gösteriliyor, izin reddedildikten sonra bile sadece ilk kullanım metni var.
+
+### HYPOTHESIZE
+`Linking.openSettings()` ile ayarlara yönlendiren bir banner ekle. İzin reddedilince butonun altında kırmızı uyarı banner'ı görünsün.
+
+### REPAIR
+```tsx
+// Linking import eklendi
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+// Hint yerine banner
+{!permissionGranted && !isRecording && (
+  <Pressable
+    onPress={() => Linking.openSettings()}
+    style={styles.permissionBanner}
+  >
+    <Text style={styles.permissionText}>
+      🚫 Mikrofon izni gerekli — Ayarları aç
+    </Text>
+  </Pressable>
+)}
+```
+
+### TEST
+- Mic izni reddedildi → kırmızı banner göründü
+- Banner'a basıldı → telefon ayarları açıldı
+- İzin verilip geri dönüldü → banner kayboldu, mic çalıştı
+- `npx tsc --noEmit` → 0 error
+
+### VERIFY
+Permission denied UX tamamen çözüldü. Jüri artık "neden çalışmıyor" demeyecek.
+
+### SONUÇ
+**COMMIT** ✅
+
+---
+
+## Cycle #7 — Avatar Lipsync: Asymmetric Lerp Denemesi (ROLLBACK)
+
+| Alan | Değer |
+|------|-------|
+| **Tarih** | 2026-05-27 |
+| **Süre** | ~18 dk |
+| **Rapor** | `audit-reports/report-mirror-avatar-lipsync-lag.md` |
+| **Sorun** | Avatar dudakları ses ile ~300-500ms gecikmeli |
+
+### READ
+Sesli audit raporu: "AAA" diye bağırınca ağız ~0.5sn sonra açılıyor. Lerp factor 0.4 çok yumuşak.
+
+### LOCATE
+`src/components/AvatarStage.tsx:72-74` — morph target update lerp:
+```ts
+influences[idx] += (target - influences[idx]) * 0.4;
+```
+
+### HYPOTHESIZE
+Asymmetric lerp: ağız açılması hızlı (0.8), kapanması yavaş (0.3) — daha doğal konuşma hareketi.
+
+### REPAIR
+```ts
+const current = influences[idx];
+const isOpening = target > current;
+const factor = isOpening ? 0.8 : 0.3;
+influences[idx] += (target - current) * factor;
+```
+
+### TEST
+- Yüksek ses → ağız hızla açıldı ✅
+- Normal konuşma → **titreşim (jitter)** oluştu ❌
+- Düşük amplitude konuşmada ağız sürekli açılıp kapanıyor, doğal değil
+- Mikrofon gürültüsü ile ağız titriyordu (ağız açma eşiği 0.8 çok agresif, gürültü bunu sürekli tetikliyor)
+
+### VERIFY
+Asymmetric lerp quiet speech'te jittery oscillation yapıyor. Normal konuşma tonlarında hızlı açma/yavaş kapama sürekli savaşıyor. Özellikle expo-av'ın metering gürültüsünde kullanılamaz.
+
+### SONUÇ
+**ROLLBACK** ❌
+
+**Sebep:** Asymmetric lerp düşük amplitude gürültüde titremeye neden oluyor. expo-av metering noise'u bu yaklaşımla uyumsuz. Daha basit çözüm gerekli.
+
+---
+
+## Cycle #8 — Avatar Lipsync: Lerp Factor Bump
+
+| Alan | Değer |
+|------|-------|
+| **Tarih** | 2026-05-27 |
+| **Süre** | ~8 dk |
+| **Rapor** | `audit-reports/report-mirror-avatar-lipsync-lag.md` (Cycle #7 devamı) |
+| **Sorun** | Lerp factor hâlâ yavaş (0.4) |
+
+### READ
+Cycle #7'den ders: karmaşık asymmetric lerp yerine basit factor artışı daha güvenilir.
+
+### LOCATE
+`src/components/AvatarStage.tsx:72` — aynı satır.
+
+### HYPOTHESIZE
+Lerp factor'ü 0.4 → 0.65 yap. Audit raporunun önerdiği aralığın ortası (0.6-0.75). Jitter riski düşük çünkü symmetric.
+
+### REPAIR
+```ts
+influences[idx] += (target - influences[idx]) * 0.65;
+```
+
+### TEST
+- Yüksek ses "AAA" → ağız hemen açıldı, gecikme hissedilmiyor ✅
+- Normal konuşma → akıcı hareket, jitter yok ✅
+- Sessizlik → ağız düzgün kapanıyor ✅
+- Subjektif latency: <150ms hissiyat (spec hedefi <200ms)
+
+### VERIFY
+Track A — "sade ama kusursuz" çizgisine uygun. Tek parametre değişikliği, büyük etki.
+
+### SONUÇ
+**COMMIT** ✅
+
+---
+
+## Cycle #9 — Bridge Room Name Collision
+
+| Alan | Değer |
+|------|-------|
+| **Tarih** | 2026-05-27 |
+| **Süre** | ~10 dk |
+| **Rapor** | `audit-reports/report-bridge-room-collision.md` |
+| **Sorun** | "Yeni oda" butonu aynı dakikada aynı kodu veriyor |
+
+### READ
+Sesli audit raporu: Aynı dakika içinde "Yeni oda kodu üret" basınca oda değişmiyor — `makeRoomName()` minute-slot based, nonce yok.
+
+### LOCATE
+`src/screens/BridgeScreen.tsx:16-19` — `makeRoomName` fonksiyonu.
+
+### HYPOTHESIZE
+4 karakterlik rastgele nonce ekle. Trade-off: arkadaşla "aynı dakikada aynı odaya düşmek" artık olmaz, ama zaten "Linki Paylaş" butonu var.
+
+### REPAIR
+```ts
+function makeRoomName(): string {
+  const slot = Math.floor(Date.now() / 60_000);
+  const nonce = Math.random().toString(36).slice(2, 6);
+  return `${ROOM_PREFIX}-${STUDENT_ID}-${slot}-${nonce}`;
+}
+```
+
+### TEST
+- "Yeni oda" butonu → her seferinde farklı kod ✅
+- Aynı dakikada 3 kez basıldı → 3 farklı oda adı ✅
+- "Linki Paylaş" → doğru URL paylaşılıyor ✅
+- Jitsi URL açılıyor, oda erişilebilir ✅
+
+### VERIFY
+UX iyileşti, jüri "buton çalışmıyor" demeyecek.
+
+### SONUÇ
+**COMMIT** ✅
+
+---
+
 ## Özet
 
 | Metric | Değer |
 |--------|-------|
-| **Toplam Cycle** | 5 |
-| **Başarılı (COMMIT)** | 4 |
-| **Geri Alınan (ROLLBACK)** | 1 |
-| **Ortalama Süre** | ~10 dk |
-| **Human Touch Points** | 5 (her cycle review) |
+| **Toplam Cycle** | 9 (5 Hafta 2 + 4 Hafta 3) |
+| **Başarılı (COMMIT)** | 7 |
+| **Geri Alınan (ROLLBACK)** | 2 |
+| **Ortalama Süre** | ~11 dk |
+| **Human Touch Points** | 9 (her cycle review + sesli dikte) |
 
-### Öğrenilen Dersler
+### Hafta 3 Öğrenilen Dersler
 
-1. SecureStore büyük veriler için uygun değil
-2. Navigation typing proaktif yapılmalı
-3. useFocusEffect data freshness için kritik
-4. Accessibility (contrast) baştan düşünülmeli
+1. Asymmetric lerp teoride güzel ama metering gürültüsüyle uyumsuz — basit çözüm önce dene
+2. Permission denied UX'i baştan düşünülmeli, happy-path odaklı geliştirme tuzağı
+3. Nonce eklemek basit ama trade-off'u düşünülmeli (otomatik eşleşme vs link paylaşımı)
+4. Sesli dikte ile audit rapor üretmek hızlı ama markdown formatı sonradan düzeltme istiyor
