@@ -15,7 +15,8 @@ const ROOM_PREFIX = 'nokta-tohum';
 
 function makeRoomName(): string {
   const slot = Math.floor(Date.now() / 60_000);
-  return `${ROOM_PREFIX}-${STUDENT_ID}-${slot}`;
+  const nonce = Math.random().toString(36).slice(2, 6);
+  return `${ROOM_PREFIX}-${STUDENT_ID}-${slot}-${nonce}`;
 }
 
 export default function BridgeScreen() {
