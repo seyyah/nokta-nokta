@@ -1,0 +1,141 @@
+diff --git a/node_modules/@xtatistix/mobile-audit/src/components/AuditOverlay.tsx b/node_modules/@xtatistix/mobile-audit/src/components/AuditOverlay.tsx
+index d2dca60..373eec0 100644
+--- a/node_modules/@xtatistix/mobile-audit/src/components/AuditOverlay.tsx
++++ b/node_modules/@xtatistix/mobile-audit/src/components/AuditOverlay.tsx
+@@ -21,7 +21,7 @@ interface Props {
+   selectedBounds: AuditNoteBounds | null;
+   screenName: string;
+   reporterId?: string;
+-  onSave: (note: string) => Promise<void>;
++  onSave: (note: string, continueSelecting?: boolean) => Promise<void>;
+   onCancel: () => void;
+ }
+ 
+@@ -41,15 +41,22 @@ export function AuditOverlay({
+   const [note, setNote] = useState('');
+   const [saving, setSaving] = useState(false);
+ 
+-  const handleSave = async () => {
++  // Overlay her açıldığında (yeni alan seçiminde) inputu sıfırla
++  React.useEffect(() => {
++    if (visible) {
++      setNote('');
++      setSaving(false);
++    }
++  }, [visible]);
++
++  const handleSave = async (continueSelecting = false) => {
+     if (!note.trim()) {
+       Alert.alert('Not boş', 'Lütfen bir açıklama girin.');
+       return;
+     }
+     setSaving(true);
+     try {
+-      await onSave(note.trim());
+-      setNote('');
++      await onSave(note.trim(), continueSelecting);
+     } finally {
+       setSaving(false);
+     }
+@@ -127,7 +134,14 @@ export function AuditOverlay({
+             <TouchableOpacity style={styles.cancelBtn} onPress={handleCancel} disabled={saving}>
+               <Text style={styles.cancelText}>İptal</Text>
+             </TouchableOpacity>
+-            <TouchableOpacity style={styles.saveBtn} onPress={handleSave} disabled={saving}>
++            <TouchableOpacity style={styles.continueBtn} onPress={() => handleSave(true)} disabled={saving}>
++              {saving ? (
++                <ActivityIndicator color="#fff" size="small" />
++              ) : (
++                <Text style={styles.continueText}>Kaydet & Devam</Text>
++              )}
++            </TouchableOpacity>
++            <TouchableOpacity style={styles.saveBtn} onPress={() => handleSave(false)} disabled={saving}>
+               {saving ? (
+                 <ActivityIndicator color="#fff" size="small" />
+               ) : (
+@@ -225,6 +239,18 @@ const styles = StyleSheet.create({
+     fontWeight: '600',
+     fontSize: 14,
+   },
++  continueBtn: {
++    flex: 2,
++    paddingVertical: 13,
++    borderRadius: 12,
++    backgroundColor: '#a855f7',
++    alignItems: 'center',
++  },
++  continueText: {
++    color: '#fff',
++    fontWeight: '700',
++    fontSize: 14,
++  },
+   saveBtn: {
+     flex: 2,
+     paddingVertical: 13,
+diff --git a/node_modules/@xtatistix/mobile-audit/src/components/AuditWidget.tsx b/node_modules/@xtatistix/mobile-audit/src/components/AuditWidget.tsx
+index d1ec684..1d6efb7 100644
+--- a/node_modules/@xtatistix/mobile-audit/src/components/AuditWidget.tsx
++++ b/node_modules/@xtatistix/mobile-audit/src/components/AuditWidget.tsx
+@@ -45,6 +45,7 @@ export function AuditWidget({ deps, appName = 'App', initialPosition }: Props) {
+   const [mode, setMode] = useState<WidgetMode>('idle');
+   const [notes, setNotes] = useState<AuditNote[]>([]);
+   const [capturedUri, setCapturedUri] = useState('');
++  const [plainUri, setPlainUri] = useState(''); // original screenshot before any burn-in
+   const [selectedBounds, setSelectedBounds] = useState<AuditNoteBounds | null>(null);
+   const managerRef = useRef(new NoteManager(deps.storage));
+   const manager = managerRef.current;
+@@ -66,10 +67,16 @@ export function AuditWidget({ deps, appName = 'App', initialPosition }: Props) {
+     setNotes(await manager.getAll());
+   }, [manager]);
+ 
++  // Load persisted notes on mount so they survive app restarts
++  React.useEffect(() => {
++    loadNotes();
++  }, [loadNotes]);
++
+   const handleCapture = useCallback(async () => {
+     setMode('capturing');
+     try {
+       const uri = await deps.captureScreen();
++      setPlainUri(uri);
+       setCapturedUri(uri);
+       setSelectedBounds(null);
+       setMode('selecting');
+@@ -139,7 +146,7 @@ export function AuditWidget({ deps, appName = 'App', initialPosition }: Props) {
+     setMode('annotating');
+   };
+ 
+-  const handleSaveNote = async (noteText: string) => {
++  const handleSaveNote = async (noteText: string, continueSelecting = false) => {
+     const { height: SH, width: SW } = Dimensions.get('screen');
+     await manager.add({
+       screenName: deps.currentScreen,
+@@ -150,8 +157,17 @@ export function AuditWidget({ deps, appName = 'App', initialPosition }: Props) {
+       reporterId: deps.reporterId,
+     });
+     await loadNotes();
+-    setMode('idle');
+-    setCapturedUri('');
++    if (continueSelecting) {
++      setSelectedBounds(null);
++      // Aynı plain ekran görüntüsü üzerinde yeni alan seçmeye devam et
++      // captureScreen tekrar çalıştırılmaz — overlay kapanır, selector açılır
++      setCapturedUri(plainUri);
++      setMode('selecting');
++    } else {
++      setMode('idle');
++      setCapturedUri('');
++      setPlainUri('');
++    }
+   };
+ 
+   const handleEditNote = async (id: string, newNote: string) => {
+@@ -196,7 +212,7 @@ export function AuditWidget({ deps, appName = 'App', initialPosition }: Props) {
+           screenshotUri={capturedUri}
+           captureRef={deps.captureRef}
+           onConfirm={handleSelectionConfirm}
+-          onCancel={() => { setMode('idle'); setCapturedUri(''); }}
++        onCancel={() => { setMode('idle'); setCapturedUri(''); setPlainUri(''); }}
+         />
+       )}
+ 
