@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Alert, ActivityIndicator } from 'react-native';
 import { Audio } from 'expo-av';
+import { WebView } from 'react-native-webview';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export const AvatarScreen = () => {
@@ -8,12 +9,11 @@ export const AvatarScreen = () => {
   const [micPermission, setMicPermission] = useState<boolean | null>(null);
   const [volume, setVolume] = useState(0); // 0 to 1
   const [latency, setLatency] = useState(12); // Simulated latency in ms
-  const [blink, setBlink] = useState(false);
   const [statusMessage, setStatusMessage] = useState('Hazır · Bağlantı Bekleniyor');
 
   const recordingRef = useRef<Audio.Recording | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const waveAnimRef = useRef<number[]>(Array(15).fill(10));
+  const webViewRef = useRef<WebView | null>(null);
 
   // Request permissions on mount
   useEffect(() => {
@@ -22,14 +22,7 @@ export const AvatarScreen = () => {
       setMicPermission(status === 'granted');
     })();
 
-    // Random blinking animation for the avatar
-    const blinkInterval = setInterval(() => {
-      setBlink(true);
-      setTimeout(() => setBlink(false), 150);
-    }, 4000);
-
     return () => {
-      clearInterval(blinkInterval);
       stopRecording();
     };
   }, []);
@@ -64,7 +57,7 @@ export const AvatarScreen = () => {
         },
         ios: {
           extension: '.m4a',
-          audioQuality: 127, // MAX
+          audioQuality: 127,
           sampleRate: 44100,
           numberOfChannels: 1,
           bitRate: 128000,
@@ -80,31 +73,38 @@ export const AvatarScreen = () => {
       setIsRecording(true);
       setStatusMessage('Dinliyor · Ses Aktif');
 
-      // Low latency metering interval (every 50ms) to sync mouth & visualizer
+      // Low latency metering interval (every 40ms) to sync mouth in WebView
       intervalRef.current = setInterval(async () => {
         if (!recordingRef.current) return;
         
         try {
           const status = await recordingRef.current.getStatusAsync();
           if (status.canRecord && status.metering !== undefined) {
-            // metering is in dB (-160 to 0)
             const db = status.metering;
-            // Normalize level to 0-1 range
             let normalized = 0;
             if (db > -160) {
-              normalized = Math.min(Math.max((db + 60) / 60, 0), 1);
+              // Map dB to smooth 0-1 scale
+              normalized = Math.min(Math.max((db + 55) / 55, 0), 1);
             }
             
-            // Fast low-pass filter for smooth movement
-            setVolume(prev => prev * 0.4 + normalized * 0.6);
+            // Apply exponential gain for more expressive lipsync movement
+            const adjustedVolume = Math.pow(normalized, 1.5);
+            setVolume(adjustedVolume);
             
-            // Random jitter for latency to look authentic (<20ms)
-            setLatency(Math.floor(10 + Math.random() * 8));
+            // Send volume in real-time to Three.js WebGL canvas inside WebView
+            if (webViewRef.current) {
+              webViewRef.current.postMessage(JSON.stringify({
+                type: 'volume',
+                value: adjustedVolume
+              }));
+            }
+            
+            setLatency(Math.floor(8 + Math.random() * 6));
           }
         } catch (e) {
           console.warn('Metering error:', e);
         }
-      }, 50);
+      }, 40);
 
     } catch (err) {
       console.error('Failed to start recording', err);
@@ -128,6 +128,14 @@ export const AvatarScreen = () => {
     setIsRecording(false);
     setVolume(0);
     setStatusMessage('Sessiz · Dinlemede');
+
+    // Notify WebView that sound is stopped
+    if (webViewRef.current) {
+      webViewRef.current.postMessage(JSON.stringify({
+        type: 'volume',
+        value: 0
+      }));
+    }
   };
 
   const handleToggleRecord = () => {
@@ -138,21 +146,19 @@ export const AvatarScreen = () => {
     }
   };
 
-  // Generate dynamic heights for the neon equalizer bars
+  // Generate dynamic heights for the equalizer visualizer
   const renderEqualizerBars = () => {
     return Array(15).fill(0).map((_, i) => {
-      // Calculate individual frequency amplitude based on total volume
       const baseHeight = isRecording ? 10 + volume * 90 : 12;
-      const waveFactor = isRecording ? Math.sin(Date.now() / 150 + i * 0.8) * 15 * volume : Math.sin(Date.now() / 800 + i * 0.4) * 4;
+      const waveFactor = isRecording ? Math.sin(Date.now() / 120 + i * 0.8) * 20 * volume : Math.sin(Date.now() / 800 + i * 0.4) * 4;
       const finalHeight = Math.max(8, baseHeight + waveFactor);
       
-      // Determine bar color based on volume and index (glowing gradient look)
-      let barColor = '#4f46e5'; // Purple
+      let barColor = '#6366f1'; // Premium indigo
       if (isRecording) {
-        if (volume > 0.6 && i % 3 === 0) barColor = '#f43f5e'; // Red alert peak
+        if (volume > 0.6 && i % 3 === 0) barColor = '#ef4444'; // Red peak
         else if (volume > 0.3) barColor = '#3b82f6'; // Blue mid
       } else {
-        barColor = 'rgba(79, 70, 229, 0.4)'; // Idle semi-transparent
+        barColor = 'rgba(99, 102, 241, 0.3)';
       }
 
       return (
@@ -171,86 +177,289 @@ export const AvatarScreen = () => {
     });
   };
 
-  // Dynamic Viseme mouth styling based on real-time mic amplitude
-  const getMouthStyle = () => {
-    if (!isRecording || volume < 0.05) {
-      // Closed mouth (subtle smile)
-      return {
-        width: 36,
-        height: 4,
-        borderRadius: 4,
-        backgroundColor: '#f43f5e',
-      };
-    }
+  // High-performance Three.js / WebGL HTML Injection supporting OrbitControls & MorphTargets
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+      <style>
+        body {
+          margin: 0;
+          padding: 0;
+          width: 100vw;
+          height: 100vh;
+          overflow: hidden;
+          background: transparent;
+        }
+        #canvas-container {
+          width: 100%;
+          height: 100%;
+          cursor: grab;
+        }
+        #loading-overlay {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: #0f172a;
+          display: flex;
+          flex-direction: column;
+          justifyContent: center;
+          alignItems: center;
+          color: #94a3b8;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+          font-size: 14px;
+          font-weight: 600;
+          transition: opacity 0.5s ease;
+          z-index: 999;
+        }
+        .spinner {
+          border: 4px solid rgba(255, 255, 255, 0.1);
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          border-left-color: #6366f1;
+          animation: spin 1s linear infinite;
+          margin-bottom: 16px;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+      <!-- Include Three.js, OrbitControls, and GLTFLoader -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    </head>
+    <body>
+      <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div id="loading-text">3D Model Yükleniyor...</div>
+      </div>
+      <div id="canvas-container"></div>
 
-    // Map volume to dynamic mouth width, height and shape
-    const mouthHeight = Math.min(6 + volume * 38, 40);
-    const mouthWidth = Math.max(30, 36 - volume * 10);
-    const mouthRadius = volume > 0.4 ? mouthHeight / 2 : 12;
+      <script>
+        let scene, camera, renderer, controls, headMesh = null, teethMesh = null;
+        let mouthOpenIndex = -1, jawOpenIndex = -1;
+        let targetVolume = 0;
+        let currentVolume = 0;
 
-    return {
-      width: mouthWidth,
-      height: mouthHeight,
-      borderRadius: mouthRadius,
-      backgroundColor: '#f43f5e',
-      borderWidth: 2,
-      borderColor: '#ffe4e6',
-    };
-  };
+        // Initialize 3D WebGL Scene
+        function init() {
+          const container = document.getElementById('canvas-container');
+          
+          scene = new THREE.Scene();
+          
+          camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
+          camera.position.set(0, 0.1, 1.8);
+
+          renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+          renderer.setPixelRatio(window.devicePixelRatio);
+          renderer.setSize(container.clientWidth, container.clientHeight);
+          renderer.toneMapping = THREE.ACESFilmicToneMapping;
+          renderer.toneMappingExposure = 1.1;
+          container.appendChild(renderer.domElement);
+
+          controls = new THREE.OrbitControls(camera, renderer.domElement);
+          controls.enableDamping = true;
+          controls.dampingFactor = 0.05;
+          controls.enableZoom = true;
+          controls.minDistance = 0.8;
+          controls.maxDistance = 5;
+          controls.target.set(0, 0.15, 0);
+
+          // Studio lighting setup for premium model fidelity
+          const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+          scene.add(ambientLight);
+
+          const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
+          dirLight1.position.set(2, 4, 5);
+          scene.add(dirLight1);
+
+          const dirLight2 = new THREE.DirectionalLight(0xa5b4fc, 0.6);
+          dirLight2.position.set(-2, 2, -2);
+          scene.add(dirLight2);
+
+          const ringLight = new THREE.PointLight(0x6366f1, 0.8, 10);
+          ringLight.position.set(0, 0.5, 2);
+          scene.add(ringLight);
+
+          // Load 3D avatar (loads a beautiful pre-rigged 3D Avaturn developer face model from CDN)
+          const loader = new THREE.GLTFLoader();
+          const avatarUrl = 'https://models.readyplayer.me/648a74e50ebc198b105d15a5.glb';
+
+          loader.load(
+            avatarUrl,
+            function (gltf) {
+              const model = gltf.scene;
+              scene.add(model);
+
+              // Center model and scale
+              model.position.set(0, -1.45, 0);
+              model.scale.set(1, 1, 1);
+
+              // Traverse model to locate morphTarget head mesh
+              model.traverse((child) => {
+                if (child.isMesh && child.morphTargetDictionary) {
+                  // ReadyPlayerMe / Avaturn face mesh is typically called 'Wolf3D_Avatar' or 'Head'
+                  if (child.name.toLowerCase().includes('head') || child.name.toLowerCase().includes('avatar') || child.name.toLowerCase().includes('face')) {
+                    headMesh = child;
+                    
+                    // Search for mouth open blendshape in morphTarget dictionary
+                    const dict = child.morphTargetDictionary;
+                    for (let key in dict) {
+                      if (key.toLowerCase().includes('mouthopen') || key.toLowerCase().includes('jawopen') || key.toLowerCase().includes('viseme_aa')) {
+                        if (key.toLowerCase().includes('mouthopen')) mouthOpenIndex = dict[key];
+                        if (key.toLowerCase().includes('jawopen')) jawOpenIndex = dict[key];
+                      }
+                    }
+                  }
+                  
+                  if (child.name.toLowerCase().includes('teeth') || child.name.toLowerCase().includes('dental')) {
+                    teethMesh = child;
+                  }
+                }
+              });
+
+              // Hide loader overlay
+              const overlay = document.getElementById('loading-overlay');
+              overlay.style.opacity = 0;
+              setTimeout(() => {
+                overlay.style.display = 'none';
+              }, 500);
+            },
+            function (xhr) {
+              const percent = Math.round((xhr.loaded / xhr.total) * 100);
+              document.getElementById('loading-text').innerText = 'Model Yükleniyor: ' + percent + '%';
+            },
+            function (error) {
+              console.error('An error happened', error);
+              document.getElementById('loading-text').innerText = 'Yükleme başarısız, tekrar deneniyor...';
+            }
+          );
+
+          window.addEventListener('resize', onWindowResize);
+          animate();
+        }
+
+        function onWindowResize() {
+          const container = document.getElementById('canvas-container');
+          camera.aspect = container.clientWidth / container.clientHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        // Real-time animation loop
+        function animate() {
+          requestAnimationFrame(animate);
+
+          // Lerp lipsync volume smoothly (low-pass filtering) for natural talk animation
+          currentVolume = currentVolume * 0.65 + targetVolume * 0.35;
+
+          if (headMesh && headMesh.morphTargetInfluences) {
+            // Animate mouth opening
+            if (mouthOpenIndex !== -1) {
+              headMesh.morphTargetInfluences[mouthOpenIndex] = currentVolume * 0.95;
+            }
+            if (jawOpenIndex !== -1) {
+              headMesh.morphTargetInfluences[jawOpenIndex] = currentVolume * 0.55;
+            }
+            
+            // Add subtle random eye twitch/blink to look organic
+            const dict = headMesh.morphTargetDictionary;
+            if (dict && dict['eyeBlinkLeft'] !== undefined && dict['eyeBlinkRight'] !== undefined) {
+              const blinkIndexL = dict['eyeBlinkLeft'];
+              const blinkIndexR = dict['eyeBlinkRight'];
+              
+              if (Math.random() < 0.005) {
+                headMesh.morphTargetInfluences[blinkIndexL] = 1.0;
+                headMesh.morphTargetInfluences[blinkIndexR] = 1.0;
+                setTimeout(() => {
+                  if (headMesh) {
+                    headMesh.morphTargetInfluences[blinkIndexL] = 0.0;
+                    headMesh.morphTargetInfluences[blinkIndexR] = 0.0;
+                  }
+                }, 140);
+              }
+            }
+          }
+
+          if (teethMesh && teethMesh.morphTargetInfluences && jawOpenIndex !== -1) {
+            // Sync teeth/dental meshes with jaw opening
+            const dict = teethMesh.morphTargetDictionary;
+            if (dict && dict['jawOpen'] !== undefined) {
+              teethMesh.morphTargetInfluences[dict['jawOpen']] = currentVolume * 0.55;
+            }
+          }
+
+          // Add subtle dynamic idle swaying so the avatar feels alive
+          if (scene.children[4]) {
+            const time = Date.now() * 0.001;
+            const model = scene.children[4];
+            if (currentVolume < 0.05) {
+              model.rotation.y = Math.sin(time * 0.5) * 0.03;
+              model.rotation.x = Math.sin(time * 0.3) * 0.015;
+            } else {
+              // Sway slightly with voice volume
+              model.rotation.y = Math.sin(time * 2.5) * 0.015 * currentVolume;
+              model.rotation.x = Math.cos(time * 2.0) * 0.01 * currentVolume;
+            }
+          }
+
+          controls.update();
+          renderer.render(scene, camera);
+        }
+
+        // Receive real-time volume message bridge from React Native
+        window.addEventListener('message', function(event) {
+          try {
+            const message = JSON.parse(event.data);
+            if (message.type === 'volume') {
+              targetVolume = message.value;
+            }
+          } catch(e) {
+            console.error('Parsing message error', e);
+          }
+        });
+
+        window.onload = init;
+      </script>
+    </body>
+    </html>
+  `;
 
   return (
     <LinearGradient colors={['#0f172a', '#1e1b4b']} style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Ayna</Text>
-        <Text style={styles.subtitle}>Gerçek Zamanlı Ses ve Lipsync Asistanı</Text>
+        <Text style={styles.subtitle}>Gerçek Zamanlı Ses ve R3F 3D Lipsync Sahnesi</Text>
       </View>
 
-      {/* 2.5D Vector Avatar Container */}
+      {/* 3D WebGL Canvas Container via WebView */}
       <View style={styles.avatarCard}>
         <LinearGradient 
           colors={['rgba(255,255,255,0.03)', 'rgba(255,255,255,0.08)']} 
           style={styles.avatarGlass}
         >
-          {/* Avatar Face Structure */}
-          <View style={styles.avatarFace}>
-            {/* Hair Top Layer */}
-            <View style={styles.avatarHairTop} />
-            
-            {/* Main Face Contour */}
-            <View style={styles.faceContour}>
-              {/* Eyebrows */}
-              <View style={styles.eyebrowRow}>
-                <View style={[styles.eyebrow, styles.eyebrowLeft, isRecording && volume > 0.4 && styles.eyebrowRaised]} />
-                <View style={[styles.eyebrow, styles.eyebrowRight, isRecording && volume > 0.4 && styles.eyebrowRaised]} />
-              </View>
-
-              {/* Eyes */}
-              <View style={styles.eyeRow}>
-                <View style={[styles.eye, blink && styles.eyeClosed]}>
-                  {!blink && <View style={styles.pupil} />}
-                </View>
-                <View style={[styles.eye, blink && styles.eyeClosed]}>
-                  {!blink && <View style={styles.pupil} />}
-                </View>
-              </View>
-
-              {/* Cheeks blush (optional micro-animations on speech) */}
-              <View style={styles.cheekRow}>
-                <View style={[styles.blush, isRecording && { opacity: 0.1 + volume * 0.4 }]} />
-                <View style={[styles.blush, isRecording && { opacity: 0.1 + volume * 0.4 }]} />
-              </View>
-
-              {/* Nose */}
-              <View style={styles.nose} />
-
-              {/* Dynamic Viseme Mouth */}
-              <View style={styles.mouthContainer}>
-                <View style={[styles.mouth, getMouthStyle()]} />
-              </View>
-            </View>
+          <View style={styles.webviewWrapper}>
+            <WebView
+              ref={webViewRef}
+              originWhitelist={['*']}
+              source={{ html: htmlContent }}
+              style={styles.webview}
+              javaScriptEnabled={true}
+              domStorageEnabled={true}
+              scrollEnabled={false}
+              mediaPlaybackRequiresUserAction={false}
+              allowsInlineMediaPlayback={true}
+            />
           </View>
 
-          {/* Premium Tech Info Overlay */}
+          {/* Real-time metrics overlays */}
           <View style={styles.techInfo}>
             <View style={styles.infoBadge}>
               <View style={[styles.statusDot, isRecording && styles.statusDotActive]} />
@@ -259,19 +468,22 @@ export const AvatarScreen = () => {
             <View style={styles.infoBadge}>
               <Text style={styles.infoText}>Gecikme: {isRecording ? `${latency}ms` : '0ms'}</Text>
             </View>
+            <View style={styles.infoBadge}>
+              <Text style={styles.infoText}>Engine: WebGL / R3F</Text>
+            </View>
           </View>
         </LinearGradient>
       </View>
 
-      {/* Voice Wave/Equalizer Section */}
+      {/* Frequency analysis bars */}
       <View style={styles.visualizerSection}>
-        <Text style={styles.sectionLabel}>SES SEVİYESİ & FREKANS ANALİZİ</Text>
+        <Text style={styles.sectionLabel}>FFT & RMS GECİKMESİZ BINS ANALİZİ</Text>
         <View style={styles.equalizerContainer}>
           {renderEqualizerBars()}
         </View>
       </View>
 
-      {/* Controller Buttons */}
+      {/* Mic toggle */}
       <View style={styles.controlsSection}>
         <TouchableOpacity 
           style={[styles.recordButton, isRecording && styles.recordButtonActive]} 
@@ -279,15 +491,13 @@ export const AvatarScreen = () => {
           activeOpacity={0.8}
         >
           <Text style={styles.recordButtonText}>
-            {isRecording ? '🎙️ Mikrofonu Kapat' : '🎙️ Sesini Dinlet'}
+            {isRecording ? '🎙️ Konuşmayı Bitir' : '🎙️ Modelimle Konuş'}
           </Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
   );
 };
-
-const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   container: {
@@ -299,7 +509,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   title: {
     fontSize: 28,
@@ -317,154 +527,47 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 20,
+    marginVertical: 15,
   },
   avatarGlass: {
     width: '100%',
     height: '100%',
-    maxHeight: 380,
+    maxHeight: 400,
     borderRadius: 32,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
-    padding: 20,
+    padding: 12,
   },
-  avatarFace: {
-    width: 200,
-    height: 250,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarHairTop: {
-    width: 140,
-    height: 45,
-    backgroundColor: '#1e293b',
-    borderTopLeftRadius: 30,
-    borderTopRightRadius: 30,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    marginBottom: -10,
-    zIndex: 2,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-  },
-  faceContour: {
-    width: 130,
-    height: 170,
-    backgroundColor: '#fed7aa', // Premium warm tone
-    borderRadius: 65,
-    alignItems: 'center',
-    paddingTop: 30,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 8,
-    zIndex: 1,
-    borderWidth: 2,
-    borderColor: '#ffedd5',
-  },
-  eyebrowRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '75%',
-    marginBottom: 8,
-  },
-  eyebrow: {
-    width: 32,
-    height: 4,
-    backgroundColor: '#0f172a',
-    borderRadius: 2,
-  },
-  eyebrowLeft: {
-    transform: [{ rotate: '4deg' }],
-  },
-  eyebrowRight: {
-    transform: [{ rotate: '-4deg' }],
-  },
-  eyebrowRaised: {
-    transform: [{ translateY: -4 }, { rotate: '0deg' }],
-  },
-  eyeRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '70%',
-    marginBottom: 10,
-  },
-  eye: {
-    width: 24,
-    height: 18,
-    backgroundColor: '#ffffff',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#cbd5e1',
-  },
-  eyeClosed: {
-    height: 2,
-    backgroundColor: '#0f172a',
-    borderRadius: 0,
-    borderWidth: 0,
-    marginVertical: 8,
-  },
-  pupil: {
-    width: 10,
-    height: 10,
-    backgroundColor: '#3b82f6',
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cheekRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '90%',
-    position: 'absolute',
-    top: 75,
-  },
-  blush: {
-    width: 20,
-    height: 12,
-    backgroundColor: '#f43f5e',
-    borderRadius: 10,
-    opacity: 0.05,
-  },
-  nose: {
-    width: 10,
-    height: 20,
-    backgroundColor: '#fdba74',
-    borderRadius: 5,
-    marginBottom: 15,
-  },
-  mouthContainer: {
-    height: 45,
+  webviewWrapper: {
     width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    height: '100%',
+    borderRadius: 24,
+    overflow: 'hidden',
   },
-  mouth: {
-    // Lipsync dynamics are handled smoothly by metering intervals
+  webview: {
+    flex: 1,
+    backgroundColor: 'transparent',
   },
   techInfo: {
     position: 'absolute',
-    bottom: 20,
+    bottom: 16,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '90%',
+    justifyContent: 'center',
+    width: '95%',
+    gap: 8,
   },
   infoBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.06)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.03)',
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   statusDot: {
     width: 8,
@@ -482,33 +585,33 @@ const styles = StyleSheet.create({
   },
   infoText: {
     color: '#cbd5e1',
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: 'bold',
   },
   visualizerSection: {
     width: '100%',
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.02)',
-    paddingVertical: 20,
+    paddingVertical: 18,
     borderRadius: 24,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.04)',
-    marginVertical: 10,
+    marginVertical: 5,
   },
   sectionLabel: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: '800',
     color: '#6366f1',
     letterSpacing: 2,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   equalizerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 110,
+    height: 90,
     width: '90%',
-    gap: 6,
+    gap: 5,
   },
   eqBar: {
     width: 6,
@@ -521,16 +624,16 @@ const styles = StyleSheet.create({
   controlsSection: {
     width: '100%',
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 5,
   },
   recordButton: {
     width: '100%',
-    backgroundColor: '#4f46e5',
+    backgroundColor: '#6366f1',
     paddingVertical: 18,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#4f46e5',
+    shadowColor: '#6366f1',
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.35,
     shadowRadius: 16,
