@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "Nokta Cleaner",
+    "slug": "expo-template-blank",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.cubukcu.expotemplateblank"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9513fba4-8826-4b7f-a206-73b25d297147"
+      }
+    },
+    "plugins": [
+      "expo-audio",
+      "expo-asset"
+    ]
+  }
+}
