@@ -1,8 +1,23 @@
-# nokta-nokta
+# 211118085 — Nokta
 
-AIgile Mobile · Final hafta · Halka kapanışı
+## Demo Video
+https://youtube.com/shorts/KTN6OrWKZX0
 
-Tek spec: [`challenge-nokta.md`](./challenge-nokta.md)
-Teslim: `submissions/<öğrenci-no>-<slug>/` klasörüne PR.
+## APK
+https://drive.google.com/file/d/1KpeCRYqyU-xH4_cDorVIarqgObJvAFdg
 
-Önceki halkalar: [nokta](https://github.com/seyyah/nokta) · [nokta-audit](https://github.com/seyyah/nokta-audit)
+## Expo QR
+`npx expo start` ile çalıştırın.
+
+## Özellikler
+- 🎙️ Voice Visualizer — mikrofon → FFT bar animasyonu
+- 🧑 Avatar — avaturn.me'den kişisel .glb, WebView ile render
+- 📞 Expert Bridge — 2x FAIL → Jitsi görüntülü çağrı
+- 🐛 Audit Widget — 3 rapor üretildi
+
+## Dosyalar
+- `app/` — React Native Expo projesi
+- `app/FORGE.md` — 4 cycle, 3 başarılı, 1 rollback
+- `app/BRIDGE.md` — uzman görüşmesi kaydı
+- `app/PERSONAS.md` — junior/senior avatar persona
+- `app/audit-reports/` — 3 audit raporu

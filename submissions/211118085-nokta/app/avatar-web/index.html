@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Avatar</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: transparent; overflow: hidden; }
+    canvas { display: block; width: 100vw; height: 100vh; }
+    #loading {
+      position: fixed; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      background: #0d0d1a; color: #e8ff00;
+      font-family: sans-serif; font-size: 14px; gap: 12px;
+    }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid #333;
+      border-top-color: #e8ff00;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #persona-badge {
+      position: fixed; bottom: 12px; left: 12px;
+      background: rgba(0,0,0,0.7);
+      color: #e8ff00; font-family: sans-serif;
+      font-size: 12px; font-weight: 700;
+      padding: 4px 12px; border-radius: 12px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div class="spinner"></div>
+    <span>Avatar yükleniyor...</span>
+  </div>
+  <div id="persona-badge" style="display:none">🧑 Junior Ben</div>
+
+  <!-- Three.js + GLTFLoader CDN -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    // ── Sahne kurulumu ──────────────────────────────────────────────
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    document.body.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(28, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0.15, 2.2);
+
+    // Işıklar
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const dir = new THREE.DirectionalLight(0xffffff, 1.2);
+    dir.position.set(2, 4, 3);
+    scene.add(dir);
+    const fill = new THREE.PointLight(0x6080ff, 0.5);
+    fill.position.set(-2, 2, 1);
+    scene.add(fill);
+
+    // Arka plan gradient (koyu mavi-siyah)
+    const bgGeom = new THREE.PlaneGeometry(10, 10);
+    const bgMat = new THREE.MeshBasicMaterial({ color: 0x0a0a18 });
+    const bg = new THREE.Mesh(bgGeom, bgMat);
+    bg.position.z = -2;
+    scene.add(bg);
+
+    // OrbitControls — sadece yatay döndürme
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableZoom = false;
+    controls.enablePan = false;
+    controls.minPolarAngle = Math.PI * 0.35;
+    controls.maxPolarAngle = Math.PI * 0.6;
+    controls.autoRotate = false;
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ── Viseme map (orijinal wass08 repo'sundan) ────────────────────
+    const corresponding = {
+      A: 'viseme_PP',
+      B: 'viseme_kk',
+      C: 'viseme_I',
+      D: 'viseme_AA',
+      E: 'viseme_O',
+      F: 'viseme_U',
+      G: 'viseme_FF',
+      H: 'viseme_TH',
+      X: 'viseme_PP',
+    };
+
+    // ── State ───────────────────────────────────────────────────────
+    let headMesh = null;   // Wolf3D_Head veya avaturn baş mesh'i
+    let teethMesh = null;  // Wolf3D_Teeth (yoksa null)
+    let rms = 0;           // RN tarafından gönderilen ses seviyesi 0..1
+    let persona = 'junior';
+    let clock = new THREE.Clock();
+    let avatarGroup = null;
+    const morphTargetSmoothing = 0.5;
+
+    // ── GLB Yükleme ─────────────────────────────────────────────────
+    // GLB dosyasını RN WebView asset URI olarak bekliyoruz.
+    // RN tarafı window.AVATAR_URI'yi postMessage ile gönderir.
+    let avatarUri = null;
+
+    function loadAvatar(uri) {
+      const loader = new GLTFLoader();
+      loader.load(uri, (gltf) => {
+        if (avatarGroup) scene.remove(avatarGroup);
+        avatarGroup = gltf.scene;
+
+        // Avaturn mesh isimlerini bul
+        let meshNames = [];
+avatarGroup.traverse((child) => {
+  if (!child.isMesh) return;
+  meshNames.push(child.name);
+  if (child.morphTargetDictionary) headMesh = child;
+});
+document.getElementById('loading').style.display = 'flex';
+document.getElementById('loading').innerHTML = '<span style="color:#e8ff00;font-size:10px">' + meshNames.join(', ') + '</span>';
+setTimeout(() => { document.getElementById('loading').style.display = 'none'; }, 6000);
+        console.log('headMesh:', headMesh?.name, 'morphDict:', JSON.stringify(headMesh?.morphTargetDictionary));
+
+        // Eğer isim bulamazsan morph target olan ilk mesh'i al
+        if (!headMesh) {
+          avatarGroup.traverse((child) => {
+            if (child.isMesh && child.morphTargetDictionary && !headMesh) {
+              headMesh = child;
+            }
+          });
+        }
+
+        // Avaturn export genellikle y-offset gerektirir
+        avatarGroup.position.set(0, -1.55, 0);
+        scene.add(avatarGroup);
+        document.getElementById('loading').style.display = 'flex';
+document.getElementById('loading').innerHTML = '<span style="color:#e8ff00">' + (headMesh ? 'Head: ' + headMesh.name : 'headMesh YOK') + '</span>';
+setTimeout(() => { document.getElementById('loading').style.display = 'none'; }, 4000);
+        document.getElementById('loading').style.display = 'none';
+      }, undefined, (err) => {
+        console.error('GLB yükleme hatası:', err);
+        document.getElementById('loading').innerHTML =
+          '<span style="color:#ef4444">Avatar yüklenemedi</span>';
+      });
+    }
+
+    // ── RMS → Viseme (RN'den gelen RMS ile çalışır) ─────────────────
+    function applyLipsync(delta) {
+      if (!headMesh?.morphTargetDictionary) return;
+
+      const dict = headMesh.morphTargetDictionary;
+      const inf = headMesh.morphTargetInfluences;
+      const tInf = teethMesh?.morphTargetInfluences;
+      const tDict = teethMesh?.morphTargetDictionary;
+
+      // Tüm viseme'leri lerp ile sıfırla
+      Object.values(corresponding).forEach((viseme) => {
+        const idx = dict[viseme];
+        if (idx === undefined) return;
+        inf[idx] = THREE.MathUtils.lerp(inf[idx], 0, morphTargetSmoothing);
+        if (tDict && tInf) {
+          const tidx = tDict[viseme];
+          if (tidx !== undefined)
+            tInf[tidx] = THREE.MathUtils.lerp(tInf[tidx], 0, morphTargetSmoothing);
+        }
+      });
+
+      if (rms < 0.015) return; // sessizlik
+
+      // RMS + zaman bazlı aktif viseme seç
+      const t = clock.getElapsedTime();
+      const cycle = (t % 0.6) / 0.6;
+      let activeViseme = 'viseme_PP';
+      if (cycle < 0.2)       activeViseme = 'viseme_AA';
+      else if (cycle < 0.4)  activeViseme = 'viseme_O';
+      else if (cycle < 0.55) activeViseme = 'viseme_I';
+      else                   activeViseme = 'viseme_U';
+
+      const weight = Math.min(rms * 3, 1);
+      const idx = dict[activeViseme];
+      if (idx !== undefined) {
+        inf[idx] = THREE.MathUtils.lerp(inf[idx], weight, 0.8);
+        if (tDict && tInf) {
+          const tidx = tDict[activeViseme];
+          if (tidx !== undefined)
+            tInf[tidx] = THREE.MathUtils.lerp(tInf[tidx], weight, 0.8);
+        }
+      }
+    }
+
+    // Göz kırpma
+    let lastBlink = 0;
+    let blinkInterval = 3 + Math.random() * 2; // 3-5s
+    function applyBlink() {
+      if (!headMesh?.morphTargetDictionary) return;
+      const now = clock.getElapsedTime();
+      const dict = headMesh.morphTargetDictionary;
+      const inf = headMesh.morphTargetInfluences;
+      const blinkL = dict['eyeBlinkLeft'];
+      const blinkR = dict['eyeBlinkRight'];
+      if (blinkL === undefined) return;
+
+      if (now - lastBlink > blinkInterval) {
+        inf[blinkL] = 1;
+        if (blinkR !== undefined) inf[blinkR] = 1;
+        setTimeout(() => {
+          if (!headMesh) return;
+          inf[blinkL] = 0;
+          if (blinkR !== undefined) inf[blinkR] = 0;
+        }, 120);
+        lastBlink = now;
+        blinkInterval = 3 + Math.random() * 2;
+      }
+    }
+
+    // Hafif idle baş hareketi
+    function applyIdleMotion() {
+      if (!avatarGroup) return;
+      const t = clock.getElapsedTime();
+      avatarGroup.rotation.y = Math.sin(t * 0.3) * 0.04;
+      avatarGroup.rotation.x = Math.sin(t * 0.2) * 0.015;
+    }
+
+    // ── Render loop ─────────────────────────────────────────────────
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      applyLipsync(delta);
+      applyBlink();
+      applyIdleMotion();
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+loadAvatar('https://raw.githubusercontent.com/ravzanurerdogan/avatar-assets/main/Avatar.glb');
+
+    // ── RN → WebView mesaj köprüsü ──────────────────────────────────
+    // RN tarafı şu formatlarla mesaj gönderir:
+    //   { type: 'RMS', value: 0.3 }
+    //   { type: 'AVATAR_URI', uri: 'file://...' }
+    //   { type: 'PERSONA', persona: 'junior' | 'senior' }
+    window.addEventListener('message', (e) => {
+      try {
+        const msg = JSON.parse(e.data);
+        if (msg.type === 'RMS') {
+          rms = msg.value;
+        } else if (msg.type === 'AVATAR_URI') {
+          avatarUri = msg.uri;
+          loadAvatar(msg.uri);
+        } else if (msg.type === 'PERSONA') {
+          persona = msg.persona;
+          const badge = document.getElementById('persona-badge');
+          badge.textContent = persona === 'senior' ? '👔 Senior Ben' : '🧑 Junior Ben';
+        }
+      } catch (_) {}
+    });
+
+    // React Native WebView onMessage için (Android)
+    document.addEventListener('message', (e) => {
+      window.dispatchEvent(new MessageEvent('message', { data: e.data }));
+    });
+  </script>
+</body>
+</html>
