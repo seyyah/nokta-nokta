@@ -6,6 +6,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { HomeScreen } from './src/screens/HomeScreen';
 import { ProjectsScreen } from './src/screens/ProjectsScreen';
 import { SettingsScreen } from './src/screens/SettingsScreen';
+import { AvatarScreen } from './src/screens/AvatarScreen';
 import { ProposalFAB } from './src/components/Audit/ProposalFAB';
 
 const Tab = createBottomTabNavigator();
@@ -31,6 +32,7 @@ export default function App() {
           }}
         >
           <Tab.Screen name="Ana Sayfa" component={HomeScreen} options={{ tabBarIcon: () => <Text style={{fontSize: 20}}>🏠</Text> }} />
+          <Tab.Screen name="Ayna" component={AvatarScreen} options={{ tabBarIcon: () => <Text style={{fontSize: 20}}>🎙️</Text> }} />
           <Tab.Screen name="Projeler" component={ProjectsScreen} options={{ tabBarIcon: () => <Text style={{fontSize: 20}}>📁</Text> }} />
           <Tab.Screen name="Ayarlar" component={SettingsScreen} options={{ tabBarIcon: () => <Text style={{fontSize: 20}}>⚙️</Text> }} />
         </Tab.Navigator>

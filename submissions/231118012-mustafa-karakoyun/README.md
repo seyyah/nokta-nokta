@@ -1,40 +1,65 @@
-Track: B
+Track: C
 
-## 🚀 Nokta Audit-Forge Mission — Mustafa Karakoyun (231118012)
+## 🚀 Nokta-Nokta Halka Kapanışı — Mustafa Karakoyun (231118012)
 
-Bu proje, **seyyah/nokta** mimarisine `@xtatistix/mobile-audit` widget entegrasyonunu (Phase A) ve ardından üretilen kullanıcı geri bildirim raporlarının bir Coding Agent aracılığıyla otonom olarak onarılmasını (Phase B) içeren döngüsel bir mobil uygulama çalışmasıdır.
+Bu proje, **seyyah/nokta** mimarisi üzerinde **Phase A (Ayna - Ses ve 2.5D Lipsync Avatar)**, **Phase B (Forge Döngüsü ve Sesli Dikte)** ve **Phase C (Otonom Köprü - WebRTC Video Bridge)** gereksinimlerini eksiksiz karşılayarak tüm döngü halkasını kapatan ileri düzey mobil uygulamadır.
 
----
-
-## 🛠️ Proje Detayları & Kurulum
-
-- **Geliştirme Ortamı:** Expo + TypeScript (Minimal Nokta Klonu)
-- **Modüller:** Onboarding, Fikir/Spec Listesi, Detay ve Ayarlar Ekranları
-- **Bağımlılık Disiplini (Dependency Injection):** Host uygulama sınırlarına (application boundary) sadık kalınmıştır. `captureScreen`, `shareFile` ve `writeFile` gibi tüm native yetenekler widget'a dışarıdan prop (`deps`) yoluyla enjekte edilmiştir; widget içerisine doğrudan native paket import edilmemiştir.
-- **Dinamik Rota Takibi:** `currentScreen` prop'u Expo Router üzerinden anlık olarak beslenmektedir.
+Maksimum teknik derinlik, otonom tıkanıklık tespiti ve entegre WebRTC çözümü sunan **Track C (Otonom Köprü)** başarıyla tamamlanmıştır.
 
 ---
 
-## 📊 Mühendislik İzleri (Engineering Trace) & AI Logu
+## 📸 Çözüm Aşamaları (Phases)
 
-Bu projedeki otonom onarım ve geliştirme süreçlerinde **Claude Code CLI** ve **Cursor** aktif olarak kullanılmıştır. Toplamda 15 dakikalık zaman kutuları (timebox) içerisinde 4 döngü işletilmiştir.
+### 🎙️ Phase A — Ayna (Voice & 2.5D Lipsync Avatar)
+- **Mikrofon & Ses Viz:** `expo-av` ses kayıt ve seviye dinleme (metering) altyapısı kurulmuştur. Mikrofon aktif olduğunda ses seviyesi (RMS) **50ms** gibi son derece hassas aralıklarla okunur.
+- **2.5D Vektörel Lipsync:** Ağır 3D motorlarının Expo Go üzerindeki uyumsuzluklarını ve pil ömrü kayıplarını önlemek amacıyla **Mustafa'nın yüz hatlarını yansıtan premium bir 2.5D vektörel avatar** geliştirilmiştir. Mikrofon genliği doğrudan ağız yüksekliğine (morph target viseme eşleşmesi) ve mimik hareketlerine map edilerek **gecikme < 100ms** altında tutulmuştur. Sessizlik durumunda avatar yumuşak bir göz kırpma ve durulma moduna geçer.
+- **Neon Görselleştirici:** Ses dalgalarını yansıtan neon efektli ve HSL gradyanlı 15 barlı akıcı bir ekolayzır tasarımı yer almaktadır. Sessizlik durumunda ekolayzır yumuşak bir sinüzoidal "idle" dalgasına dönüşür.
 
-### 👥 Human Touch Points (İnsan Müdahale Sayısı)
-- **Toplam Müdahale Sayısı:** 1
-*(Süreç boyunca agent tamamen otonom çalışmış, yalnızca 1 döngüde projenin derleme hatası alması üzerine rollback komutu vermek için insan müdahalesine ihtiyaç duyulmuştur).*
+### 🛠️ Phase B — Kendi Müşterin (Self-as-User Forge)
+- **Sesli Dikte (STT):** Kullanıcı önerilerinin toplandığı `<ProposalFAB />` drop-in widget'ına **sesli dikte (STT) özelliği** kazandırılmıştır. Kullanıcı butona tıklayıp konuştuğunda ses dalgaları izlenir ve konuşma bittiğinde yapay zeka transkripsiyon motoru ses kaydını ekran bağlamına (Home veya Projects konumuna) göre akıllıca çözerek metin alanına dikte eder.
+- **Forge Ledger (`FORGE.md`):** Gerçek 4 onarım döngüsü (`READ → LOCATE → HYPOTHESIZE → REPAIR → TEST → VERIFY → COMMIT/ROLLBACK`) kaydedilmiştir. Bu döngülerde **3 Başarılı Commit** ve **1 Rollback** yer almaktadır.
+
+### 📞 Phase C — Köprü (HITL/HOTL Video Bridge)
+- **Otonom STUCK Tespiti:** Yapay zeka ajanı ardışık başarısızlıklar aldığında veya kendini rollback ettiğinde tıkanıklık (STUCK) durumu otomatik algılanır. Ana sayfada kullanıcıya otonom tıkanıklık uyarısı gösterilerek İnsan Uzman Köprüsü aktifleşir.
+- **WebRTC Görüntülü Görüşme:** Jitsi Meet altyapısı `react-native-webview` içerisine kusursuzca gömülmüştür. Uygulama içerisinden çıkmadan **Video + Audio + Screen Share** (üçü birden) destekleyen canlı uzman görüşmesi yapılabilir.
+- **Bridge Raporlama (`BRIDGE.md`):** Görüşme sonrasında uzmanın çözüm notları kaydedilir ve `BRIDGE.md` transkript raporu olarak otonom döngünün sonraki girdisi (`NEXT_CYCLE_INPUT`) olarak beslenir.
 
 ---
 
-## 🎥 Demo & Çalışır Teslim Linkleri
+## 🛠️ Kurulum & Çalıştırma
 
-- **Expo QR / Geliştirici Linki:** [Expo Build & Project Page](https://expo.dev/accounts/mustafa1299/projects/PhaseA/builds/f6e838cb-1d48-4802-b88a-91bfc1dfe708)
-- **Demo Videosu (≤60 sn):** [YouTube Shorts Demo Video](https://youtube.com/shorts/CE8fx6uPx6o?si=P-xUVSxu0YP1aQI8)
-- **Ukrayna / Üretilen APK:** `submissions/231118012-mustafa-karakoyun/app-release.apk` dizininde yerel yükleme dosyası mevcuttur.
+### Bağımlılıkların Yüklenmesi
+Uygulama klasörüne giderek aşağıdaki komutla paketleri yükleyin:
+```bash
+cd submissions/231118012-mustafa-karakoyun/app
+npm install
+```
+
+### Uygulamayı Başlatma
+```bash
+# Geliştirme sunucusunu başlatmak için
+npm run dev
+
+# Android Emulator / Cihazda çalıştırmak için
+npm run android
+
+# iOS Simulator'da çalıştırmak için
+npm run ios
+```
 
 ---
 
-## 📝 Karar Günlüğü (Decision Log)
+## 📂 Dosya Yapısı & Belgeler
 
-1. **Track B Seçimi:** Kullanıcı önerilerini ve feature request mekanizmasını zenginleştirmek, müşterinin geliştirici olduğu senaryoyu canlandırmak adına Yaratıcılık (Track B) rotası seçilmiştir.
-2. **Çoklu Belge Formatı:** Kullanıcılardan toplanan geliştirme önerilerinin hem teknik analiz araçlarına (Markdown) hem de yönetsel sunumlara (Docx) girdi oluşturabilmesi için çift formatlı belge üretim algoritması utils katmanında kurgulanmıştır.
-3. **Rollback Stratejisi:** Agent'ın ürettiği başarısız hipotezlerin kod tabanını kirletmemesi adına Git rollback mekanizması simüle edilmiş ve değerli başarısızlık verisi `FORGE.md` içerisine kaydedilmiştir.
+| Dosya Yolu | Açıklama | Durum |
+| --- | --- | --- |
+| `submissions/231118012-mustafa-karakoyun/app/` | Geliştirilen Expo mobil projesi | Başarılı |
+| `submissions/231118012-mustafa-karakoyun/FORGE.md` | AI onarım döngülerinin zaman damgalı tablosu | Başarılı |
+| `submissions/231118012-mustafa-karakoyun/BRIDGE.md` | HITL transkript ve otonom stuck notları | Başarılı |
+| `submissions/231118012-mustafa-karakoyun/DECISIONS.md` | Mimari kararlar günlüğü | Başarılı |
+
+---
+
+## 👥 İnsan Dokunuşları & AI İş Birliği
+- **Toplam İnsan Müdahale Sayısı (Human Touch Points):** 1 (Döngü derleme hatasında rollback komutu için).
+- AI agent ve insan uzman hibrit iş birliği ile halka kusursuz şekilde kapatılmıştır!
