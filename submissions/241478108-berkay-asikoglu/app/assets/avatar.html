@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body, #canvas { width: 100%; height: 100%; background: #09090b; }
+  #status { position: absolute; top: 10px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,0.5); font-family: monospace; font-size: 12px; pointer-events: none; z-index: 10; }
+</style>
+<script>
+  window.AVATAR_GLB_BASE64 = null;
+  window.AVATAR_STATUS = 'init';
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r160/three.min.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="canvas"></div>
+<div id="status">Avatar yükleniyor...</div>
+<script>
+  (function() {
+    var statusEl = document.getElementById('status');
+    var scene, camera, renderer, model, morphMeshes = [], jawBone, skinMaterial;
+    var variant = 'junior-sen';
+    var visemeState = { index: 0, weight: 0 };
+    var initDone = false;
+
+    function log(msg) {
+      statusEl.textContent = msg;
+      window.AVATAR_STATUS = msg;
+      if (window.ReactNativeWebView) {
+        window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'log', msg: msg }));
+      }
+    }
+
+    function applyVariant() {
+      if (!skinMaterial) return;
+      if (variant === 'junior-sen') {
+        skinMaterial.emissive = new THREE.Color('#e0f2fe');
+        skinMaterial.emissiveIntensity = 0.4;
+      } else {
+        skinMaterial.emissive = new THREE.Color('#52525b');
+        skinMaterial.emissiveIntensity = 0.15;
+      }
+    }
+
+    function applyViseme() {
+      var idx = visemeState.index;
+      var weight = visemeState.weight;
+      morphMeshes.forEach(function(mesh) {
+        if (!mesh.morphTargetDictionary) return;
+        var names = [
+          'viseme_sil', 'viseme_MBP', 'viseme_E', 'viseme_I',
+          'viseme_AAH', 'viseme_OO', 'viseme_U', 'viseme_oh'
+        ];
+        names.forEach(function(n, i) {
+          if (mesh.morphTargetDictionary[n] !== undefined) {
+            mesh.morphTargetInfluences[mesh.morphTargetDictionary[n]] = (i === idx ? weight : 0);
+          }
+        });
+      });
+      if (jawBone) {
+        var jawOpen = (idx === 4 ? weight * 0.5 : idx === 2 ? weight * 0.2 : idx === 0 ? 0 : weight * 0.1);
+        jawBone.rotation.x = jawOpen;
+      }
+    }
+
+    function createProceduralHead() {
+      log('Procedural avatar oluşturuluyor...');
+      var group = new THREE.Group();
+      var headGeo = new THREE.SphereGeometry(0.6, 32, 32);
+      var mat = new THREE.MeshStandardMaterial({ color: 0xd1a3a3, roughness: 0.6, metalness: 0.1 });
+      skinMaterial = mat;
+      applyVariant();
+      var head = new THREE.Mesh(headGeo, mat);
+      head.position.y = 0.1;
+      group.add(head);
+      var jawGeo = new THREE.BoxGeometry(0.5, 0.25, 0.45);
+      jawBone = new THREE.Mesh(jawGeo, mat);
+      jawBone.position.set(0, -0.3, 0.05);
+      group.add(jawBone);
+      var eyeGeo = new THREE.SphereGeometry(0.06, 16, 16);
+      var eyeMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+      var leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+      leftEye.position.set(-0.18, 0.15, 0.5);
+      group.add(leftEye);
+      var rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+      rightEye.position.set(0.18, 0.15, 0.5);
+      group.add(rightEye);
+      model = group;
+      scene.add(model);
+      log('Procedural avatar hazır');
+    }
+
+    function loadGLB(base64) {
+      if (!base64 || base64.length < 100) {
+        log('GLB verisi yok — procedural kullanılıyor');
+        createProceduralHead();
+        return;
+      }
+      try {
+        var binary = atob(base64);
+        var bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        var loader = new THREE.GLTFLoader();
+        loader.parse(bytes.buffer, '', function(gltf) {
+          model = gltf.scene;
+          scene.add(model);
+          log('Avatar GLB yüklendi ✅');
+          model.traverse(function(o) {
+            if (o.isMesh) {
+              if (o.morphTargetDictionary && Object.keys(o.morphTargetDictionary).some(function(k){ return k.startsWith('viseme'); })) {
+                morphMeshes.push(o);
+              }
+              if (o.material && !skinMaterial) {
+                skinMaterial = o.material;
+                applyVariant();
+              }
+            }
+            if (o.name && o.name.toLowerCase().includes('jaw')) {
+              jawBone = o;
+            }
+          });
+        }, function(err) {
+          log('GLB parse hatası — procedural fallback');
+          createProceduralHead();
+        });
+      } catch (e) {
+        log('GLB çözümleme hatası — procedural fallback');
+        createProceduralHead();
+      }
+    }
+
+    function init() {
+      if (initDone) return;
+      if (typeof THREE === 'undefined' || typeof THREE.GLTFLoader === 'undefined') {
+        log('Three.js bekleniyor...');
+        setTimeout(init, 300);
+        return;
+      }
+      initDone = true;
+      log('Three.js hazır — sahne başlatılıyor');
+
+      try {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x09090b);
+
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 0, 3);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        document.getElementById('canvas').appendChild(renderer.domElement);
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+        var keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        keyLight.position.set(2, 3, 2);
+        scene.add(keyLight);
+        var fillLight = new THREE.DirectionalLight(0xa855f7, 0.5);
+        fillLight.position.set(-2, 1, 1);
+        scene.add(fillLight);
+
+        loadGLB(window.AVATAR_GLB_BASE64);
+
+        window.addEventListener('resize', function() {
+          if (!camera || !renderer) return;
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        var time = 0;
+        function animate() {
+          requestAnimationFrame(animate);
+          time += 0.01;
+          if (model) {
+            model.rotation.y = Math.sin(time * 0.5) * 0.15;
+            model.position.y = Math.sin(time * 1.2) * 0.01;
+          }
+          renderer.render(scene, camera);
+        }
+        animate();
+      } catch (e) {
+        log('WebGL hatası: ' + e.message);
+      }
+    }
+
+    window.addEventListener('load', init);
+
+    document.addEventListener('message', function(e) {
+      try {
+        var msg = JSON.parse(e.data);
+        if (msg.type === 'viseme') { visemeState = msg.payload; applyViseme(); }
+        if (msg.type === 'variant') { variant = msg.payload; applyVariant(); }
+        if (msg.type === 'glb') { window.AVATAR_GLB_BASE64 = msg.payload; }
+      } catch (_) {}
+    });
+  })();
+</script>
+</body>
+</html>

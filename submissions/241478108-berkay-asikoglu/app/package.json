@@ -1,0 +1,47 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "postinstall": "patch-package",
+    "lint": "expo lint"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^15.0.3",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-navigation/native": "^7.2.2",
+    "@react-navigation/native-stack": "^7.14.11",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@xtatistix/mobile-audit": "^0.1.0",
+    "expo": "~54.0.34",
+    "expo-asset": "~12.0.13",
+    "expo-audio": "^56.0.9",
+    "expo-av": "~16.0.8",
+    "expo-blur": "~15.0.8",
+    "expo-file-system": "~19.0.22",
+    "expo-gl": "~16.0.10",
+    "expo-linear-gradient": "~15.0.8",
+    "expo-sharing": "~14.0.8",
+    "expo-speech": "~14.0.8",
+    "expo-status-bar": "~3.0.9",
+    "react": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
+    "react-native-view-shot": "4.0.3",
+    "react-native-webview": "~13.16.1",
+    "three": "^0.160.1"
+  },
+  "private": true,
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~10.0.0",
+    "patch-package": "^8.0.1",
+    "typescript": "^6.0.3"
+  }
+}
