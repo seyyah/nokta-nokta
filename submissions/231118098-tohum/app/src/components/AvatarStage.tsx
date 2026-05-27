@@ -70,7 +70,7 @@ function GltfAvatar({ glbModule, mouthOpenness }: { glbModule: number; mouthOpen
       const influences = mesh.morphTargetInfluences!;
       for (const idx of indices) {
         const target = mouthOpenness;
-        influences[idx] += (target - influences[idx]) * 0.4;
+        influences[idx] += (target - influences[idx]) * 0.65;
       }
     }
   });
