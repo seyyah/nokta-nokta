@@ -1,114 +1,124 @@
-# Track: A — Sadelik
+Track: A
 
-## 231118098-tohum: NOKTA Audit Forge
+# 231118098-tohum — NOKTA Halka Kapanışı
 
-> Müşteri yakalar, agent onarır, sen review edersin.
+> 🪞 Kendi avatarın seninle konuşur · 🎙️ sesin görselleşir · 🛠️ kendi raporlarınla tamir edersin · 📞 sıkıştığında insan gelir
+
+NOKTA serisinin **3. ve final** submission'ı. Hafta 1'de fikir mükemmelleştirme, Hafta 2'de audit-forge döngüsü kurulmuştu — bu hafta halkayı kapatıyoruz: **Ayna + Kendi Müşterin + Köprü** katmanlarını mevcut tohum app'inin üstüne ekliyoruz.
 
 ---
 
-## Proje Özeti
+## Track A — Sadakat ("Sade ama kusursuz")
 
-NOKTA, dağınık fikirleri yapılandırılmış spesifikasyonlara dönüştüren AI destekli bir mobil fikir yönetim uygulamasıdır. Bu submission, `@xtatistix/mobile-audit` widget'ını drop-in olarak entegre eder ve Forge döngüsünü uygular.
+Voice viz akıcılığı + lipsync senkronu öncelikli. Track A çizgisi:
+- Avatar **drop-in** mount — kaldırıldığında app çalışır
+- Manuel "Uzmana Bağlan" butonu (agent auto-trigger yok — o Track C)
+- Tek dosya yerine ayrı `hook`, `component`, `screen` yapısı (sadelik = az kuplaj)
 
-## Expo Link & Demo
+`grep -r '<AvatarStage' app/src/screens/` tek satır göstermeli; aynı disiplin `<JitsiBridge>` için de.
 
-- **Expo Build:** https://expo.dev/accounts/aleyna1955/projects/nokta-audit-forge/builds/b3d94ea0-bd7e-4cb7-afcf-f7b28b79f593
-- **APK İndir:** https://expo.dev/artifacts/eas/od6pwLLjbupmQYciKL7aiD.apk
-- **Demo Video:** [60sn video linki eklenecek]
-- **APK:** `app-release.apk` (63MB)
+## Phase A — Ayna (Voice + Avatar)
 
-## Tech Stack
+- **`expo-av`** ile mikrofon yakalama, **FFT/RMS** üzerinden bar/dalga animasyonu
+- **`react-three-fiber`** ile `avatar.glb` (avaturn.me'den export edilmiş kendi yüzüm) sahneye mount
+- **Viseme pipeline** (wass08/r3f-lipsync-tutorial ref) ile sesin enerjisinden ağız şekli üretimi
+- **Hedef:** mic → mouth latency < 200ms, ekranda canlı ms göstergesi
 
-- React Native + Expo SDK 54
-- TypeScript
+## Phase B — Kendi Müşterin (Self-as-User Forge)
+
+- `<AuditWidget />` Hafta 2'den itibaren `App.tsx`'te mount (drop-in)
+- Yeni: **`expo-speech-recognition`** ile sesli rapor dikte (voice → STT → markdown)
+- Coding agent (Claude Code Opus 4.7) ile forge döngüsü: READ → LOCATE → HYPOTHESIZE → REPAIR → TEST → VERIFY → COMMIT/ROLLBACK
+- ≥2 yeni COMMIT + ≥1 ROLLBACK; her cycle ≤20 dk; `FORGE.md`'ye log
+
+## Phase C — Köprü (HITL Video Bridge)
+
+- Uygulama içinden **"Uzmana Bağlan"** butonu → **Jitsi Meet** odası açar
+- Demo videoda ≥60 sn ekran paylaşımlı sınıf arkadaşıyla görüşme
+- Görüşme özeti `BRIDGE.md`'de (Track A'da strict format zorunlu değil, kısa özet yeterli)
+
+## Stack
+
+**Hafta 2'den devam:**
+- React Native + Expo SDK 54, TypeScript
 - @react-navigation/native (Stack + Bottom Tabs)
-- @xtatistix/mobile-audit (Audit Widget)
+- @xtatistix/mobile-audit (drop-in widget)
 - @react-native-async-storage/async-storage
 
-## Ekranlar (4 Ekran)
+**Bu hafta yeni:**
+- `expo-av` — mic capture + FFT
+- `three` + `@react-three/fiber` + `expo-gl` — 3D avatar sahnesi
+- `expo-speech-recognition` — STT sesli dikte
+- `react-native-webview` + Jitsi Meet URL — bridge call
 
-1. **Home Screen** - Fikir listesi, FAB ile yeni fikir ekleme
-2. **Add Idea Screen** - Başlık, açıklama, durum, etiket girişi
-3. **Idea Detail Screen** - Fikir detayı, durum güncelleme, silme
-4. **Profile Screen** - İstatistikler, uygulama bilgisi
+## Ekran Yapısı
 
-## AuditWidget Entegrasyonu
+| Ekran | Kaynak | Görev |
+|---|---|---|
+| Home | Hafta 2 | Fikir listesi |
+| Add Idea | Hafta 2 | Yeni fikir formu |
+| Idea Detail | Hafta 2 | Fikir düzenle/sil |
+| Profile | Hafta 2 | İstatistik dashboard |
+| **Mirror** | **Bu hafta** | Voice viz + avatar lipsync (Phase A) |
+| **Bridge** | **Bu hafta** | Uzman Jitsi çağrısı (Phase C) |
 
-Widget, `App.tsx` içinde dependency injection ile mount edilmiştir:
+## Build & Demo
 
-```typescript
-<AuditWidget
-  appName="NOKTA"
-  deps={{
-    captureScreen,
-    writeFile,
-    writeFileBinary,
-    shareFile,
-    storage: auditStorage,
-    currentScreen: routeName,
-    reporterId: '231118098',
-  }}
-  initialPosition={{ bottom: 180, right: 16 }}
-/>
-```
+- **APK:** `app-release.apk` (Hafta 2 build, Halka Kapanışı build sonra eklenecek)
+- **Expo Build (week 2):** https://expo.dev/accounts/aleyna1955/projects/nokta-audit-forge/builds/b3d94ea0-bd7e-4cb7-afcf-f7b28b79f593
+- **Demo video (3 dk, Phase A+B+C):** [eklenecek — `demo.mp4`]
 
-**Drop-in garantisi:** Widget kaldırıldığında uygulama sorunsuz çalışır. Native kod widget'a bağımlı değil.
+## Decision Log (özet)
 
-## Decision Log
+Tam liste: [`DECISIONS.md`](./DECISIONS.md). AI-DLC çerçevesinde Visioner/Harness/Guardian/Critical Thinker/System Thinker/Teacher rolleri ile bağlantılı her karar.
 
 | Karar | Gerekçe |
-|-------|---------|
-| Track A seçimi | Önceki PR'da Track A kullandım, tutarlılık + sadelik bonusu |
-| 4 ekran tasarımı | Minimum 3 gerekli, 4 ekran yeterli kapsam sağlıyor |
-| Dark theme | Modern görünüm, NOKTA konseptine uygun |
-| AsyncStorage | Basit, expo uyumlu, widget bağımlılığı yok |
-| Bottom tabs | UX standartı, kolay navigasyon |
+|---|---|
+| Track A | Sadakat çizgisi, Phase A 30 puanı + sadelik bonusu |
+| Önceki tohum app'inin üstüne devam | Hocanın "önceki haftadan devam" yönergesi; AuditWidget zaten kurulu |
+| Jitsi (Daily.co/LiveKit yerine) | Hesapsız oda açma, en hızlı kurulum |
+| Ayrı `hook`/`component`/`screen` dosyaları | Track A sadelik = az kuplaj; monolitik App.tsx anti-pattern |
+| AI-DLC harness pattern | Hocanın paylaştığı AWS AI-DLC çerçevesi; jüri farkındalığı + +25 çılgınlık bonus argümanı |
 
-## AI Tool Kullanımı
+## Human Touch Points
 
-- **Claude Code CLI** - Proje oluşturma, kod yazımı, debug
-- Tüm kodlar Claude Code ile üretildi ve review edildi
+| # | Nerede | Kim | Ne |
+|---|---|---|---|
+| 1 | Track + scope kararı | Aleyna | Visioner rolü |
+| 2 | Avatar selfie export | Aleyna | avaturn.me'den `.glb` |
+| 3 | Forge cycle review | Aleyna | Critical Thinker — Claude önerilerini onay/red |
+| 4 | Sesli audit dikte | Aleyna | Phase B veri girişi |
+| 5 | Uzman Jitsi çağrısı | Aleyna + sınıf arkadaşı | Phase C bridge |
+| 6 | Demo video kaydı | Aleyna | Final sunum |
 
-## Audit Reports
+## AI Tools
 
-`audit-reports/` klasöründe en az 3 burn-in'li `.md` raporu:
-
-1. `report-home-screen.md`
-2. `report-add-idea-screen.md`
-3. `report-profile-screen.md`
-
-## Forge Döngüsü
-
-Detaylar `FORGE.md` dosyasında. Minimum 3 başarılı + 1 rollback cycle loglanmıştır.
-
-## Kurulum
-
-```bash
-cd app
-npm install
-npx expo start
-```
+- **Claude Opus 4.7 (1M context) via Claude Code** — kod üretimi, forge cycle, dosya orchestration
+- **AI-DLC pattern** (AWS) — plan-clarify-implement döngüsü, harness rolü disiplini
 
 ## Dosya Yapısı
 
 ```
 submissions/231118098-tohum/
-├── README.md           # Bu dosya
-├── FORGE.md            # Cycle ledger
-├── audit-reports/      # ≥3 .md rapor
-│   ├── report-home-screen.md
-│   ├── report-add-idea-screen.md
-│   └── report-profile-screen.md
-├── app/                # Expo projesi
-│   ├── App.tsx
-│   ├── src/
-│   │   ├── screens/
-│   │   ├── utils/
-│   │   └── types/
-│   └── ...
-└── app-release.apk
+├── README.md              # Bu dosya (Track: A satır 1)
+├── DECISIONS.md           # AI-DLC harness kararları
+├── FORGE.md               # Cycle ledger (hafta 2'den, hafta 3'te ≥2+1 yeni)
+├── BRIDGE.md              # Phase C görüşme özeti
+├── demo.mp4               # ≤3dk Phase A+B+C
+├── app-release.apk        # Halka Kapanışı build
+├── audit-reports/         # ≥3 .md rapor (yeni rapor eklenecek)
+└── app/                   # Expo + TS proje
+    ├── App.tsx
+    ├── src/
+    │   ├── screens/       # Home/AddIdea/IdeaDetail/Profile + Mirror + Bridge
+    │   ├── components/    # AvatarStage, Waveform, JitsiBridge
+    │   ├── hooks/         # useVoiceMeter
+    │   ├── utils/         # ideaStorage, auditStorage
+    │   └── types/
+    └── assets/
+        └── avatar.glb     # avaturn.me — kendi yüzüm
 ```
 
 ---
 
-**231118098** | Track A — Sadelik | NOKTA Audit Forge Challenge
+**231118098** · Track A — Sadakat · NOKTA Halka Kapanışı · Mobil Ders Ödevi
