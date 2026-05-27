@@ -75,13 +75,13 @@ function GltfAvatar({ glbModule, mouthOpenness }: { glbModule: number; mouthOpen
     }
   });
 
-  return <primitive object={gltf.scene} position={[0, -1.4, 0]} />;
+  return <primitive object={gltf.scene} position={[0, -1.55, 0]} />;
 }
 
 export default function AvatarStage({ glbModule, mouthOpenness, height = 320 }: AvatarStageProps) {
   return (
     <View style={[styles.container, { height }]}>
-      <Canvas camera={{ position: [0, 1.4, 2.6], fov: 38 }}>
+      <Canvas camera={{ position: [0, 1.55, 0.9], fov: 28 }}>
         <ambientLight intensity={0.6} />
         <directionalLight position={[3, 4, 2]} intensity={0.9} />
         <directionalLight position={[-3, 2, -2]} intensity={0.3} />
