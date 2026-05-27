@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AvatarStage from '../components/AvatarStage';
 import Waveform from '../components/Waveform';
@@ -75,10 +75,15 @@ export default function MirrorScreen() {
         </Text>
       </Pressable>
 
-      {!permissionGranted && isRecording === false && (
-        <Text style={styles.hint}>
-          İlk kullanımda mikrofon izni isteyecek.
-        </Text>
+      {!permissionGranted && !isRecording && (
+        <Pressable
+          onPress={() => Linking.openSettings()}
+          style={styles.permissionBanner}
+        >
+          <Text style={styles.permissionText}>
+            🚫 Mikrofon izni gerekli — Ayarları aç
+          </Text>
+        </Pressable>
       )}
 
       {AVATAR_GLB == null ? (
@@ -165,5 +170,17 @@ const styles = StyleSheet.create({
     color: '#475569',
     textAlign: 'center',
     fontStyle: 'italic',
+  },
+  permissionBanner: {
+    backgroundColor: '#7f1d1d',
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  permissionText: {
+    color: '#fca5a5',
+    fontSize: 13,
+    fontWeight: '500',
   },
 });
