@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "nokta-audit",
+    "slug": "nokta-audit",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.ravzanur.noktaaudit"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a90e0eb0-e5d8-43ec-b4a0-4cf07cbe754d"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a90e0eb0-e5d8-43ec-b4a0-4cf07cbe754d"
+    },
+    "plugins": [
+  "expo-asset",
+  [
+    "expo-av",
+    { "microphonePermission": "Ses görselleştirici için mikrofon gerekli." }
+  ]
+],
+"assetBundlePatterns": [
+  "assets/**/*",
+  "avatar-web/**/*"
+]
+  }
+}
