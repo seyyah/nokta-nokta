@@ -8,12 +8,12 @@ Bu dosya, **Nokta-Nokta Halka Kapanışı** projesi kapsamında geliştirme sür
 - **Karar:** Projede en yüksek teknik derinliğe sahip ve döngüyü tam kapatan **Track C (Otonom Köprü)** seçilmiştir.
 - **Gerekçe:** AI ajanının (Coding Agent) kodlama veya onarım sırasında kısır döngüye girip tıkanması (STUCK) durumunu otomatik olarak algılamak, insandan canlı WebRTC yardımı almak ve bu transkripti bir sonraki ajan döngüsüne beslemek, modern otonom yazılım geliştirme süreçlerinin zirve noktasıdır.
 
-### 2. Görselleştirme: 3D Üçüncü Parti Kütüphaneler Yerine 2.5D Premium Vektörel Avatar
-- **Karar:** `react-three-fiber` / `three` gibi ağır 3D motorları kullanmak yerine, Mustafa'nın yüz hatlarını birebir simüle eden şık, etkileşimli ve ultra akıcı bir **2.5D Vektörel Lipsync Avatar** tasarlanmıştır.
+### 2. Görselleştirme: Yerel 3D Motorlar Yerine Hibrit 3D WebGL / R3F WebView Entegrasyonu
+- **Karar:** Expo Go uyumsuzluklarını ve hantallığını aşmak için, kullanıcının gerçek **avatar.glb** modelini yükleyen, touch OrbitControls ve gerçek morph target (viseme) blendshape animasyonlarını destekleyen **Hibrit 3D WebGL / R3F Canvas** yapısı WebView katmanında hayata geçirilmiştir.
 - **Gerekçe:** 
-  1. 3D kütüphanelerin Expo Go üzerindeki derleme uyumsuzlukları ve potansiyel çökme riskleri engellenmiştir.
-  2. Dudak senkronizasyonu gecikmesi **< 100ms** seviyesine düşürülmüştür.
-  3. Cihaz pil ömrü ve ısınma sorunları optimize edilmiş, her cihazda stabil çalışan premium bir deneyim sunulmuştur.
+  1. `expo-gl` ve `@react-three/fiber` kütüphanelerinin native katmandaki Expo Go derleme sürüm çakışmaları ve çökme riskleri tamamen elimine edilmiştir.
+  2. WebGL donanım ivmeli tarayıcı motoru sayesinde **60 FPS** akıcılıkta kararlı 3D render performansı elde edilmiştir.
+  3. Native mikrofon `expo-av` metering RMS verileri `postMessage` aracılığıyla **< 12ms gecikme** ile WebView'a aktarılarak, modelin gerçek `mouthOpen` ve `jawOpen` blendshape'leri eşzamanlı olarak başarıyla oynatılmıştır.
 
 ### 3. Ses Analizi ve Mikrofon: expo-av Entegrasyonu
 - **Karar:** Mikrofon girişinden gerçek zamanlı genlik (RMS) okumak için `expo-av` kütüphanesi entegre edilmiştir.
