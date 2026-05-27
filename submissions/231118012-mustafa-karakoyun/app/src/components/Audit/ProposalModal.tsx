@@ -55,6 +55,7 @@ export const ProposalModal: React.FC<ProposalModalProps> = ({ visible, onClose, 
 
       const recording = new Audio.Recording();
       await recording.prepareToRecordAsync({
+        isMeteringEnabled: true, // Enable real-time voice amplitude capture!
         android: {
           extension: '.m4a',
           outputFormat: 2, // MPEG_4

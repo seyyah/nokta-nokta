@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, Alert, ScrollView } from 'react-native';
 import { Audio } from 'expo-av';
+import * as Speech from 'expo-speech';
 import { WebView } from 'react-native-webview';
 import { LinearGradient } from 'expo-linear-gradient';
+import { AVATAR_BASE64 } from '../utils/avatarData';
 
 export const AvatarScreen = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -10,24 +12,100 @@ export const AvatarScreen = () => {
   const [volume, setVolume] = useState(0); // 0 to 1
   const [latency, setLatency] = useState(12); // Simulated latency in ms
   const [statusMessage, setStatusMessage] = useState('Hazır · Bağlantı Bekleniyor');
+  
+  // AI Speech Assistant states
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [activeSpeechText, setActiveSpeechText] = useState('');
+  const [maleVoiceId, setMaleVoiceId] = useState<string | null>(null);
 
   const recordingRef = useRef<Audio.Recording | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const webViewRef = useRef<WebView | null>(null);
 
-  // Request permissions on mount
+  // Request mic permissions on mount and find available Turkish male voices
   useEffect(() => {
     (async () => {
       const { status } = await Audio.requestPermissionsAsync();
       setMicPermission(status === 'granted');
     })();
 
+    // Find Turkish male voice dynamically
+    (async () => {
+      try {
+        const voices = await Speech.getAvailableVoicesAsync();
+        const trVoices = voices.filter(v => v.language.startsWith('tr'));
+        // Find Turkish voice with male characteristics in its name
+        const maleVoice = trVoices.find(v => {
+          const name = v.name.toLowerCase();
+          return name.includes('male') || 
+                 name.includes('erkek') || 
+                 name.includes('cem') || 
+                 name.includes('tolga') || 
+                 name.includes('tmc') || 
+                 name.includes('y-local');
+        });
+        if (maleVoice) {
+          setMaleVoiceId(maleVoice.identifier);
+        }
+      } catch (e) {
+        console.warn('Error fetching voices:', e);
+      }
+    })();
+
     return () => {
       stopRecording();
+      Speech.stop();
     };
   }, []);
 
+  // Text-To-Speech Lipsync: Generate voice frequency RMS waves while avatar is speaking
+  useEffect(() => {
+    let ttsTimer: NodeJS.Timeout | null = null;
+    
+    if (isSpeaking) {
+      ttsTimer = setInterval(() => {
+        // Generate realistic voice frequency gen (oscillating sinusoids with slight jitter)
+        const time = Date.now();
+        const baseVolume = 0.45 + Math.sin(time / 70) * 0.4;
+        
+        // Add speech pauses (simulate syllables)
+        let finalVolume = 0;
+        if (Math.sin(time / 450) > -0.6) {
+          finalVolume = Math.min(Math.max(baseVolume + (Math.random() - 0.5) * 0.2, 0), 0.85);
+        }
+
+        setVolume(finalVolume);
+
+        if (webViewRef.current) {
+          webViewRef.current.postMessage(JSON.stringify({
+            type: 'volume',
+            value: finalVolume
+          }));
+        }
+      }, 40);
+    } else {
+      if (!isRecording) {
+        setVolume(0);
+        if (webViewRef.current) {
+          webViewRef.current.postMessage(JSON.stringify({
+            type: 'volume',
+            value: 0
+          }));
+        }
+      }
+    }
+
+    return () => {
+      if (ttsTimer) clearInterval(ttsTimer);
+    };
+  }, [isSpeaking, isRecording]);
+
   const startRecording = async () => {
+    // Stop any active assistant speech first
+    if (isSpeaking) {
+      handleStopSpeech();
+    }
+
     try {
       if (micPermission !== true) {
         const { status } = await Audio.requestPermissionsAsync();
@@ -38,7 +116,6 @@ export const AvatarScreen = () => {
         setMicPermission(true);
       }
 
-      // Configure Expo AV for low-latency recording and metering
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
@@ -47,6 +124,7 @@ export const AvatarScreen = () => {
 
       const recording = new Audio.Recording();
       await recording.prepareToRecordAsync({
+        isMeteringEnabled: true, // Enable real-time voice amplitude capture!
         android: {
           extension: '.m4a',
           outputFormat: 2, // MPEG_4
@@ -69,11 +147,34 @@ export const AvatarScreen = () => {
       });
 
       recordingRef.current = recording;
+      
+      // Dual-Layer Mic Capture: 1. Native Status Update Callback (Highly efficient, low latency)
+      recording.setOnRecordingStatusUpdate((status) => {
+        if (status.canRecord && status.metering !== undefined) {
+          const db = status.metering;
+          let normalized = 0;
+          if (db !== undefined && db > -160) {
+            normalized = Math.min(Math.max((db + 60) / 55, 0), 1);
+          }
+          
+          const adjustedVolume = Math.pow(normalized, 1.5);
+          setVolume(adjustedVolume);
+          
+          if (webViewRef.current) {
+            webViewRef.current.postMessage(JSON.stringify({
+              type: 'volume',
+              value: adjustedVolume
+            }));
+          }
+        }
+      });
+      await recording.setProgressUpdateInterval(40);
+
       await recording.startAsync();
       setIsRecording(true);
       setStatusMessage('Dinliyor · Ses Aktif');
 
-      // Low latency metering interval (every 40ms) to sync mouth in WebView
+      // Dual-Layer Mic Capture: 2. Interval Polling Fallback (Guarantees execution even if updates fail)
       intervalRef.current = setInterval(async () => {
         if (!recordingRef.current) return;
         
@@ -82,16 +183,13 @@ export const AvatarScreen = () => {
           if (status.canRecord && status.metering !== undefined) {
             const db = status.metering;
             let normalized = 0;
-            if (db > -160) {
-              // Map dB to smooth 0-1 scale
-              normalized = Math.min(Math.max((db + 55) / 55, 0), 1);
+            if (db !== undefined && db > -160) {
+              normalized = Math.min(Math.max((db + 60) / 55, 0), 1);
             }
             
-            // Apply exponential gain for more expressive lipsync movement
             const adjustedVolume = Math.pow(normalized, 1.5);
             setVolume(adjustedVolume);
             
-            // Send volume in real-time to Three.js WebGL canvas inside WebView
             if (webViewRef.current) {
               webViewRef.current.postMessage(JSON.stringify({
                 type: 'volume',
@@ -129,7 +227,6 @@ export const AvatarScreen = () => {
     setVolume(0);
     setStatusMessage('Sessiz · Dinlemede');
 
-    // Notify WebView that sound is stopped
     if (webViewRef.current) {
       webViewRef.current.postMessage(JSON.stringify({
         type: 'volume',
@@ -146,19 +243,58 @@ export const AvatarScreen = () => {
     }
   };
 
-  // Generate dynamic heights for the equalizer visualizer
+  // Trigger TTS Speech welcome message or responses
+  const handleSpeakText = (text: string, response: string) => {
+    if (isRecording) {
+      stopRecording();
+    }
+
+    Speech.stop();
+    setIsSpeaking(true);
+    setActiveSpeechText(text);
+    setStatusMessage('Konuşuyor · TTS Aktif');
+
+    Speech.speak(response, {
+      language: 'tr-TR',
+      pitch: 0.82, // Deeper, more masculine tone!
+      rate: 0.92,
+      voice: maleVoiceId || undefined, // Use detected Turkish male voice if available
+      onDone: () => handleStopSpeech(),
+      onError: (e) => {
+        console.warn('Speech playback error:', e);
+        handleStopSpeech();
+      }
+    });
+  };
+
+  const handleStopSpeech = () => {
+    Speech.stop();
+    setIsSpeaking(false);
+    setActiveSpeechText('');
+    setVolume(0);
+    setStatusMessage('Sessiz · Dinlemede');
+
+    if (webViewRef.current) {
+      webViewRef.current.postMessage(JSON.stringify({
+        type: 'volume',
+        value: 0
+      }));
+    }
+  };
+
   const renderEqualizerBars = () => {
     return Array(15).fill(0).map((_, i) => {
-      const baseHeight = isRecording ? 10 + volume * 90 : 12;
-      const waveFactor = isRecording ? Math.sin(Date.now() / 120 + i * 0.8) * 20 * volume : Math.sin(Date.now() / 800 + i * 0.4) * 4;
+      const baseHeight = (isRecording || isSpeaking) ? 10 + volume * 90 : 12;
+      const waveFactor = (isRecording || isSpeaking) ? Math.sin(Date.now() / 120 + i * 0.8) * 20 * volume : Math.sin(Date.now() / 800 + i * 0.4) * 4;
       const finalHeight = Math.max(8, baseHeight + waveFactor);
       
-      let barColor = '#6366f1'; // Premium indigo
+      let barColor = '#6366f1'; // Indigo base
       if (isRecording) {
-        if (volume > 0.6 && i % 3 === 0) barColor = '#ef4444'; // Red peak
-        else if (volume > 0.3) barColor = '#3b82f6'; // Blue mid
+        barColor = '#3b82f6'; // Blue for mic capture
+      } else if (isSpeaking) {
+        barColor = '#10b981'; // Green for avatar speech playback
       } else {
-        barColor = 'rgba(99, 102, 241, 0.3)';
+        barColor = 'rgba(99, 102, 241, 0.3)'; // Semi-trans idle
       }
 
       return (
@@ -177,7 +313,7 @@ export const AvatarScreen = () => {
     });
   };
 
-  // High-performance Three.js / WebGL HTML Injection supporting OrbitControls & MorphTargets
+  // High-performance Three.js WebGL canvas injected directly inside WebView
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -230,7 +366,6 @@ export const AvatarScreen = () => {
           100% { transform: rotate(360deg); }
         }
       </style>
-      <!-- Include Three.js, OrbitControls, and GLTFLoader -->
       <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -248,14 +383,17 @@ export const AvatarScreen = () => {
         let targetVolume = 0;
         let currentVolume = 0;
 
-        // Initialize 3D WebGL Scene
+        // Statically bound Base64 string of the user's HD avatar.glb (model 2)
+        const localBase64 = "${AVATAR_BASE64}";
+
         function init() {
           const container = document.getElementById('canvas-container');
           
           scene = new THREE.Scene();
           
+          // Camera position Z=0.65, Y=0.22 focuses perfectly on the developer face card!
           camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
-          camera.position.set(0, 0.1, 1.8);
+          camera.position.set(0, 0.22, 0.65);
 
           renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
           renderer.setPixelRatio(window.devicePixelRatio);
@@ -268,11 +406,11 @@ export const AvatarScreen = () => {
           controls.enableDamping = true;
           controls.dampingFactor = 0.05;
           controls.enableZoom = true;
-          controls.minDistance = 0.8;
-          controls.maxDistance = 5;
-          controls.target.set(0, 0.15, 0);
+          controls.minDistance = 0.45;
+          controls.maxDistance = 2.5;
+          // Target Y=0.24 is the exact center of the face
+          controls.target.set(0, 0.24, 0);
 
-          // Studio lighting setup for premium model fidelity
           const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
           scene.add(ambientLight);
 
@@ -288,9 +426,8 @@ export const AvatarScreen = () => {
           ringLight.position.set(0, 0.5, 2);
           scene.add(ringLight);
 
-          // Load 3D avatar (loads a beautiful pre-rigged 3D Avaturn developer face model from CDN)
           const loader = new THREE.GLTFLoader();
-          const avatarUrl = 'https://models.readyplayer.me/648a74e50ebc198b105d15a5.glb';
+          const avatarUrl = "data:model/gltf-binary;base64," + localBase64;
 
           loader.load(
             avatarUrl,
@@ -298,18 +435,15 @@ export const AvatarScreen = () => {
               const model = gltf.scene;
               scene.add(model);
 
-              // Center model and scale
+              // Position avatar
               model.position.set(0, -1.45, 0);
               model.scale.set(1, 1, 1);
 
-              // Traverse model to locate morphTarget head mesh
               model.traverse((child) => {
                 if (child.isMesh && child.morphTargetDictionary) {
-                  // ReadyPlayerMe / Avaturn face mesh is typically called 'Wolf3D_Avatar' or 'Head'
                   if (child.name.toLowerCase().includes('head') || child.name.toLowerCase().includes('avatar') || child.name.toLowerCase().includes('face')) {
                     headMesh = child;
                     
-                    // Search for mouth open blendshape in morphTarget dictionary
                     const dict = child.morphTargetDictionary;
                     for (let key in dict) {
                       if (key.toLowerCase().includes('mouthopen') || key.toLowerCase().includes('jawopen') || key.toLowerCase().includes('viseme_aa')) {
@@ -325,7 +459,6 @@ export const AvatarScreen = () => {
                 }
               });
 
-              // Hide loader overlay
               const overlay = document.getElementById('loading-overlay');
               overlay.style.opacity = 0;
               setTimeout(() => {
@@ -333,12 +466,11 @@ export const AvatarScreen = () => {
               }, 500);
             },
             function (xhr) {
-              const percent = Math.round((xhr.loaded / xhr.total) * 100);
-              document.getElementById('loading-text').innerText = 'Model Yükleniyor: ' + percent + '%';
+              document.getElementById('loading-text').innerText = 'Model Okunuyor...';
             },
             function (error) {
               console.error('An error happened', error);
-              document.getElementById('loading-text').innerText = 'Yükleme başarısız, tekrar deneniyor...';
+              document.getElementById('loading-text').innerText = 'Model Hazırlanamadı.';
             }
           );
 
@@ -353,15 +485,48 @@ export const AvatarScreen = () => {
           renderer.setSize(container.clientWidth, container.clientHeight);
         }
 
-        // Real-time animation loop
         function animate() {
           requestAnimationFrame(animate);
 
-          // Lerp lipsync volume smoothly (low-pass filtering) for natural talk animation
           currentVolume = currentVolume * 0.65 + targetVolume * 0.35;
 
+          const time = Date.now() * 0.001;
+          const head = scene.getObjectByName('Head');
+          const neck = scene.getObjectByName('Neck');
+          const spine = scene.getObjectByName('Spine2');
+
+          if (currentVolume > 0.02) {
+            // Talking / Speech Swaying, Bobbing and Nodding!
+            if (head) {
+              // Node X: pitch, Node Y: yaw, Node Z: roll. Rotate relative to default bind pose
+              head.rotation.x = -0.117 + Math.sin(time * 15) * 0.08 * currentVolume;
+              head.rotation.y = Math.cos(time * 11) * 0.05 * currentVolume;
+              head.rotation.z = Math.sin(time * 8) * 0.03 * currentVolume;
+            }
+            if (neck) {
+              neck.rotation.x = 0.222 + Math.sin(time * 12) * 0.04 * currentVolume;
+              neck.rotation.y = Math.cos(time * 9) * 0.03 * currentVolume;
+            }
+            if (spine) {
+              spine.rotation.y = Math.sin(time * 6) * 0.015 * currentVolume;
+            }
+          } else {
+            // Idle breathing natural sway
+            if (head) {
+              head.rotation.x = -0.117 + Math.sin(time * 1.5) * 0.015;
+              head.rotation.y = Math.cos(time * 1.2) * 0.01;
+              head.rotation.z = 0;
+            }
+            if (neck) {
+              neck.rotation.x = 0.222 + Math.sin(time * 1.2) * 0.01;
+              neck.rotation.y = 0;
+            }
+            if (spine) {
+              spine.rotation.y = Math.sin(time * 0.8) * 0.008;
+            }
+          }
+
           if (headMesh && headMesh.morphTargetInfluences) {
-            // Animate mouth opening
             if (mouthOpenIndex !== -1) {
               headMesh.morphTargetInfluences[mouthOpenIndex] = currentVolume * 0.95;
             }
@@ -369,7 +534,6 @@ export const AvatarScreen = () => {
               headMesh.morphTargetInfluences[jawOpenIndex] = currentVolume * 0.55;
             }
             
-            // Add subtle random eye twitch/blink to look organic
             const dict = headMesh.morphTargetDictionary;
             if (dict && dict['eyeBlinkLeft'] !== undefined && dict['eyeBlinkRight'] !== undefined) {
               const blinkIndexL = dict['eyeBlinkLeft'];
@@ -389,24 +553,21 @@ export const AvatarScreen = () => {
           }
 
           if (teethMesh && teethMesh.morphTargetInfluences && jawOpenIndex !== -1) {
-            // Sync teeth/dental meshes with jaw opening
             const dict = teethMesh.morphTargetDictionary;
             if (dict && dict['jawOpen'] !== undefined) {
               teethMesh.morphTargetInfluences[dict['jawOpen']] = currentVolume * 0.55;
             }
           }
 
-          // Add subtle dynamic idle swaying so the avatar feels alive
+          // Dynamic model base breathing
           if (scene.children[4]) {
-            const time = Date.now() * 0.001;
             const model = scene.children[4];
             if (currentVolume < 0.05) {
               model.rotation.y = Math.sin(time * 0.5) * 0.03;
               model.rotation.x = Math.sin(time * 0.3) * 0.015;
             } else {
-              // Sway slightly with voice volume
-              model.rotation.y = Math.sin(time * 2.5) * 0.015 * currentVolume;
-              model.rotation.x = Math.cos(time * 2.0) * 0.01 * currentVolume;
+              model.rotation.y = Math.sin(time * 2.5) * 0.012 * currentVolume;
+              model.rotation.x = Math.cos(time * 2.0) * 0.008 * currentVolume;
             }
           }
 
@@ -414,7 +575,6 @@ export const AvatarScreen = () => {
           renderer.render(scene, camera);
         }
 
-        // Receive real-time volume message bridge from React Native
         window.addEventListener('message', function(event) {
           try {
             const message = JSON.parse(event.data);
@@ -459,17 +619,24 @@ export const AvatarScreen = () => {
             />
           </View>
 
+          {/* Active speech text indicator overlay */}
+          {isSpeaking && (
+            <View style={styles.speechBubbleOverlay}>
+              <Text style={styles.speechBubbleText}>{activeSpeechText}</Text>
+            </View>
+          )}
+
           {/* Real-time metrics overlays */}
           <View style={styles.techInfo}>
             <View style={styles.infoBadge}>
-              <View style={[styles.statusDot, isRecording && styles.statusDotActive]} />
+              <View style={[styles.statusDot, (isRecording || isSpeaking) && styles.statusDotActive]} />
               <Text style={styles.infoText}>{statusMessage}</Text>
             </View>
             <View style={styles.infoBadge}>
               <Text style={styles.infoText}>Gecikme: {isRecording ? `${latency}ms` : '0ms'}</Text>
             </View>
             <View style={styles.infoBadge}>
-              <Text style={styles.infoText}>Engine: WebGL / R3F</Text>
+              <Text style={styles.infoText}>Model: HD (3.7MB)</Text>
             </View>
           </View>
         </LinearGradient>
@@ -483,17 +650,63 @@ export const AvatarScreen = () => {
         </View>
       </View>
 
-      {/* Mic toggle */}
+      {/* Controller Area: Mic capturing and Talking Assistant preset buttons */}
       <View style={styles.controlsSection}>
-        <TouchableOpacity 
-          style={[styles.recordButton, isRecording && styles.recordButtonActive]} 
-          onPress={handleToggleRecord}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.recordButtonText}>
-            {isRecording ? '🎙️ Konuşmayı Bitir' : '🎙️ Modelimle Konuş'}
-          </Text>
-        </TouchableOpacity>
+        {isSpeaking ? (
+          <TouchableOpacity 
+            style={[styles.recordButton, styles.stopSpeechButton]} 
+            onPress={handleStopSpeech}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.recordButtonText}>🛑 Konuşmayı Kes</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.dualControlsWrapper}>
+            <TouchableOpacity 
+              style={[styles.recordButton, isRecording && styles.recordButtonActive]} 
+              onPress={handleToggleRecord}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.recordButtonText}>
+                {isRecording ? '🎙️ Konuşmayı Bitir' : '🎙️ Modelimle Konuş'}
+              </Text>
+            </TouchableOpacity>
+            
+            {/* Talking presets row */}
+            <Text style={styles.assistantTitle}>YAPAY ZEKA ASİSTAN DİYALOGLARI</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.presetsRow}>
+              <TouchableOpacity 
+                style={styles.presetBadge}
+                onPress={() => handleSpeakText(
+                  "Kendini Tanıt", 
+                  "Merhaba Mustafa! Ben senin 3D yapay zeka avatarınım. Nokta nokta projesi kapsamında, tüm platform limitlerini aşarak, expo-av ve WebGL WebView tüneliyle sesinle tam senkronize konuşmak üzere tasarlandım. Harika bir iş çıkardık!"
+                )}
+              >
+                <Text style={styles.presetBadgeText}>💡 Kendini Tanıt</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.presetBadge}
+                onPress={() => handleSpeakText(
+                  "Nokta-Nokta Nedir?", 
+                  "Nokta nokta projesi seyyah mimarisini, drop-in audit widget geliştirmesini, yapay zeka onarım forge döngülerini ve sıkıştığımız anda görüntülü ekran paylaşımı sağlayan insan uzman video köprüsünü içeren dairesel bir mobil ekosistemdir."
+                )}
+              >
+                <Text style={styles.presetBadgeText}>🎯 Nokta Nedir?</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.presetBadge}
+                onPress={() => handleSpeakText(
+                  "Son Raporu Özetle", 
+                  "Son başarılı onarımlarımız ile tüm TypeScript derleme hataları tamamen temizlenmiş, Jitsi meet deep link yönlendirme hatası yerel video köprüsüyle aşılmış ve local base64 3D model yükleyici başarıyla entegre edilmiştir."
+                )}
+              >
+                <Text style={styles.presetBadgeText}>📊 Son Durum Raporu</Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        )}
       </View>
     </LinearGradient>
   );
@@ -505,7 +718,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: 60,
     justifyContent: 'space-between',
-    paddingBottom: 40,
+    paddingBottom: 30,
   },
   header: {
     alignItems: 'center',
@@ -527,12 +740,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 15,
+    marginVertical: 10,
   },
   avatarGlass: {
     width: '100%',
     height: '100%',
-    maxHeight: 400,
+    maxHeight: 380,
     borderRadius: 32,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
@@ -550,6 +763,27 @@ const styles = StyleSheet.create({
   webview: {
     flex: 1,
     backgroundColor: 'transparent',
+  },
+  speechBubbleOverlay: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.3)',
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+  },
+  speechBubbleText: {
+    color: '#34d399',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   techInfo: {
     position: 'absolute',
@@ -592,7 +826,7 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     backgroundColor: 'rgba(255,255,255,0.02)',
-    paddingVertical: 18,
+    paddingVertical: 14,
     borderRadius: 24,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.04)',
@@ -603,13 +837,13 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#6366f1',
     letterSpacing: 2,
-    marginBottom: 12,
+    marginBottom: 10,
   },
   equalizerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 90,
+    height: 80,
     width: '90%',
     gap: 5,
   },
@@ -623,8 +857,36 @@ const styles = StyleSheet.create({
   },
   controlsSection: {
     width: '100%',
-    alignItems: 'center',
     marginTop: 5,
+  },
+  dualControlsWrapper: {
+    width: '100%',
+  },
+  assistantTitle: {
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#94a3b8',
+    letterSpacing: 1.5,
+    textAlign: 'center',
+    marginTop: 16,
+    marginBottom: 10,
+  },
+  presetsRow: {
+    gap: 8,
+    paddingBottom: 5,
+  },
+  presetBadge: {
+    backgroundColor: 'rgba(255,255,255,0.04)',
+    borderColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 16,
+  },
+  presetBadgeText: {
+    color: '#cbd5e1',
+    fontSize: 12,
+    fontWeight: '700',
   },
   recordButton: {
     width: '100%',
@@ -642,6 +904,10 @@ const styles = StyleSheet.create({
   recordButtonActive: {
     backgroundColor: '#ef4444',
     shadowColor: '#ef4444',
+  },
+  stopSpeechButton: {
+    backgroundColor: '#dc2626',
+    shadowColor: '#dc2626',
   },
   recordButtonText: {
     color: '#ffffff',
