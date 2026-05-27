@@ -5,7 +5,7 @@ import AvatarStage from '../components/AvatarStage';
 import Waveform from '../components/Waveform';
 import { useVoiceMeter } from '../hooks/useVoiceMeter';
 
-const AVATAR_GLB: number | null = null;
+const AVATAR_GLB: number | null = require('../../assets/avatar.glb');
 
 export default function MirrorScreen() {
   const { amplitude, bars, isRecording, latencyMs, permissionGranted, start, stop } = useVoiceMeter();
@@ -81,10 +81,14 @@ export default function MirrorScreen() {
         </Text>
       )}
 
-      {AVATAR_GLB == null && (
+      {AVATAR_GLB == null ? (
         <Text style={styles.placeholderHint}>
           Placeholder avatar (sphere) gösteriliyor — avaturn.me .glb dosyası
           assets/avatar.glb'ye düşünce gerçek avatar binecek.
+        </Text>
+      ) : (
+        <Text style={styles.placeholderHint}>
+          Avatar: avaturn.me export · assets/avatar.glb
         </Text>
       )}
     </ScrollView>
