@@ -8,7 +8,7 @@ Track: B
 ## Quick Links
 - **Expo QR (development):** `npx expo start` ile QR üretilebilir — `submissions/241478108-berkay-asikoglu/app/` altında çalıştırın.
 - **Demo Video (3 dk):** [YouTube Link](https://youtube.com/shorts/n1j6CKLj2M0?feature=share) *(Phase A + B + C tek videoda)*
-- **App APK:** iOS Expo Go kullanıldığı için APK derlenmemiştir (EAS build opsiyonel).
+- **App APK:** [EAS Build APK Linki](https://expo.dev/accounts/ruthlesscat/projects/app/builds/e2a194f1-ccc2-4d7f-b906-30d151261cf4) üzerinden indirilebilir.
 
 ## Track Seçimi
 **Track B (Yaratıcılık + Otonomi)** — Audit raporları sıradan bug değil, **feature request** içeriyor. Müşteri "burada X olsa güzel olurdu" yazıyor, forge cycle yeni bir davranış doğuruyor.
@@ -132,7 +132,7 @@ npx expo start
 - [x] `submissions/241478108-berkay-asikoglu/` altında sadece değişiklik
 - [x] `Track: B` README ilk satırında
 - [x] Expo QR link / 3 dk demo video linki (Eklendi)
-- [ ] `app-release.apk` mevcut (iOS Expo Go test edildiği için APK alınmadı)
+- [x] `app-release.apk` mevcut ([EAS Build üzerinden APK linki eklendi](https://expo.dev/accounts/ruthlesscat/projects/app/builds/e2a194f1-ccc2-4d7f-b906-30d151261cf4))
 - [x] Decision log + human touch points + AI tool logu README'de
 - [x] `audit-reports/` altında ≥3 burn-in'li `.md` rapor (toplam 8 rapor)
 - [x] `FORGE.md`'de ≥3 success + ≥1 rollback (toplam 8 cycle, 2 rollback)
