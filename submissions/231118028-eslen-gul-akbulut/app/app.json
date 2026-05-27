@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "Nokta Echo",
+    "slug": "nokta-echo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#09090b"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#09090b"
+      },
+      "package": "com.eslen.noktaecho",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Nokta Forge mikrofon izni gerektirir."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "e6b0278c-fe31-48d8-a5cf-d7cd1add5d52"
+      }
+    },
+    "owner": "eslengulakbulut"
+  }
+}

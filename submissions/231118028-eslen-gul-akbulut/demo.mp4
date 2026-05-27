@@ -1,0 +1,26 @@
+# DEMO VIDEO EXPLANATION (demo.mp4 Placeholder)
+
+This is a placeholder for `demo.mp4` video.
+
+### Application Flow & Demonstration:
+1. **Home Screen**: Welcoming screen featuring a high-fidelity statistics dashboard with real-time counters and recent activity logs. The floating AuditWidget bug button is visible.
+2. **Voice Visualizer Screen**:
+   - Tapping "Allow Microphone" requests permissions.
+   - Upon permission approval, the page renders an animated multi-bar wave visualizer.
+   - Speaking into the microphone dynamically scales the height of the bars in sync with the sound volume.
+   - In silence, the bars enter a faded, slow-pulsing idle animation.
+3. **Avatar Screen**:
+   - The application checks for `avatar.glb` in the assets directory.
+   - If not found, a beautiful custom-styled 2D Vector Avatar is rendered inside a neon cards viewport.
+   - The mouth of the avatar dynamically scales (lipsync simulation) mapped directly to the microphone volume level.
+4. **Expert Bridge Screen**:
+   - Displays online expert status, upcoming meeting info, and a premium "Connect to Expert" button.
+   - Clicking the button launches the browser or Jitsi Meet application directly to: `https://meet.jit.si/nokta-forge-231118028`.
+5. **Audit / Forge Info Screen**:
+   - Summarizes the Forge cycles (2 COMMIT, 1 ROLLBACK, 1 STUCK).
+   - Allows users to review all logs.
+6. **AuditWidget Interaction**:
+   - Tapping the floating 🐛 button triggers a freeze-frame.
+   - A yellow boundary selector can be drawn on screen.
+   - A note form allows submitting feedback, saving it locally.
+   - Double tapping the FAB opens the feedback ledger to edit, delete, or export report Markdown.
