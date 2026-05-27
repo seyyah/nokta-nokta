@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "NOKTA",
+    "slug": "nokta-audit-forge",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0F172A"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nokta.auditforge.231118098"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0F172A"
+      },
+      "edgeToEdgeEnabled": true,
+      "package": "com.nokta.auditforge_231118098"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "studentId": "231118098",
+      "track": "A",
+      "challenge": "audit-forge",
+      "eas": {
+        "projectId": "8b18653f-8439-474b-8eaa-e9f01af1efdb"
+      }
+    },
+    "owner": "aleyna1955"
+  }
+}
