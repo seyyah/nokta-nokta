@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+<style>
+html,body{margin:0;padding:0;width:100%;height:100%;background:#0a0e1a;overflow:hidden}
+canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
+#s{position:absolute;top:8px;left:8px;color:rgba(255,255,255,.55);font:10px monospace;pointer-events:none;max-width:90%;word-break:break-all;z-index:10}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<!-- Sese göre açılan 2D ağız katmanı (blendshape/jaw yoksa devreye girer) -->
+<div id="mouth"></div>
+<div id="s">three.js yükleniyor…</div>
+<style>
+#mouth{
+  position:absolute; pointer-events:none; z-index:5;
+  width:30px; height:4px;
+  margin-left:-15px; margin-top:-2px;
+  border-radius:50%;
+  background:radial-gradient(ellipse at center, rgba(60,20,20,0.92) 0%, rgba(30,10,10,0.78) 60%, rgba(20,5,5,0.0) 100%);
+  opacity:0; display:none;
+}
+</style>
+
+<!-- Three.js r128 UMD — importmap YOK, tüm Android WebView sürümlerinde çalışır -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<script>
+(function () {
+  var s = document.getElementById('s');
+  function log(msg) {
+    s.textContent = msg;
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'log', msg: msg }));
+    }
+  }
+  function rn(obj) {
+    if (window.ReactNativeWebView) {
+      window.ReactNativeWebView.postMessage(JSON.stringify(obj));
+    }
+  }
+
+  if (typeof THREE === 'undefined') { log('THREE.js yüklenemedi!'); return; }
+  log('THREE r' + THREE.REVISION + ' tamam');
+
+  var canvas = document.getElementById('c');
+  var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  var scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0a0e1a);
+
+  var camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera.position.set(0, 1.55, 1.0);
+  camera.lookAt(0, 1.55, 0);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+  var dl = new THREE.DirectionalLight(0xffffff, 0.9);
+  dl.position.set(1, 2, 2);
+  scene.add(dl);
+
+  var avatarRoot = null;
+  var morphMeshes = [];
+  var targetAmp = 0, smoothAmp = 0, blinkPhase = 0;
+
+  // Prosedürel lip-sync için kemik referansları (morph yoksa fallback)
+  var headBone = null, jawBone = null, neckBone = null;
+  var headRest = null, jawRest = null, neckRest = null;
+
+  // 2D ağız katmanı (blendshape + jaw yoksa görsel lip-sync)
+  var mouthEl = document.getElementById('mouth');
+  var useMouthOverlay = false;
+  var mouthWorld = null;       // ağzın dünya konumu (her frame hesaplanır)
+  // Ağız offset'i — baş kemiğine göre (Y aşağı, Z öne). Gerekirse ayarlanır.
+  var MOUTH_OFFSET_Y = -0.06;
+  var MOUTH_OFFSET_Z = 0.07;
+
+  var JAW = ['jawOpen', 'JawOpen', 'mouthOpen', 'MouthOpen', 'viseme_aa', 'A25_Jaw_Open'];
+  var MOUTH = ['mouthFunnel', 'mouthPucker', 'viseme_O', 'viseme_E', 'viseme_U'];
+  var BLINK = ['eyeBlinkLeft', 'eyeBlinkRight', 'EyeBlinkLeft', 'EyeBlinkRight'];
+
+  function findIdx(d, names) {
+    for (var i = 0; i < names.length; i++) if (names[i] in d) return d[names[i]];
+    return -1;
+  }
+  function findAll(d, names) {
+    var r = [];
+    for (var i = 0; i < names.length; i++) if (names[i] in d) r.push(d[names[i]]);
+    return r;
+  }
+
+  function onLoaded(gltf) {
+    avatarRoot = gltf.scene;
+    var allMorphNames = [];
+    avatarRoot.traverse(function (o) {
+      if (o.isMesh && o.morphTargetDictionary && o.morphTargetInfluences) {
+        var d = o.morphTargetDictionary;
+        for (var name in d) { if (allMorphNames.indexOf(name) < 0) allMorphNames.push(name); }
+        var j = findIdx(d, JAW), m = findAll(d, MOUTH), b = findAll(d, BLINK);
+        if (j >= 0 || m.length || b.length) morphMeshes.push({ mesh: o, j: j, m: m, b: b });
+      }
+      // Kemik referanslarını yakala (prosedürel fallback için)
+      if (o.isBone || o.type === 'Bone') {
+        var n = (o.name || '').toLowerCase();
+        if (!jawBone && n.indexOf('jaw') >= 0) jawBone = o;
+        if (!headBone && n.indexOf('head') >= 0) headBone = o;
+        if (!neckBone && n.indexOf('neck') >= 0) neckBone = o;
+      }
+    });
+
+    // Rest (dinlenme) rotasyonlarını sakla — offset bunların üstüne eklenir
+    if (headBone) headRest = headBone.rotation.clone();
+    if (jawBone)  jawRest  = jawBone.rotation.clone();
+    if (neckBone) neckRest = neckBone.rotation.clone();
+
+    rn({ type: 'morphnames', names: allMorphNames });
+    rn({ type: 'log', msg: 'bones → head:' + (!!headBone) + ' jaw:' + (!!jawBone) + ' neck:' + (!!neckBone) });
+
+    // Morph YOK ve jaw YOK → 2D ağız katmanını aç
+    if (morphMeshes.length === 0 && !jawBone && headBone) {
+      useMouthOverlay = true;
+      mouthWorld = new THREE.Vector3();
+      mouthEl.style.display = 'block';
+    }
+    scene.add(avatarRoot);
+
+    var box = new THREE.Box3().setFromObject(avatarRoot);
+    var sz = box.getSize(new THREE.Vector3());
+    var ct = box.getCenter(new THREE.Vector3());
+    // Yüze nişan al: üst gövde / omuz üstü çerçeve (önceki 0.28 → 0.42)
+    var fy = ct.y + sz.y * 0.42;
+    // Yüze yakınlaş (önceki 0.5 → 0.34 oranı)
+    camera.position.set(ct.x, fy, ct.z + Math.max(sz.y * 0.34, 0.4));
+    camera.lookAt(ct.x, fy, ct.z);
+    camera.fov = 34;
+    camera.updateProjectionMatrix();
+
+    log('Avatar ✓  morph:' + morphMeshes.length + '  h:' + sz.y.toFixed(2) + 'm');
+    rn({ type: 'loaded' });
+  }
+
+  window.setAmplitude = function (a) {
+    targetAmp = Math.max(0, Math.min(1, parseFloat(a) || 0));
+  };
+
+  function loadAvatar(url) {
+    log('XHR → ' + url.slice(0, 60));
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'arraybuffer';
+    xhr.onprogress = function (e) {
+      if (e.total) log('Yükleniyor ' + Math.round(e.loaded / e.total * 100) + '%…');
+    };
+    xhr.onload = function () {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        log('Parse ediliyor…');
+        new THREE.GLTFLoader().parse(xhr.response, '', onLoaded, function (err) {
+          var msg = err && err.message ? err.message : String(err);
+          log('Parse hata: ' + msg);
+          rn({ type: 'error', msg: 'parse: ' + msg });
+        });
+      } else {
+        log('HTTP hata: ' + xhr.status);
+        rn({ type: 'error', msg: 'HTTP ' + xhr.status });
+      }
+    };
+    xhr.onerror = function () {
+      log('XHR network hata — GLTFLoader.load denenecek');
+      // XHR başarısız → GLTFLoader.load dene (data: / file: URL için)
+      new THREE.GLTFLoader().load(
+        url,
+        onLoaded,
+        function (p) { if (p.total) log('load ' + Math.round(p.loaded / p.total * 100) + '%'); },
+        function (err) {
+          var msg = err && err.message ? err.message : String(err);
+          log('load hata: ' + msg);
+          rn({ type: 'error', msg: 'load: ' + msg });
+        }
+      );
+    };
+    xhr.send();
+  }
+
+  // postMessage → avatarUrl
+  function onMsg(e) {
+    try {
+      var d = JSON.parse(e.data);
+      if (d.type === 'avatarUrl' && d.url) loadAvatar(d.url);
+      if (d.type === 'amplitude') window.setAmplitude(d.value);
+    } catch (ex) { /* ignore */ }
+  }
+  window.addEventListener('message', onMsg);
+  document.addEventListener('message', function (e) { onMsg(e); }); // Android compat
+
+  window.addEventListener('resize', function () {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+  });
+
+  (function tick() {
+    smoothAmp = smoothAmp * 0.5 + targetAmp * 0.5;
+    blinkPhase += 0.016;
+
+    if (morphMeshes.length) {
+      // --- Yol 1: Gerçek blendshape lip-sync ---
+      var blink = Math.sin(blinkPhase * 0.7) > 0.985 ? 1 : 0;
+      for (var i = 0; i < morphMeshes.length; i++) {
+        var e = morphMeshes[i], o = e.mesh;
+        if (e.j >= 0) o.morphTargetInfluences[e.j] = Math.min(1, smoothAmp * 1.4);
+        for (var k = 0; k < e.m.length; k++) o.morphTargetInfluences[e.m[k]] = smoothAmp * 0.35;
+        for (var k = 0; k < e.b.length; k++) o.morphTargetInfluences[e.b[k]] = blink;
+      }
+    } else if (jawBone && jawRest) {
+      // --- Yol 2a: Çene kemiği ile ağız aç/kapa ---
+      jawBone.rotation.x = jawRest.x + smoothAmp * 0.35;
+    } else if (headBone && headRest) {
+      // --- Yol 2b: Çene/morph yok → baş ile "konuşma" simülasyonu ---
+      // Sese göre hafif baş sallama (nod) + konuşma titreşimi
+      var talk = smoothAmp * Math.sin(blinkPhase * 9.0) * 0.06; // hızlı konuşma mikro-hareketi
+      var nod  = smoothAmp * 0.10;                              // genel "konuşuyor" eğimi
+      headBone.rotation.x = headRest.x + nod + talk;
+      headBone.rotation.z = headRest.z + smoothAmp * Math.sin(blinkPhase * 5.0) * 0.03;
+      if (neckBone && neckRest) {
+        neckBone.rotation.x = neckRest.x + nod * 0.4;
+      }
+    }
+
+    // Hafif idle gövde salınımı (her durumda)
+    if (avatarRoot) avatarRoot.rotation.y = Math.sin(blinkPhase * 0.3) * 0.03;
+
+    renderer.render(scene, camera);
+
+    // --- 2D ağız katmanı: baş konumunu ekrana yansıt + sese göre aç ---
+    if (useMouthOverlay && headBone) {
+      headBone.getWorldPosition(mouthWorld);
+      mouthWorld.y += MOUTH_OFFSET_Y;
+      mouthWorld.z += MOUTH_OFFSET_Z;
+      var p = mouthWorld.clone().project(camera);
+      if (p.z < 1) {
+        var sx = (p.x * 0.5 + 0.5) * window.innerWidth;
+        var sy = (-p.y * 0.5 + 0.5) * window.innerHeight;
+        var openH = 3 + smoothAmp * 22;        // ağız açıklığı (yükseklik)
+        var openW = 26 + smoothAmp * 12;       // ağız genişliği
+        mouthEl.style.left = sx + 'px';
+        mouthEl.style.top = sy + 'px';
+        mouthEl.style.height = openH + 'px';
+        mouthEl.style.width = openW + 'px';
+        mouthEl.style.marginLeft = (-openW / 2) + 'px';
+        mouthEl.style.marginTop = (-openH / 2) + 'px';
+        mouthEl.style.opacity = Math.min(1, smoothAmp * 2.2);
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }());
+
+  // THREE hazır → React Native'e bildir
+  log('THREE hazır — GLB URL bekleniyor');
+  rn({ type: 'ready' });
+}());
+</script>
+</body>
+</html>
