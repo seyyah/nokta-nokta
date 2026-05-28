@@ -1,0 +1,26 @@
+# EAS Build'e yüklenmeyecek dosyalar — arşiv boyutunu düşürür (2GB limiti)
+# node_modules EAS sunucusunda yeniden kurulur, yüklemeye gerek yok.
+node_modules/
+.expo/
+dist/
+web-build/
+android/
+ios/
+
+# Loglar ve build çıktıları
+*.log
+*.apk
+*.aab
+eas-build.log
+expo-lan.log
+expo-start.log
+tsc-check.log
+
+# Geçici / sistem
+.DS_Store
+*.tmp
+.vscode/
+.idea/
+
+# Git
+.git/
