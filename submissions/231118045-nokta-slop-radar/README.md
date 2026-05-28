@@ -57,6 +57,14 @@ npx expo start --tunnel -c
 - Expert bridge CTA for repeated broken cycles
 - Local `avatar.glb` asset included in both submission root and app assets
 
+## Decision Log
+
+1. **Track selection:** I chose `PERSONAS + BRIDGE` because the strongest Week 3 value of this project is not only scoring reports, but showing how spoken feedback changes under different personas and how the system escalates when repeated repair cycles fail.
+2. **Voice-first interface:** I rebuilt the app around `Record -> Audit -> Repair` so the product story is visible immediately instead of looking like unrelated widgets on one page.
+3. **Avatar role:** The avatar is positioned as a speaking guide rather than decoration. It sits in the hero area and reacts to the live voice layer.
+4. **Mobile-first delivery:** The app is optimized for Expo Go mobile demo flow. Browser support is treated as a secondary fallback path rather than the main delivery surface.
+5. **Submission structure:** I documented forge cycles, persona behavior, and expert bridge flow separately so the Week 3 evaluation criteria map directly to repository artifacts.
+
 ## Delivery Checklist
 
 Before opening the final PR, complete these manual items:
@@ -70,6 +78,7 @@ Before opening the final PR, complete these manual items:
 
 ## Final Links
 
+- Expo QR / Expo Go Link: `exp://7f40i80-yagmurtoprakli-8081.exp.direct`
 - Demo Video: `TODO`
 - APK: `TODO`
 - PR: `TODO`
