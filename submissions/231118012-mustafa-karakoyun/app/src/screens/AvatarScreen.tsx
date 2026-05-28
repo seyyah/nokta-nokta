@@ -19,7 +19,7 @@ export const AvatarScreen = () => {
   const [maleVoiceId, setMaleVoiceId] = useState<string | null>(null);
 
   const recordingRef = useRef<Audio.Recording | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const webViewRef = useRef<WebView | null>(null);
 
   // Request mic permissions on mount and find available Turkish male voices
@@ -53,14 +53,16 @@ export const AvatarScreen = () => {
     })();
 
     return () => {
-      stopRecording();
+      (async () => {
+        await stopRecording();
+      })();
       Speech.stop();
     };
   }, []);
 
   // Text-To-Speech Lipsync: Generate voice frequency RMS waves while avatar is speaking
   useEffect(() => {
-    let ttsTimer: NodeJS.Timeout | null = null;
+    let ttsTimer: ReturnType<typeof setInterval> | null = null;
     
     if (isSpeaking) {
       ttsTimer = setInterval(() => {
@@ -235,18 +237,18 @@ export const AvatarScreen = () => {
     }
   };
 
-  const handleToggleRecord = () => {
+  const handleToggleRecord = async () => {
     if (isRecording) {
-      stopRecording();
+      await stopRecording();
     } else {
-      startRecording();
+      await startRecording();
     }
   };
 
   // Trigger TTS Speech welcome message or responses
-  const handleSpeakText = (text: string, response: string) => {
+  const handleSpeakText = async (text: string, response: string) => {
     if (isRecording) {
-      stopRecording();
+      await stopRecording();
     }
 
     Speech.stop();
@@ -343,8 +345,8 @@ export const AvatarScreen = () => {
           background: #0f172a;
           display: flex;
           flex-direction: column;
-          justifyContent: center;
-          alignItems: center;
+          justify-content: center;
+          align-items: center;
           color: #94a3b8;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
           font-size: 14px;

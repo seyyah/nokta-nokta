@@ -26,14 +26,14 @@ export const ProposalModal: React.FC<ProposalModalProps> = ({ visible, onClose, 
     };
   }, []);
 
-  const stopRecordingAndCleanup = () => {
+  const stopRecordingAndCleanup = async () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
     if (recordingRef.current) {
       try {
-        recordingRef.current.stopAndUnloadAsync();
+        await recordingRef.current.stopAndUnloadAsync();
       } catch (e) {}
       recordingRef.current = null;
     }
@@ -95,7 +95,7 @@ export const ProposalModal: React.FC<ProposalModalProps> = ({ visible, onClose, 
   const handleStopRecording = async () => {
     if (!recordingRef.current) return;
 
-    stopRecordingAndCleanup();
+    await stopRecordingAndCleanup();
     setIsTranscribing(true);
 
     // Simulated premium high-fidelity transcription based on current view/context

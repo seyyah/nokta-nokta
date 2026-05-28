@@ -19,8 +19,8 @@ export const exportProposalAsMarkdown = async (
 
     const markdownContent = `# Geliştirme Önerisi\n\n**Başlık:** ${title}\n**Tarih:** ${timestamp}${areaText}\n\n## Açıklama\n${description}\n${imageText}`;
     
-    // Geçici dizine dosya yolu oluştur
-    const fileUri = `${FileSystem.cacheDirectory}oneriler.md`;
+    // Geçici dizine benzersiz dosya yolu oluştur
+    const fileUri = `${FileSystem.cacheDirectory}oneriler_${Date.now()}.md`;
     
     await FileSystem.writeAsStringAsync(fileUri, markdownContent, {
       encoding: FileSystem.EncodingType.UTF8,
@@ -112,7 +112,7 @@ export const exportProposalAsDocx = async (
     });
 
     const base64Data = await Packer.toBase64String(doc);
-    const fileUri = `${FileSystem.cacheDirectory}oneriler.docx`;
+    const fileUri = `${FileSystem.cacheDirectory}oneriler_${Date.now()}.docx`;
     
     await FileSystem.writeAsStringAsync(fileUri, base64Data, {
       encoding: 'base64',

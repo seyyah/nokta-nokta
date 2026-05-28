@@ -30,22 +30,18 @@ export const BridgeModal: React.FC<BridgeModalProps> = ({
     'Hızlı İşlemler emoji ikonlarının hizalanma sorunu giderildi. actionIconContainer için flexWrap eklendi ve alt padding 8px olarak optimize edilerek taşma önlendi.'
   );
   const [duration, setDuration] = useState(0);
-  const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | null = null;
     if (callActive) {
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         setDuration(prev => prev + 1);
       }, 1000);
-      setTimerInterval(interval);
-    } else {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-        setTimerInterval(null);
-      }
     }
     return () => {
-      if (timerInterval) clearInterval(timerInterval);
+      if (interval) {
+        clearInterval(interval);
+      }
     };
   }, [callActive]);
 
@@ -93,8 +89,8 @@ NEXT_CYCLE_INPUT: ${expertNotes}
       }
 
       Alert.alert(
-        'Rapor Hazırlandı',
-        'BRIDGE.md başarıyla oluşturuldu ve otonom döngüye beslendi!',
+        'Notlar Kaydedildi',
+        'Köprü çözüm notları başarıyla otonom döngüye beslendi ve kaydedildi!',
         [{ text: 'Tamam', onPress: () => {
           resetAndClose();
         }}]

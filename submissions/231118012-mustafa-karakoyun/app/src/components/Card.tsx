@@ -12,9 +12,10 @@ interface CardProps {
 
 export const Card: React.FC<CardProps> = ({ title, subtitle, value, progress, icon, onPress }) => {
   const CardComponent = onPress ? TouchableOpacity : View;
+  const extraProps = onPress ? { activeOpacity: 0.8, onPress } : {};
 
   return (
-    <CardComponent style={styles.card} activeOpacity={0.8} onPress={onPress}>
+    <CardComponent style={styles.card} {...extraProps}>
       <View style={styles.header}>
         <View style={styles.titleContainer}>
           {icon && <Text style={styles.icon}>{icon}</Text>}
