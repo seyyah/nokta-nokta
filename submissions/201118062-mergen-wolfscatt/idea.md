@@ -1,0 +1,5 @@
+# Track B Fikir Notu
+
+Bu entegrasyonla ortaya cikan en guclu kullanim durumu, kullanicinin sadece hata bildiren bir testci gibi degil, calisan mobil uygulama icinden dogrudan mini bir urun istegi birakan "customer-as-developer" rolu ustlenebilmesidir. Ornegin ana ekrandaki fikir kartinin aksiyon alanini sari kutu ile isaretleyip `Burada fikri arsivleme butonu da olsa iyi olurdu.` notunu biraktiginda ortaya cikan sey yalnizca bir UX yorumu degil, ekrani, hedef alani ve niyeti birlikte tasiyan agent-okunur bir degisiklik artefaktidir.
+
+Bu artefakt daha sonra Codex icin dogrudan uygulama girdisine donusur: ajan raporu okur, ilgili ekran veya component'i bulur, istenen davranisin minimum versiyonunu uygular, mevcut akisi koruyarak testi ve dogrulamayi yapar, gelistirici ise sifirdan brief yazmak yerine sadece son diff'i gozden gecirir. Boylece mobil geri bildirim zinciri "yorum -> task" seviyesinden "isaretlenmis ekran -> uygulanabilir degisiklik girdisi" seviyesine cikarak Track B'nin audit mantigini dogrudan agent-readable implementation input'a cevirmis olur.
