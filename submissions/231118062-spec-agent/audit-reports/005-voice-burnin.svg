@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+  <rect width="900" height="520" fill="#0d1118"/>
+  <text x="40" y="58" fill="#58f0d5" font-family="Arial" font-size="22" font-weight="700">BURN-IN 005 - Voice Visualizer</text>
+  <text x="40" y="94" fill="#d8dee9" font-family="Arial" font-size="18">Dictated audit: bars must wake under speech and fade under silence.</text>
+  <g transform="translate(90 160)">
+    <rect x="0" y="128" width="14" height="74" rx="7" fill="#58f0d5"/>
+    <rect x="28" y="96" width="14" height="106" rx="7" fill="#58f0d5"/>
+    <rect x="56" y="52" width="14" height="150" rx="7" fill="#58f0d5"/>
+    <rect x="84" y="18" width="14" height="184" rx="7" fill="#58f0d5"/>
+    <rect x="112" y="60" width="14" height="142" rx="7" fill="#58f0d5"/>
+    <rect x="140" y="104" width="14" height="98" rx="7" fill="#58f0d5"/>
+    <rect x="168" y="134" width="14" height="68" rx="7" fill="#58f0d5"/>
+  </g>
+  <rect x="40" y="430" width="820" height="42" rx="8" fill="#141a24" stroke="#58f0d5"/>
+  <text x="58" y="458" fill="#f7fafc" font-family="Arial" font-size="16">Evidence: expo-av RMS metering, 80ms update interval, silence decay.</text>
+</svg>

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+  <rect width="900" height="520" fill="#f4f7f8"/>
+  <text x="40" y="58" fill="#245a53" font-family="Arial" font-size="22" font-weight="700">BURN-IN 007 - Expert Bridge</text>
+  <text x="40" y="94" fill="#53606f" font-family="Arial" font-size="18">Dictated audit: after repeated stuck cycles, a human bridge must open.</text>
+  <rect x="120" y="150" width="210" height="120" rx="12" fill="#ffffff" stroke="#d7e0e6"/>
+  <text x="168" y="215" fill="#a23830" font-family="Arial" font-size="28" font-weight="700">ROLLBACK</text>
+  <rect x="345" y="150" width="210" height="120" rx="12" fill="#ffffff" stroke="#d7e0e6"/>
+  <text x="410" y="215" fill="#74540a" font-family="Arial" font-size="28" font-weight="700">STUCK</text>
+  <path d="M560 210 L690 210" stroke="#245a53" stroke-width="8" stroke-linecap="round"/>
+  <polygon points="690,190 735,210 690,230" fill="#245a53"/>
+  <rect x="610" y="320" width="210" height="58" rx="10" fill="#2ab69d"/>
+  <text x="652" y="356" fill="#ffffff" font-family="Arial" font-size="20" font-weight="700">Uzmana Baglan</text>
+  <rect x="40" y="430" width="820" height="42" rx="8" fill="#ffffff" stroke="#2ab69d"/>
+  <text x="58" y="458" fill="#17212b" font-family="Arial" font-size="16">Evidence: failure streak enables the Jitsi expert bridge from inside the app.</text>
+</svg>
