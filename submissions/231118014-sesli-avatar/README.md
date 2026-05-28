@@ -10,7 +10,7 @@ Final halka: kendi yüzünden avatar + sesin görselleşmesi + kendi audit rapor
 - **Forge (Phase B):** `<AuditWidget />` dikte (mic → STT → markdown) + manuel modlu; raporlar kalıcı saklanır. Cycle ledger COMMIT / ROLLBACK / STUCK durumlarını, 20dk kutuyu ve canlı kabul-kriteri sayaçlarını (≥2 COMMIT, ≥1 ROLLBACK) tutar.
 - **Köprü (Phase C):** "Uzmana Bağlan" butonu Jitsi (meet.jit.si) görüntülü görüşmeyi açar; video + ses + ekran paylaşımı tarayıcı/native tarafında çalışır. Buton, ardışık FAIL/ROLLBACK durumuna göre vurgulanır.
 
-## QR Linki
+## Expo QR Linki
 
 `exp://192.168.1.105:8081`
 
