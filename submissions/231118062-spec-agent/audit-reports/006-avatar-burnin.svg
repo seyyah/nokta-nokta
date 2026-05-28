@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+  <rect width="900" height="520" fill="#10131b"/>
+  <text x="40" y="58" fill="#f5f0a6" font-family="Arial" font-size="22" font-weight="700">BURN-IN 006 - Avatar Lipsync</text>
+  <text x="40" y="94" fill="#d8dee9" font-family="Arial" font-size="18">Dictated audit: the GLB avatar must speak with microphone energy.</text>
+  <circle cx="450" cy="245" r="96" fill="#263142" stroke="#f5f0a6" stroke-width="4"/>
+  <circle cx="415" cy="222" r="10" fill="#f7fafc"/>
+  <circle cx="485" cy="222" r="10" fill="#f7fafc"/>
+  <path d="M410 278 Q450 322 490 278" fill="none" stroke="#58f0d5" stroke-width="12" stroke-linecap="round"/>
+  <text x="332" y="386" fill="#f7fafc" font-family="Arial" font-size="18">avatar.glb + morph targets + RMS</text>
+  <rect x="40" y="430" width="820" height="42" rx="8" fill="#161b25" stroke="#f5f0a6"/>
+  <text x="58" y="458" fill="#f7fafc" font-family="Arial" font-size="16">Evidence: Junior-sen and Senior-sen personas share the user's GLB identity.</text>
+</svg>
