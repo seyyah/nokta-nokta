@@ -1,0 +1,35 @@
+{
+  "name": "nokta-nokta-yahya-ozden",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "prebuild:android": "expo prebuild --platform android",
+    "build:debug": "cd android && gradlew assembleDebug",
+    "ios": "expo run:ios"
+  },
+  "dependencies": {
+    "@react-three/fiber": "^9.6.1",
+    "expo": "~54.0.33",
+    "expo-asset": "~12.0.12",
+    "expo-av": "~16.0.8",
+    "expo-gl": "~16.0.7",
+    "expo-linking": "~8.0.11",
+    "expo-status-bar": "~3.0.9",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-web": "~0.21.0",
+    "three": "^0.184.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.0",
+    "@types/three": "^0.184.0",
+    "babel-preset-expo": "~54.0.10",
+    "typescript": "~5.9.2"
+  }
+}
