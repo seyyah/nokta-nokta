@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Nokta Nokta Bridge",
+    "slug": "nokta-nokta-yahya-ozden",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "noktanokta",
+    "newArchEnabled": false,
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Ses seviyesini okuyup voice visualizer ve lipsync avatar animasyonunu calistirmak icin mikrofon kullanilir."
+      }
+    },
+    "android": {
+      "package": "com.yahyaozden.noktanokta",
+      "permissions": [
+        "RECORD_AUDIO",
+        "MODIFY_AUDIO_SETTINGS",
+        "INTERNET"
+      ]
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
