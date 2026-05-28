@@ -14,7 +14,7 @@ Final halka: kendi yüzünden avatar + sesin görselleşmesi + kendi audit rapor
 
 `exp://192.168.1.105:8081`
 
-## YouTube Demo Videosu Linki
+## YouTube Demo Video Linki
 
 `https://youtube.com/shorts/hWWAktrIBeM?feature=share`
 
