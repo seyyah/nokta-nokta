@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Nokta Nokta Final",
+    "slug": "nokta-nokta-final",
+    "version": "1.0.0",
+    "scheme": "noktanoktafinal",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "android": {
+      "package": "com.bahri.noktanoktafinal",
+      "softwareKeyboardLayoutMode": "pan",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.INTERNET",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Nokta Nokta needs the microphone to dictate audit reports.",
+          "speechRecognitionPermission": "Nokta Nokta converts dictated audit notes into text.",
+          "androidSpeechServicePackages": [
+            "com.google.android.googlequicksearchbox"
+          ]
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
