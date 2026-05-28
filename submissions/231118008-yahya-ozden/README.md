@@ -24,6 +24,8 @@ npm start
 - `avatar-source/` raw local GLB variants kept inside the submission folder
 - `FORGE.md`
 - `BRIDGE.md`
+- `SUBMISSION_INDEX.md`
+- `DEMO.md`
 - `app-debug.apk` local Android debug build output
 - `app-release.apk` standalone Android release build output
 
@@ -31,3 +33,14 @@ npm start
 
 The APKs were built from a short temporary Windows path to avoid CMake path-length issues, then
 copied back to this folder.
+
+## PR / Classroom
+
+Classroom submission link:
+
+```text
+https://github.com/seyyah/nokta-nokta/pull/27
+```
+
+Demo video should show the installed APK on a phone: voice visualizer, avatar lipsync, forge stuck
+state, and the Jitsi expert bridge button.
