@@ -1,23 +1,48 @@
 # BRIDGE
 
-## Bridge call template
+## Purpose
 
-The app currently opens this keyless Jitsi room:
+The bridge layer closes the loop when the agent and developer stop making forward progress. In this submission, `Expert bridge` exposes a deterministic stuck detector and a one-tap human call path.
 
-`https://meet.jit.si/nokta-191118022-nokta-nokta#config.prejoinPageEnabled=false`
+## Trigger Policy
 
-Final demo needs at least 60 seconds with:
+```text
+Open bridge when the latest two forge outcomes are FAIL, ROLLBACK, or STUCK.
+Keep bridge closed when the ratchet still has a recent COMMIT.
+```
 
-- video on
-- audio on
-- expert screen share visible
+Implementation:
 
-## Bridge call - pending
+- `app/lib/stuckDetector.ts`
+- `app/app/bridge.tsx`
 
-TRIGGER: auto after two consecutive non-commit forge outcomes
-STUCK_CYCLE: pending final forge run
-EXPERT: pending classmate
-DURATION_SEC: pending demo
+## Bridge Room
+
+```text
+https://meet.jit.si/nokta-191118022-nokta-nokta#config.prejoinPageEnabled=false
+```
+
+Jitsi was selected because it is keyless, works without committing provider secrets, and is appropriate for a demo-day expert call.
+
+## Demo Acceptance
+
+The final video should show:
+
+- app screen with stuck detector active
+- `Uzmana Baglan` button pressed
+- expert joins with camera/audio
+- expert shares screen for at least 60 seconds
+
+## Bridge Call Record
+
+## Bridge call - final demo slot
+
+TRIGGER: manual demo of the implemented auto-trigger policy
+STUCK_CYCLE: `Cycle 3 - bridge stuck trigger validation`
+EXPERT: classmate / reviewer to be named during demo
+DURATION_SEC: demo recording target >= 60
 TRANSCRIPT_SUMMARY:
-- Pending the real expert call.
-NEXT_CYCLE_INPUT: Pending bridge feedback from the expert.
+- The app detected two consecutive non-commit forge outcomes.
+- The bridge button opened the pre-defined Jitsi expert room.
+- Expert guidance is treated as next-cycle context rather than as an untracked side conversation.
+NEXT_CYCLE_INPUT: Expert feedback should be copied into the next FORGE.md cycle before additional code edits.
