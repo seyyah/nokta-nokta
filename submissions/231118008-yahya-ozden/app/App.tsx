@@ -425,7 +425,7 @@ function AvatarScreen({ amplitude }: { amplitude: number }) {
       </View>
       <View style={styles.avatarReadout}>
         <Metric label="Lip drive" value={`%${Math.round(amplitude * 100)}`} />
-        <Metric label="Pipeline" value="Avaturn GLB" />
+        <Metric label="Pipeline" value="Avaturn close-up" />
       </View>
     </ScrollView>
   );
@@ -450,11 +450,12 @@ function AuditWidget() {
 
 function AvatarCanvas({ amplitude }: { amplitude: number }) {
   return (
-    <Canvas camera={{ position: [0, 0.25, 4.8], fov: 38 }} style={styles.canvas}>
+    <Canvas camera={{ position: [0, 0.2, 4.5], fov: 34 }} style={styles.canvas}>
       <color attach="background" args={['#10131a']} />
-      <ambientLight intensity={0.78} />
-      <directionalLight position={[2.8, 4.2, 3.2]} intensity={1.65} />
-      <pointLight position={[-3, 1.2, 2.5]} intensity={0.7} color="#8be9d4" />
+      <ambientLight intensity={1.18} />
+      <directionalLight position={[2.4, 3.5, 3.6]} intensity={0.95} />
+      <pointLight position={[0, 1.8, 3.2]} intensity={1.35} color="#ffffff" />
+      <pointLight position={[-2.4, 1.1, 2.4]} intensity={0.7} color="#8be9d4" />
       <Suspense fallback={<ProceduralAvatar amplitude={amplitude} />}>
         <AvatarModel amplitude={amplitude} />
       </Suspense>
@@ -521,8 +522,8 @@ function LoadedAvatar({ uri, amplitude }: { uri: string; amplitude: number }) {
   const fallbackMouthRef = useRef<THREE.Mesh>(null);
   const mouthRef = useRef(0);
   const [needsMouthOverlay, setNeedsMouthOverlay] = useState(false);
-  const avatarBaseY = -4.95;
-  const avatarScale = 3.3;
+  const avatarBaseY = -8.15;
+  const avatarScale = 5.0;
   const boneDriversRef = useRef<
     Array<{
       bone: THREE.Object3D;
@@ -590,7 +591,7 @@ function LoadedAvatar({ uri, amplitude }: { uri: string; amplitude: number }) {
       if (lowerName.includes('hair')) {
         tintMaterial(mesh.material, '#111720', 0.9, 0.02);
       } else if (lowerName.includes('look')) {
-        tintMaterial(mesh.material, '#27313d', 0.78, 0.02);
+        tintMaterial(mesh.material, '#172230', 0.82, 0.02);
       } else if (lowerName.includes('shoe')) {
         tintMaterial(mesh.material, '#161b22', 0.78, 0.02);
       } else if (lowerName.includes('body')) {
@@ -706,13 +707,13 @@ function LoadedAvatar({ uri, amplitude }: { uri: string; amplitude: number }) {
     });
 
     if (fallbackMouthRef.current) {
-      fallbackMouthRef.current.scale.y = 0.008 + mouth * 0.036;
-      fallbackMouthRef.current.position.y = 1.595 - mouth * 0.012;
+      fallbackMouthRef.current.scale.y = 0.004 + mouth * 0.025;
+      fallbackMouthRef.current.position.y = 1.688 - mouth * 0.006;
     }
 
     if (groupRef.current) {
-      groupRef.current.rotation.y = Math.sin(clock.elapsedTime * 0.75) * 0.07;
-      groupRef.current.position.y = avatarBaseY + Math.sin(clock.elapsedTime * 1.1) * 0.025;
+      groupRef.current.rotation.y = Math.sin(clock.elapsedTime * 0.75) * 0.025;
+      groupRef.current.position.y = avatarBaseY + Math.sin(clock.elapsedTime * 1.1) * 0.012;
     }
   });
 
@@ -720,10 +721,20 @@ function LoadedAvatar({ uri, amplitude }: { uri: string; amplitude: number }) {
     <group ref={groupRef} position={[0, avatarBaseY, 0]} scale={avatarScale}>
       <primitive object={gltf.scene} />
       {needsMouthOverlay ? (
-        <mesh ref={fallbackMouthRef} position={[0, 1.595, 0.255]} scale={[0.04, 0.008, 0.01]}>
-          <sphereGeometry args={[1, 32, 16]} />
-          <meshBasicMaterial color="#2b0f14" />
-        </mesh>
+        <group>
+          <mesh position={[-0.07, 1.765, 0.262]} scale={[0.017, 0.024, 0.006]}>
+            <sphereGeometry args={[1, 24, 12]} />
+            <meshBasicMaterial color="#111318" depthTest={false} />
+          </mesh>
+          <mesh position={[0.07, 1.765, 0.262]} scale={[0.017, 0.024, 0.006]}>
+            <sphereGeometry args={[1, 24, 12]} />
+            <meshBasicMaterial color="#111318" depthTest={false} />
+          </mesh>
+          <mesh ref={fallbackMouthRef} position={[0, 1.688, 0.268]} scale={[0.032, 0.004, 0.007]}>
+            <sphereGeometry args={[1, 32, 16]} />
+            <meshBasicMaterial color="#2b0f14" depthTest={false} />
+          </mesh>
+        </group>
       ) : null}
     </group>
   );
