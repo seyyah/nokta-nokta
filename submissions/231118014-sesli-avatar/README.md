@@ -12,8 +12,11 @@ Final halka: kendi yüzünden avatar + sesin görselleşmesi + kendi audit rapor
 
 ## QR Linki
 
-Aynı ağda Expo Go uygulamasıyla okutun:
 `exp://192.168.1.105:8081`
+
+## YouTube Demo Videosu Linki
+
+`https://youtube.com/shorts/hWWAktrIBeM?feature=share`
 
 ## Çalıştırma
 
