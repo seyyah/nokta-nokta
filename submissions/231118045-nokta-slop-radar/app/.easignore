@@ -1,0 +1,10 @@
+node_modules
+.expo
+.git
+submissions_yedek
+submissions
+artifacts
+node_modules
+npm-debug.log
+yarn-error.log
+.DS_Store
