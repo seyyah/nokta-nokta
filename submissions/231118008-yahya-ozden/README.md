@@ -26,6 +26,7 @@ npm start
 - `BRIDGE.md`
 - `SUBMISSION_INDEX.md`
 - `DEMO.md`
+- `Demo.mp4` recorded phone demo
 - `app-debug.apk` local Android debug build output
 - `app-release.apk` standalone Android release build output
 

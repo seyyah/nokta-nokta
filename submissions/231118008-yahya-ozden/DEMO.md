@@ -2,6 +2,12 @@
 
 The demo video should be recorded from the installed Android APK.
 
+Recorded demo file:
+
+```text
+submissions/231118008-yahya-ozden/Demo.mp4
+```
+
 ## APK
 
 Install one of these files on the phone:

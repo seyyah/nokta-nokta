@@ -32,6 +32,7 @@ The app contains:
 - `app-debug.apk`: Android installable build.
 - `app-release.apk`: Android release build.
 - `DEMO.md`: demo recording checklist.
+- `Demo.mp4`: recorded phone demo video.
 
 ## Pull Request
 
