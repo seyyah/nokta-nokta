@@ -1,0 +1,37 @@
+{
+  "expo": {
+    "name": "Nokta Audit Forge",
+    "slug": "nokta-audit-forge-231118060",
+    "scheme": "noktaforge231118060",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "plugins": [
+      "expo-router",
+      "expo-asset",
+      "expo-sharing"
+    ],
+    "ios": {
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Nokta Audit Forge uses the microphone to visualize live speech level and drive avatar mouth response."
+      }
+    },
+    "android": {
+      "package": "com.aliordek.noktaauditforge",
+      "permissions": [
+        "RECORD_AUDIO"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#f7f3ea"
+      }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      }
+    }
+  }
+}
