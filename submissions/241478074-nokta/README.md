@@ -26,6 +26,8 @@ npx expo start
 **APK:** [app-release.apk](https://expo.dev/artifacts/eas/nokta-forge-b-release.apk)
 
 ---
+**video link:** https://www.youtube.com/@safiye%C3%B6zkan-e9g/shorts
+
 
 ## Tez: "Müşterinin Developer Olduğu" Kapalı Döngü
 
@@ -147,4 +149,4 @@ Widget kaldırıldığında uygulama bozulmadan çalışır.
 - [x] `FORGE.md` ≥3 success + ≥1 rollback
 - [x] `IDEA.md` — müşteri-developer use case
 - [x] Decision log + human touch points + AI tool log
-- [ ] `app-release.apk` — EAS build ile üretilir (`eas build --platform android --profile preview`)
+- [x] `app-release.apk` — EAS build ile üretilir (`eas build --platform android --profile preview`)
