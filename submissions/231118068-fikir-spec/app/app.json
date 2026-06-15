@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "Nokta Dot Capture",
+    "slug": "nokta-dot-capture",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0a0a0a"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nokta.dotcapture",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Görüntülü görüşme için kamera erişimi gereklidir.",
+        "NSMicrophoneUsageDescription": "Sesli görüşme için mikrofon erişimi gereklidir.",
+        "NSSpeechRecognitionUsageDescription": "Konuşmayı metne dönüştürmek için konuşma tanıma erişimi gereklidir."
+      }
+    },
+    "android": {
+      "package": "com.nokta.dotcapture",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0a0a0a"
+      },
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-dev-client",
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "Sesli görüşme için mikrofon erişimi gereklidir.",
+          "speechRecognitionPermission": "Konuşmayı metne dönüştürmek için konuşma tanıma erişimi gereklidir."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "633b7623-c891-444e-9979-71ae1985c4bf"
+      }
+    },
+    "owner": "zeynepacil"
+  }
+}
