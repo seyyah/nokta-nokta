@@ -1,0 +1,3 @@
+This is a placeholder for avatar.glb.
+To use your own 3D custom avatar, replace this file with your actual 3D GLB model file named 'avatar.glb'.
+The application code includes a loading structure that dynamically detects and attempts to resolve this file locally.
