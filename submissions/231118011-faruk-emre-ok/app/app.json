@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "Nokta Halka",
+    "slug": "nokta-halka-231118011",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "nokta-halka-231118011",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "plugins": [
+      "expo-router",
+      "expo-asset",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow Nokta Halka to read microphone level for the voice avatar."
+        }
+      ],
+      "expo-sharing"
+    ],
+    "android": {
+      "package": "com.farukemre.noktahalka",
+      "permissions": [
+        "RECORD_AUDIO",
+        "CAMERA"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#F8FAFC"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.farukemre.noktahalka",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Camera is used when the Jitsi expert bridge is opened.",
+        "NSMicrophoneUsageDescription": "Microphone level drives the voice avatar and live waveform."
+      }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "cb584463-7b52-45bc-9134-baa871dc62ee"
+      }
+    },
+    "owner": "farukkemree"
+  }
+}
