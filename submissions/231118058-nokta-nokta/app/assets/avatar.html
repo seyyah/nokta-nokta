@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Avatar 3D</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #080c18; /* AvatarVoiceScreen ile aynı renk */
+        }
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+        }
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff6b6b;
+            font-family: sans-serif;
+            font-size: 14px;
+        }
+    </style>
+    <!-- Three.js ve GLTFLoader CDN'leri -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+</head>
+<body>
+    <div id="loading">Model Yükleniyor...</div>
+    <div id="canvas-container"></div>
+
+    <script>
+        let scene, camera, renderer, avatar, mouthNode;
+        let clock = new THREE.Clock();
+
+        // Sahne Kurulumu
+        function init() {
+            const container = document.getElementById('canvas-container');
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color('#080c18');
+
+            camera = new THREE.PerspectiveCamera(42, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.set(0, 0.1, 2.6);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            // Renk ayarları
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            container.appendChild(renderer.domElement);
+
+            // Işıklar
+            const ambient = new THREE.AmbientLight(0x3355aa, 1.2);
+            scene.add(ambient);
+
+            const dirLight = new THREE.DirectionalLight(0x88aaff, 2.0);
+            dirLight.position.set(1.5, 3, 2.5);
+            scene.add(dirLight);
+
+            const fillLight = new THREE.DirectionalLight(0xff88cc, 0.8);
+            fillLight.position.set(-2, 1, 1);
+            scene.add(fillLight);
+
+            window.addEventListener('resize', onWindowResize, false);
+            animate();
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function loadModel(dataUri) {
+            const loader = new THREE.GLTFLoader();
+            loader.load(dataUri, (gltf) => {
+                avatar = gltf.scene;
+
+                // Modeli merkeze ve ekrana oturtma
+                const box = new THREE.Box3().setFromObject(avatar);
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const scale = maxDim > 0 ? 1.8 / maxDim : 1;
+                avatar.scale.setScalar(scale);
+
+                const center = box.getCenter(new THREE.Vector3());
+                const faceY = box.max.y - (size.y * 0.12);
+                avatar.position.set(-center.x * scale, -faceY * scale + 0.1, -center.z * scale);
+
+                // Ağız nodunu bul
+                avatar.traverse((node) => {
+                    const lower = node.name.toLowerCase();
+                    if (lower.includes('mouth') || lower.includes('jaw') || lower.includes('lip') || lower.includes('teeth')) {
+                        mouthNode = node;
+                    }
+                });
+
+                scene.add(avatar);
+                document.getElementById('loading').style.display = 'none';
+
+                // Hazır olduğunu React Native'e bildir
+                window.ReactNativeWebView.postMessage(JSON.stringify({ type: 'ready' }));
+
+            }, undefined, (error) => {
+                document.getElementById('loading').innerText = 'Yükleme Hatası!';
+                console.error(error);
+            });
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (avatar) {
+                const t = clock.getElapsedTime();
+                avatar.rotation.y = Math.sin(t * 0.5) * 0.12;
+                avatar.position.y += (Math.sin(t * 1.2) * 0.02 - avatar.position.y) * 0.1;
+            }
+            renderer.render(scene, camera);
+        }
+
+        // React Native'den gelen mesajları dinle
+        document.addEventListener('message', function(event) {
+            handleMessage(event.data);
+        });
+        window.addEventListener('message', function(event) {
+            handleMessage(event.data);
+        });
+
+        function handleMessage(dataString) {
+            try {
+                const data = JSON.parse(dataString);
+                
+                // 1. Model Verisi Geldi
+                if (data.type === 'loadGLB') {
+                    loadModel(data.base64Uri);
+                }
+                
+                // 2. Ses Seviyesi Geldi (Lipsync)
+                if (data.type === 'volume' && mouthNode) {
+                    const vol = data.value;
+                    const targetY = vol > 0.04 ? 1 + vol * 4 : 1;
+                    mouthNode.scale.y += (targetY - mouthNode.scale.y) * 0.3;
+                    mouthNode.scale.z = mouthNode.scale.y; // Z'yi de esnet ki gerçekçi dursun
+                }
+            } catch (e) {
+                console.error("Parse error:", e);
+            }
+        }
+
+        // Başlat
+        init();
+    </script>
+</body>
+</html>
