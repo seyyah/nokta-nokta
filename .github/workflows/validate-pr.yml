@@ -1,0 +1,78 @@
+name: Validate PR
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check only submissions/ touched
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          CHANGED=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")
+          echo "Changed files:"
+          echo "$CHANGED"
+          BAD=$(echo "$CHANGED" | grep -v '^submissions/' || true)
+          if [ -n "$BAD" ]; then
+            echo "::error::Ana dizine dokunmak YASAK. İhlal eden dosyalar:"
+            echo "$BAD"
+            exit 1
+          fi
+
+      - name: Check folder name format
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          DIRS=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep '^submissions/' | cut -d/ -f2 | sort -u)
+          for DIR in $DIRS; do
+            if ! echo "$DIR" | grep -qE '^[0-9]{6,}-[A-Za-z0-9-]+$'; then
+              echo "::error::Klasör adı formatı yanlış: $DIR"
+              echo "Beklenen: <öğrenci-no>-<slug>, örn: 20210123-kuantum-seyyah"
+              exit 1
+            fi
+          done
+
+      - name: Check required files
+        run: |
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          DIRS=$(git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep '^submissions/' | cut -d/ -f1-2 | sort -u)
+          for DIR in $DIRS; do
+            if [ ! -f "$DIR/README.md" ]; then
+              echo "::warning::$DIR/README.md eksik"
+            fi
+            if ! ls "$DIR"/*.apk 2>/dev/null | grep -q .; then
+              echo "::warning::$DIR içinde .apk dosyası yok (-5 ceza riski)"
+            fi
+
+            # Challenge 2 specific checks
+            HAS_CH2_FILES=false
+            if [ -f "$DIR/FORGE.md" ] || [ -d "$DIR/audit-reports" ]; then
+              HAS_CH2_FILES=true
+            fi
+            if git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -q "^$DIR/FORGE.md\|^$DIR/audit-reports/"; then
+              HAS_CH2_FILES=true
+            fi
+
+            if [ "$HAS_CH2_FILES" = true ]; then
+              echo "Challenge 2 (Audit-Forge) tespit edildi. Özel dosyalar kontrol ediliyor..."
+              if [ ! -f "$DIR/FORGE.md" ]; then
+                echo "::warning::$DIR/FORGE.md eksik! (Engineering Trace = 0 puanlanacaktır)"
+              fi
+
+              REPORT_COUNT=0
+              if [ -d "$DIR/audit-reports" ]; then
+                REPORT_COUNT=$(find "$DIR/audit-reports" -name "*.md" 2>/dev/null | wc -l)
+              fi
+              if [ "$REPORT_COUNT" -lt 3 ]; then
+                echo "::warning::$DIR/audit-reports/ altında yetersiz rapor ($REPORT_COUNT/3)! (Çalışır Teslim -10 ceza alacaktır)"
+              fi
+            fi
+          done

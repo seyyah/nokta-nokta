@@ -1,0 +1,53 @@
+name: Score Submissions
+
+on:
+  workflow_dispatch:  # manuel tetikleme — sen lab bitince çalıştırırsın
+  push:
+    branches: [main]
+    paths:
+      - 'submissions/**'
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: pip install scikit-learn numpy
+
+      - name: Run similarity check
+        run: python .github/scripts/similarity_check.py
+
+      - name: Run scoring
+        run: python .github/scripts/score.py
+
+      - name: Regenerate LEADERBOARD.md
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python .github/scripts/update_leaderboard.py
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: scoring-results
+          path: |
+            scoring/
+            LEADERBOARD.md
+
+      - name: Commit scoring + leaderboard
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add scoring/ LEADERBOARD.md .github/scripts/score.py
+          git diff --cached --quiet || git commit -m "Auto: update scoring + leaderboard [skip ci]"
+          git push
+        continue-on-error: true
