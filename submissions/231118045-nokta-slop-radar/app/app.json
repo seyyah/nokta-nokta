@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Nokta Slop Radar",
+    "slug": "nokta-slop-radar",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.yagmurtoprakli.noktaslopradar"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a353657a-afb4-4d72-bf4c-58cdc9a57dd5"
+      }
+    }
+  }
+}
