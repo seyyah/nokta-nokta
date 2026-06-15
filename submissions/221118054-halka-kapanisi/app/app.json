@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "Halka Kapanisi",
+    "slug": "halka-kapanisi",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "android": {
+      "package": "com.nokta.halka",
+      "permissions": ["RECORD_AUDIO", "CAMERA"]
+    },
+    "ios": {
+      "bundleIdentifier": "com.nokta.halka",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Sesinizin görselleştirilmesi ve avatarın dudak senkronu için mikrofon kullanılır.",
+        "NSCameraUsageDescription": "Uzmanla görüntülü görüşme için kamera kullanılır."
+      }
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Mikrofon erişimi voice visualizer ve lipsync için gereklidir."
+        }
+      ]
+    ],
+    "scheme": "halka",
+    "assetBundlePatterns": ["**/*", "assets/avatar.glb"]
+  }
+}

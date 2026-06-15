@@ -1,0 +1,6 @@
+Gerçek burn-in'li ekran görüntüsü Expo Go'da widget ile üretilecek:
+  1. İlgili ekrana git
+  2. 🐛 FAB → ekran yakala
+  3. İlgili alanı sarı kutu ile işaretle
+  4. Not yaz, kaydet
+  5. Export edilen .md içindeki görüntüyü buraya audit-3.png olarak kaydet
