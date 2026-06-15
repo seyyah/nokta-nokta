@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "app",
+    "slug": "app",
+    "version": "1.0.0",
+    "sdkVersion": "55.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.mohammedalmashhor.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "497e2ae4-e91e-42ed-99e9-d705cb31903f"
+      }
+    },
+    "owner": "mohammedalmashhor",
+    "plugins": [
+      "expo-sharing"
+    ]
+  }
+}
