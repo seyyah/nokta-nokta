@@ -17,7 +17,7 @@ Bu proje, Nokta-Nokta (Halka Kapanışı) görevinin Track A (Sadakat) spesifika
 - **YouTube Demo:** [Nokta Avatar — Phase A+B Demo](https://youtube.com/shorts/YkBfYwaSHcI)
 
 ## Bağlantılar
-- **Yeni EAS Build (Aktif):** [Build Durumu](https://expo.dev/accounts/aatesoglu/projects/app/builds/8b7ceeae-1e86-47a2-8eec-2a583477cfe4)
+- **Yeni EAS Build (Aktif):** [Build Durumu](https://expo.dev/accounts/aatesoglu/projects/app/builds/130e4c4d-258e-46b9-8a95-7910b331bb76)
 - **Son Çalışan EAS Build Günlüğü:** [EAS Build Log](https://expo.dev/accounts/aatesoglu/projects/app/builds/8b7ceeae-1e86-47a2-8eec-2a583477cfe4)
 - **Son Çalışan APK İndirme Bağlantısı:** [app-release.apk](https://expo.dev/artifacts/eas/zCWoZ6IWPRRdPN5ZIr3KY2TKYqfMUnWqaByxVdEMrEw.apk)
 - **Eski EAS Build Günlüğü:** [EAS Build Log](https://expo.dev/accounts/aatesoglu/projects/app/builds/2de2799e-e24f-4e71-8287-0be3665b53a0)
@@ -36,7 +36,7 @@ Bu proje, Nokta-Nokta (Halka Kapanışı) görevinin Track A (Sadakat) spesifika
 - [x] Yalnızca `submissions/231118063-avatar/` altında değişiklik yaptım (ve proje yapılandırması için kök dizine `.gitignore` eklendi)
 - [x] README'de Expo QR link var
 - [x] README'de 60 sn demo video linki var
-- [x] `app-release.apk` klasörde mevcut (Not: arm64-v8a optimizasyonuyla boyutu 50 MB'a düşürülen yeni hatasız APK bulutta derlenmektedir, derleme biter bitmez yerel dizine otomatik eklenip PR güncellenecektir).
+- [x] `app-release.apk` klasörde mevcut (Not: 3D model yükleme düzeltmesini içeren güncel APK bulutta derlenmektedir. İnceleyen kişi doğrudan yukarıdaki "Yeni EAS Build (Aktif)" bağlantısından güncel APK'yı indirebilir).
 - [x] README'de decision log yazdım (Ayrıca `DECISIONS.md` ve `FORGE.md` dosyaları eklendi)
 - [x] Track seçimim README'de net
 
