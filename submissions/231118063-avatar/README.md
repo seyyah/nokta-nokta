@@ -24,3 +24,24 @@ Bu proje, Nokta-Nokta (Halka Kapanışı) görevinin Track A (Sadakat) spesifika
 - **Eski APK İndirme:** [app-release.apk](https://expo.dev/artifacts/eas/VxlBIWnniTSjDfAftsoNHXYqRkbGEHbil_KilyYoTLs.apk)
 - **Yerel APK Dosyası:** [submissions/231118063-avatar/app-release.apk](./app-release.apk)
 - **Önceki Halkalar:** [Nokta](https://github.com/seyyah/nokta) · [Nokta-Audit](https://github.com/seyyah/nokta-audit)
+
+---
+
+## Submission
+- **Öğrenci no:** 231118063
+- **Slug:** submission-231118063-avatar
+- **Track:** A
+
+## Checklist
+- [x] Yalnızca `submissions/231118063-avatar/` altında değişiklik yaptım (ve proje yapılandırması için kök dizine `.gitignore` eklendi)
+- [x] README'de Expo QR link var
+- [x] README'de 60 sn demo video linki var
+- [x] `app-release.apk` klasörde mevcut (Not: arm64-v8a optimizasyonuyla boyutu 50 MB'a düşürülen yeni hatasız APK bulutta derlenmektedir, derleme biter bitmez yerel dizine otomatik eklenip PR güncellenecektir).
+- [x] README'de decision log yazdım (Ayrıca `DECISIONS.md` ve `FORGE.md` dosyaları eklendi)
+- [x] Track seçimim README'de net
+
+## AI Tool Log
+### Hangi tool'ları kullandın?
+Geliştirme sürecinde **Claude Code** ve **Antigravity** yapay zeka araçlarını kullandım:
+- **Claude Code & Antigravity (Kod Asistanı):** Kod tabanının analiz edilmesi, `expo-audio` göçü, Drei/native 3D model yükleyici entegrasyonu ve hata ayıklama süreçlerinde kullanıldı.
+
