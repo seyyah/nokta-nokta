@@ -3,9 +3,12 @@ import { StyleSheet, View, Text, TouchableOpacity, Animated, ScrollView, Activit
 import { useAudioRecorder, useAudioRecorderState, RecordingPresets, setAudioModeAsync, requestRecordingPermissionsAsync } from 'expo-audio';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei/native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system';
+import { Buffer } from 'buffer';
+import { GLTFLoader } from 'three-stdlib';
 
 import { AuditWidget } from '@/components/AuditWidget';
 import Brain from '@/services/Brain';
@@ -16,22 +19,7 @@ const apiKey = process.env.EXPO_PUBLIC_GROQ_API_KEY;
 // 3D Avatar Component
 // GLB (avaturn.me export) has no viseme morph targets; lipsync is driven by
 // rotating the Head bone forward (chin-down) in proportion to mic volume.
-function Avatar({ volume }: { volume: number }) {
-  let gltf: any;
-  try {
-    // @ts-ignore
-    gltf = useGLTF(require('../../assets/avatar.glb'));
-  } catch (e) {
-    return (
-      <mesh>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="#1a6bff" wireframe />
-      </mesh>
-    );
-  }
-
-  const { scene } = gltf;
-
+function Avatar({ scene, volume }: { scene: any; volume: number }) {
   useFrame(() => {
     if (!scene) return;
     scene.traverse((child: any) => {
@@ -47,6 +35,7 @@ function Avatar({ volume }: { volume: number }) {
     <primitive object={scene} scale={1.2} position={[0, -1.8, 0]} />
   );
 }
+
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -64,6 +53,48 @@ export default function HomeScreen() {
   const [chat, setChat] = useState<{ role: 'user' | 'nokta'; text: string }[]>([
     { role: 'nokta', text: 'Merhaba! Ben senin yapay zeka sağlık asistanın Nokta. Bugün seni dinlemek için buradayım. Kendini nasıl hissediyorsun?' }
   ]);
+
+  const [avatarScene, setAvatarScene] = useState<any>(null);
+  const [avatarError, setAvatarError] = useState<string | null>(null);
+
+  // Load avatar model manually via expo-file-system and base64 parsing for release builds
+  useEffect(() => {
+    async function loadAvatarModel() {
+      try {
+        const asset = Asset.fromModule(require('../../assets/avatar.glb'));
+        await asset.downloadAsync();
+        
+        const fileUri = asset.localUri || asset.uri;
+        if (!fileUri) {
+          throw new Error("Could not get local URI of avatar.glb");
+        }
+
+        const base64Data = await FileSystem.readAsStringAsync(fileUri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+
+        const arrayBuffer = Buffer.from(base64Data, 'base64').buffer;
+
+        const loader = new GLTFLoader();
+        loader.parse(
+          arrayBuffer,
+          '',
+          (gltf) => {
+            setAvatarScene(gltf.scene);
+          },
+          (err) => {
+            console.error("GLTF Loader parse error:", err);
+            setAvatarError(err.message || String(err));
+          }
+        );
+      } catch (err: any) {
+        console.error("GLTF manual load error:", err);
+        setAvatarError(err.message || String(err));
+      }
+    }
+
+    loadAvatarModel();
+  }, []);
 
   // Track C: STUCK auto-detect — art arda 2 başarısız cevap → uzman çağrısı
   const stuckCount = useRef(0);
@@ -304,15 +335,29 @@ export default function HomeScreen() {
 
       {/* 3D Avatar Area */}
       <View style={styles.avatarContainer}>
-        <Canvas camera={{ position: [0, 0, 2.5], fov: 45 }}>
-          <ambientLight intensity={0.65} />
-          <directionalLight position={[5, 5, 5]} intensity={1.2} />
-          <pointLight position={[-5, 5, -5]} intensity={0.5} />
-          
-          <Suspense fallback={null}>
-            <Avatar volume={volume} />
-          </Suspense>
-        </Canvas>
+        {avatarError ? (
+          <View style={styles.errorContainer}>
+            <Ionicons name="alert-circle-outline" size={28} color="#ef4444" />
+            <Text style={styles.errorText}>Avatar yüklenemedi: {avatarError}</Text>
+          </View>
+        ) : (
+          <Canvas camera={{ position: [0, 0, 2.5], fov: 45 }}>
+            <ambientLight intensity={0.65} />
+            <directionalLight position={[5, 5, 5]} intensity={1.2} />
+            <pointLight position={[-5, 5, -5]} intensity={0.5} />
+            
+            <Suspense fallback={null}>
+              {avatarScene ? (
+                <Avatar scene={avatarScene} volume={volume} />
+              ) : (
+                <mesh>
+                  <boxGeometry args={[1, 1, 1]} />
+                  <meshStandardMaterial color="#1a6bff" wireframe />
+                </mesh>
+              )}
+            </Suspense>
+          </Canvas>
+        )}
       </View>
 
       {/* Chat Thread Area */}
@@ -550,5 +595,18 @@ const styles = StyleSheet.create({
     fontSize: 13,
     marginTop: 8,
     fontWeight: '500',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#111115',
+  },
+  errorText: {
+    color: '#ef4444',
+    fontSize: 14,
+    marginTop: 8,
+    textAlign: 'center',
   },
 });

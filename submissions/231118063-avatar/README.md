@@ -18,10 +18,10 @@ Bu proje, Nokta-Nokta (Halka Kapanışı) görevinin Track A (Sadakat) spesifika
 
 ## Bağlantılar
 - **Yeni EAS Build (Aktif):** [Build Durumu](https://expo.dev/accounts/aatesoglu/projects/app/builds/8b7ceeae-1e86-47a2-8eec-2a583477cfe4)
-- **Son Çalışan EAS Build Günlüğü:** [EAS Build Log](https://expo.dev/accounts/aatesoglu/projects/app/builds/2de2799e-e24f-4e71-8287-0be3665b53a0)
-- **Son Çalışan APK İndirme Bağlantısı:** [app-release.apk](https://expo.dev/artifacts/eas/djqKiXhur_uHPs7VoAR2mriRLuWekBb9FRN7IuV8MDk.apk)
-- **Eski EAS Build Günlüğü:** [EAS Build Log](https://expo.dev/accounts/aatesoglu/projects/app/builds/8278866f-6772-471f-95c9-8e04614f5e51)
-- **Eski APK İndirme:** [app-release.apk](https://expo.dev/artifacts/eas/VxlBIWnniTSjDfAftsoNHXYqRkbGEHbil_KilyYoTLs.apk)
+- **Son Çalışan EAS Build Günlüğü:** [EAS Build Log](https://expo.dev/accounts/aatesoglu/projects/app/builds/8b7ceeae-1e86-47a2-8eec-2a583477cfe4)
+- **Son Çalışan APK İndirme Bağlantısı:** [app-release.apk](https://expo.dev/artifacts/eas/zCWoZ6IWPRRdPN5ZIr3KY2TKYqfMUnWqaByxVdEMrEw.apk)
+- **Eski EAS Build Günlüğü:** [EAS Build Log](https://expo.dev/accounts/aatesoglu/projects/app/builds/2de2799e-e24f-4e71-8287-0be3665b53a0)
+- **Eski APK İndirme:** [app-release.apk](https://expo.dev/artifacts/eas/djqKiXhur_uHPs7VoAR2mriRLuWekBb9FRN7IuV8MDk.apk)
 - **Yerel APK Dosyası:** [submissions/231118063-avatar/app-release.apk](./app-release.apk)
 - **Önceki Halkalar:** [Nokta](https://github.com/seyyah/nokta) · [Nokta-Audit](https://github.com/seyyah/nokta-audit)
 
